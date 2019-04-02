@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 int main()
@@ -17,7 +18,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // To make MacOS happy; should not be needed
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
 
-    GLFWwindow *window; // (In the accompanying source code, this variable is global for simplicity)
+    GLFWwindow *window;
     window = glfwCreateWindow(1600, 900, "Game", NULL, NULL);
     if (window == NULL)
     {
@@ -25,14 +26,22 @@ int main()
         glfwTerminate();
         return -1;
     }
-    glfwMakeContextCurrent(window); // Initialize GLEW
+    glfwMakeContextCurrent(window);
 
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cerr << "Failed to initialize OpenGL context\n";
+        return -1;
+    }
+
+    glViewport(0, 0, 1600, 900);
+
     do
     {
-        // glClear(GL_COLOR_BUFFER_BIT);
-
+        glClearColor(0.2f, 0.3f, 0.9f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         // Swap buffers
         glfwSwapBuffers(window);

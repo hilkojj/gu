@@ -16,9 +16,12 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(./external/glfw-3.2.1)
 include_directories(./external/glfw-3.2.1)
-target_link_libraries(game glfw)
 
 
+# ---GLAD---
+add_subdirectory(glad/)
 
 # -no-pie is used to get 'application/x-application' as mime type instead of 'application/x-sharedlib'
 set(CMAKE_CXX_FLAGS  "-no-pie")
+
+target_link_libraries(game glad glfw)
