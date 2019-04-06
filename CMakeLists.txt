@@ -1,7 +1,11 @@
-cmake_minimum_required (VERSION 3.0)
-project (game)
+cmake_minimum_required(VERSION 3.0)
+
+project(game)
 set(EXECUTABLE_OUTPUT_PATH "bin")
-add_executable(game main.cpp)
+
+file(GLOB_RECURSE source source/*)
+add_executable(game ${source})
+set_target_properties(game PROPERTIES LINKER_LANGUAGE CXX)
 
 find_package(OpenGL REQUIRED)
 

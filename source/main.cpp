@@ -1,7 +1,8 @@
 #include <iostream>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+#include "game/game.h"
 
 int main()
 {
@@ -20,7 +21,8 @@ int main()
 
     GLFWwindow *window;
     window = glfwCreateWindow(1600, 900, "Game", NULL, NULL);
-    if (window == NULL)
+    
+    if (!window)
     {
         std::cerr << "Failed to open GLFW window.\n";
         glfwTerminate();
@@ -36,20 +38,45 @@ int main()
         return -1;
     }
 
+    glfwSwapInterval(0); // a way to disable vsync.
+
     glViewport(0, 0, 1600, 900);
+
+    double prevTime = glfwGetTime();
+    int framesInSecond = 0;
+    double remainingSecond = 1;
+
+    Screen scr;
+    Game::setScreen(&scr);
 
     do
     {
-        glClearColor(0.2f, 0.3f, 0.9f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        double currTime = glfwGetTime();
+        double deltaTime = currTime - prevTime;
+
+        framesInSecond++;
+
+        if ((remainingSecond -= deltaTime) <= 0) {
+            std::string fps = std::to_string(framesInSecond) + "fps";
+            glfwSetWindowTitle(window, fps.c_str());
+            framesInSecond = 0;
+            remainingSecond = 1;
+        }
+
+        Game::render(std::min(deltaTime, .1));
 
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
 
+        prevTime = currTime;
+
     } // Check if the ESC key was pressed or the window was closed
     while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-           glfwWindowShouldClose(window) == 0);
+           !glfwWindowShouldClose(window));
 
+    Game::end();
+
+    glfwTerminate();
     return 0;
 }
