@@ -2,11 +2,13 @@
 
 #include "glad/glad.h"
 #include "../game/screen.h"
+#include "../graphics/shader_program.h"
 
 class TriangleScreen : public Screen
 {
 
   public:
+    ShaderProgram shaderProgram;
     GLuint vaoId;
     GLuint vertBufferId;
     GLfloat verts[9] {
@@ -15,7 +17,7 @@ class TriangleScreen : public Screen
         0.0f,  1.0f, 0.0f
     };
 
-    TriangleScreen()
+    TriangleScreen() : shaderProgram(ShaderProgram::fromFiles("Testshader", "assets/shaders/test.vert", "assets/shaders/test.frag"))
     {
         glGenVertexArrays(1, &vaoId);
         glBindVertexArray(vaoId);

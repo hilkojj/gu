@@ -79,6 +79,6 @@ int main()
 
     Game::end();
 
-    glfwTerminate();
+    // glfwTerminate(); // todo: causes seg fault. ShaderProgram calls openGL to delete program AFTER glfw has terminated.
     return 0;
 }
