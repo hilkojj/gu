@@ -4,6 +4,8 @@
 #include "GLFW/glfw3.h"
 #include "game/game.h"
 
+#include "test_screens/triangle_screen.cpp"
+
 int main()
 {
     // Initialise GLFW
@@ -46,7 +48,7 @@ int main()
     int framesInSecond = 0;
     double remainingSecond = 1;
 
-    Screen scr;
+    TriangleScreen scr;
     Game::setScreen(&scr);
 
     do

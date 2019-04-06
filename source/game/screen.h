@@ -5,7 +5,7 @@
 class Screen
 {
   public:
-    void render(double deltaTime);
+    virtual void render(double deltaTime) = 0;
 };
 
 #endif
