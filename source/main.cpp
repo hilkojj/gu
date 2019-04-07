@@ -5,9 +5,16 @@
 #include "game/game.h"
 
 #include "test_screens/triangle_screen.cpp"
+#include "../external/json.hpp"
+#include "files/file.h"
+using json = nlohmann::json;
 
 int main()
 {
+    json j = json::parse(File::readString("assets/models/example.g3dj"));
+
+    std::cout << j["meshes"][0]["attributes"] << std::endl;
+
     // Initialise GLFW
     if (!glfwInit())
     {

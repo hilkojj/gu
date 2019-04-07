@@ -4,6 +4,10 @@
 
 2. Generate & download the OpenGL loader with [Glad](https://glad.dav1d.de/) and extract the .zip to `./external/glad`
 
+3. Download [GLM (OpenGL Mathematics for C++) version 0.9.9.5](https://github.com/g-truc/glm/releases) and extract to `./external/glm-0.9.9.5`
+
+4. Download `json.hpp` from [JSON for Modern C++ (version 3.6.1)](https://github.com/nlohmann/json/releases/tag/v3.6.1) and place it in `./external`
+
 3. Run `cmake .`
 
 4. Run `make && ./bin/game`
