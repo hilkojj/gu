@@ -52,6 +52,11 @@ bool ShaderProgram::compiled() const
     return compiled_;
 }
 
+GLuint ShaderProgram::getProgramId() const
+{
+    return programId;
+}
+
 ShaderProgram ShaderProgram::fromFiles(std::string name, const char *vertPath, const char *fragPath)
 {
     std::string vertCode = File::readString(vertPath);
