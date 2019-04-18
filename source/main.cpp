@@ -5,15 +5,18 @@
 #include "game/game.h"
 
 #include "test_screens/triangle_screen.cpp"
+#include "test_screens/mesh_screen.cpp"
 #include "../external/json.hpp"
 #include "files/file.h"
 using json = nlohmann::json;
 
 int main()
 {
-    json j = json::parse(File::readString("assets/models/example.g3dj"));
+    // json j = json::parse(File::readString("assets/models/example.g3dj"));
+    json j = json::from_ubjson(File::readBinary("assets/models/example.ubj"));
+    std::cout << j << std::endl;
 
-    std::cout << j["meshes"][0]["attributes"] << std::endl;
+    // std::cout << j["meshes"][0]["attributes"] << std::endl;
 
     // Initialise GLFW
     if (!glfwInit())
@@ -55,7 +58,7 @@ int main()
     int framesInSecond = 0;
     double remainingSecond = 1;
 
-    TriangleScreen scr;
+    MeshScreen scr;
     Game::setScreen(&scr);
 
     do

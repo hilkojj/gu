@@ -1,10 +1,11 @@
 #include <iostream>
 
 #include "glad/glad.h"
+#include "../graphics/3d/vert_attributes.h"
 #include "../game/screen.h"
 #include "../game/game.h"
 #include "../graphics/shader_program.h"
-#include "../graphics/perspective_camera.h"
+#include "../graphics/3d/perspective_camera.h"
 #include "glm/glm.hpp"
 using namespace glm;
 
@@ -32,6 +33,15 @@ class TriangleScreen : public Screen
         glGenBuffers(1, &vertBufferId);
         glBindBuffer(GL_ARRAY_BUFFER, vertBufferId);
         glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(
+            0, // location of VertexPosition that is used in vertex shader. 'layout(location = 0)'
+            3, // size. x, y, z
+            GL_FLOAT, // type
+            GL_FALSE, // normalized?
+            0, // stride
+            (void*)0 // offset
+        );
     }
 
     void render(double deltaTime)
@@ -56,14 +66,14 @@ class TriangleScreen : public Screen
 
         glUniformMatrix4fv(mvpId, 1, GL_FALSE, &mvp[0][0]);
 
+        // enable & bind vertex positions
         glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertBufferId);
-        glVertexAttribPointer(
-            0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0
-        );
+        glBindBuffer(GL_ARRAY_BUFFER, vertBufferId);    // bind VBO
+        // end
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glDisableVertexAttribArray(0);
+        glDrawArrays(GL_TRIANGLES, 0, 3); // draw
+
+        glDisableVertexAttribArray(0); // disable vertex positions
     }
 
 };
