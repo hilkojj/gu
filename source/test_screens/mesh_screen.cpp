@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "glad/glad.h"
+#include "../graphics/3d/vert_buffer.h"
 #include "../graphics/3d/vert_attributes.h"
 #include "../graphics/3d/mesh.h"
 #include "../graphics/3d/mesh_instance.h"
@@ -15,12 +16,12 @@ class MeshScreen : public Screen
 {
 
   public:
-    MeshInstance* meshInstance;
+    MeshInstance *meshInstance;
     ShaderProgram shaderProgram;
     PerspectiveCamera cam;
     float time;
 
-    MeshScreen() 
+    MeshScreen()
         : shaderProgram(ShaderProgram::fromFiles("Testshader", "assets/shaders/test.vert", "assets/shaders/test.frag")),
           cam(PerspectiveCamera(.1, 100, 1600, 900, 75))
     {
@@ -29,16 +30,24 @@ class MeshScreen : public Screen
         attrs.add(VertAttributes::POSITION);
         attrs.add(VertAttributes::NORMAL);
 
-        std::cout << attrs.getVertSize() << std::endl;
-
         SharedMesh mesh = SharedMesh(new Mesh("testMesh", 3, 3, attrs));
+        SharedMesh mesh2 = SharedMesh(new Mesh("testMesh2", 3, 3, attrs));
 
         mesh->vertices[0] = 4;
 
-        std::cout << mesh->vertices[0] << std::endl;
+        mesh->vertices[17] = 3;
+
+        mesh2->vertices[0] = 2;
+
+        mesh2->vertices[17] = 1;
+
+        VertBuffer* buffer = VertBuffer::with(attrs);
+
+        buffer->add(mesh)->add(mesh2);
+
+        buffer->upload();
 
         meshInstance = new MeshInstance(mesh);
-
     }
 
     void render(double deltaTime)
@@ -49,12 +58,10 @@ class MeshScreen : public Screen
         cam.position.z = glm::cos(time) * 3;
         cam.lookAt(vec3(0));
         cam.update();
-
     }
 
     ~MeshScreen()
     {
         delete meshInstance;
     }
-
 };

@@ -8,6 +8,8 @@
 
 #include "vert_attributes.h"
 
+class VertBuffer;
+
 class Mesh
 {
 
@@ -17,6 +19,8 @@ class Mesh
     std::vector<unsigned short> indices;
 
     unsigned int nrOfVertices, nrOfIndices;
+
+    VertBuffer *vertBuffer = nullptr;
 
     Mesh(
         std::string name,

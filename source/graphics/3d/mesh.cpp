@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "mesh.h"
+#include "vert_buffer.h"    
 #include "vert_attributes.h"
 
 Mesh::Mesh(std::string name, unsigned int nrOfVertices, unsigned int nrOfIndices, const VertAttributes &attributes)
@@ -17,4 +18,7 @@ Mesh::Mesh(std::string name, unsigned int nrOfVertices, unsigned int nrOfIndices
 Mesh::~Mesh()
 {
     std::cout << "Mesh destroyed: " << name << std::endl;
+
+    if (vertBuffer)
+        vertBuffer->onMeshDestroyed();
 }

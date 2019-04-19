@@ -23,6 +23,16 @@ unsigned int VertAttributes::add(VertAttr attr)
     return offset;
 }
 
+VertAttr& VertAttributes::get(unsigned int i)
+{
+    return attributes[i];
+}
+
+unsigned int VertAttributes::nrOfAttributes() const
+{
+    return attributes.size();
+}
+
 unsigned int VertAttributes::getVertSize() const
 {
     return vertSize;
