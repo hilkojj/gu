@@ -3,6 +3,7 @@
 #include "glad/glad.h"
 #include "../graphics/3d/vert_attributes.h"
 #include "../graphics/3d/mesh.h"
+#include "../graphics/3d/mesh_instance.h"
 #include "../game/screen.h"
 #include "../game/game.h"
 #include "../graphics/shader_program.h"
@@ -14,6 +15,7 @@ class MeshScreen : public Screen
 {
 
   public:
+    MeshInstance* meshInstance;
     ShaderProgram shaderProgram;
     PerspectiveCamera cam;
     float time;
@@ -29,11 +31,14 @@ class MeshScreen : public Screen
 
         std::cout << attrs.getVertSize() << std::endl;
 
-        Mesh mesh(3, 3, attrs);
+        SharedMesh mesh = SharedMesh(new Mesh("testMesh", 3, 3, attrs));
 
-        mesh.vertices[0] = 4;
+        mesh->vertices[0] = 4;
 
-        std::cout << mesh.vertices[0] << std::endl;
+        std::cout << mesh->vertices[0] << std::endl;
+
+        meshInstance = new MeshInstance(mesh);
+
     }
 
     void render(double deltaTime)
@@ -45,6 +50,11 @@ class MeshScreen : public Screen
         cam.lookAt(vec3(0));
         cam.update();
 
+    }
+
+    ~MeshScreen()
+    {
+        delete meshInstance;
     }
 
 };

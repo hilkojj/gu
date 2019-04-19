@@ -13,10 +13,7 @@ using json = nlohmann::json;
 int main()
 {
     // json j = json::parse(File::readString("assets/models/example.g3dj"));
-    json j = json::from_ubjson(File::readBinary("assets/models/example.ubj"));
-    std::cout << j << std::endl;
-
-    // std::cout << j["meshes"][0]["attributes"] << std::endl;
+    // json j = json::from_ubjson(File::readBinary("assets/models/example.ubj"));
 
     // Initialise GLFW
     if (!glfwInit())
