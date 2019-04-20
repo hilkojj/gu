@@ -4,11 +4,13 @@
 #include "../graphics/3d/vert_buffer.h"
 #include "../graphics/3d/vert_attributes.h"
 #include "../graphics/3d/mesh.h"
-#include "../graphics/3d/mesh_instance.h"
+#include "../graphics/3d/model.h"
+#include "../graphics/3d/model_instance.h"
 #include "../game/screen.h"
 #include "../game/game.h"
 #include "../graphics/shader_program.h"
 #include "../graphics/3d/perspective_camera.h"
+#include "../utils/json_model_loader.h"
 #include "glm/glm.hpp"
 using namespace glm;
 
@@ -16,7 +18,7 @@ class MeshScreen : public Screen
 {
 
   public:
-    MeshInstance *meshInstance;
+    ModelInstance *modelInstance;
     ShaderProgram shaderProgram;
     PerspectiveCamera cam;
     float time;
@@ -31,27 +33,26 @@ class MeshScreen : public Screen
         // attrs.add(VertAttributes::NORMAL);
 
         SharedMesh mesh = SharedMesh(new Mesh("testMesh", 3, 3, attrs));
-        SharedMesh mesh2 = SharedMesh(new Mesh("testMesh2", 3, 3, attrs));
 
         mesh->vertices.insert(mesh->vertices.begin(), {-1.0f, -1.0f, 0.0f,
                                                        1.0f, -1.0f, 0.0f,
                                                        0.0f, 1.0f, 0.0f});
 
-        mesh2->vertices.insert(mesh2->vertices.begin(), {-0.4f, -0.7f, 0.0f,
-                                                       0.2f, -0.3f, 0.0f,
-                                                       0.1f, 1.0f, 0.0f});
-
         mesh->indices.insert(mesh->indices.begin(), {0, 1, 2});
-        mesh2->indices.insert(mesh2->indices.begin(), {0, 1, 2});
 
-        VertBuffer *buffer = VertBuffer::with(attrs);
+        SharedModel model = SharedModel(new Model("testModel"));
+        model->parts.push_back({mesh});
 
-        buffer->add(mesh)->add(mesh2);
+        // VertBuffer *buffer = VertBuffer::with(attrs);
+        // buffer->add(mesh)->upload(true);
 
-        buffer->upload(true);
+        SharedModel loadedModel = JsonModelLoader::fromUbjsonFile("assets/models/example.ubj")[0];
 
-        meshInstance = new MeshInstance(mesh);
-        meshInstance->scale(1, 3, 1);
+        VertBuffer *buffer = VertBuffer::with(loadedModel->parts[0].mesh->attributes);
+        buffer->add(loadedModel->parts[0].mesh)->upload(true);        
+
+        modelInstance = new ModelInstance(loadedModel);
+        // modelInstance->scale(1, 3, 1);
     }
 
     void render(double deltaTime)
@@ -69,15 +70,16 @@ class MeshScreen : public Screen
         glUseProgram(shaderProgram.getProgramId());
         GLuint mvpId = glGetUniformLocation(shaderProgram.getProgramId(), "MVP");
 
-        glm::mat4 mvp = cam.combined * meshInstance->transform;
+        glm::mat4 mvp = cam.combined * modelInstance->transform;
 
         glUniformMatrix4fv(mvpId, 1, GL_FALSE, &mvp[0][0]);
 
-        meshInstance->mesh->render();
+        for (ModelPart part : modelInstance->model->parts)
+            part.mesh->render();
     }
 
     ~MeshScreen()
     {
-        delete meshInstance;
+        delete modelInstance;
     }
 };

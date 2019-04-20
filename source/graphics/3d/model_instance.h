@@ -1,20 +1,20 @@
 
-#ifndef MESH_INSTANCE_H
-#define MESH_INSTANCE_H
+#ifndef MODEL_INSTANCE_H
+#define MODEL_INSTANCE_H
 
 #include <vector>
 
-#include "mesh.h"
+#include "model.h"
 #include "glm/glm.hpp"
 
-class MeshInstance
+class ModelInstance
 {
   public:
-    SharedMesh mesh;
+    SharedModel model;
 
-    MeshInstance(SharedMesh mesh);
+    ModelInstance(SharedModel model);
 
-    ~MeshInstance();
+    ~ModelInstance();
 
     glm::mat4 transform = glm::mat4(1.0f);
 

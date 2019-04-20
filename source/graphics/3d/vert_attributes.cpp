@@ -23,7 +23,7 @@ unsigned int VertAttributes::add(VertAttr attr)
     return offset;
 }
 
-VertAttr& VertAttributes::get(unsigned int i)
+VertAttr &VertAttributes::get(unsigned int i)
 {
     return attributes[i];
 }
@@ -48,4 +48,12 @@ unsigned int VertAttributes::getOffset(const VertAttr &attr) const
         offset += a.size;
     }
     throw std::runtime_error(attr.name + " is not in VertAttributes, add it first with .add(attribute)");
+}
+
+std::ostream &operator<<(std::ostream &stream, const VertAttributes &attrs)
+{
+    stream << "[ ";
+    for (VertAttr a : attrs.attributes)
+        stream << "{" << a.name << ", " << a.size << ", " << (a.normalized ? "GL_TRUE" : "GL_FALSE") << "} ";
+    return stream << "]";
 }
