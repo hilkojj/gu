@@ -7,7 +7,7 @@
 #include "../graphics/shader_program.h"
 #include "../graphics/3d/perspective_camera.h"
 #include "glm/glm.hpp"
-using namespace glm;
+#include "glm/gtx/transform.hpp"
 
 class TriangleScreen : public Screen
 {
@@ -53,15 +53,18 @@ class TriangleScreen : public Screen
     void render(double deltaTime)
     {
         time += deltaTime;
-        cam.position.x = glm::sin(time) * 3;
-        cam.position.y = 3;
-        cam.position.z = glm::cos(time) * 3;
+        // cam.position.x = glm::sin(time) * 3;
+        // cam.position.y = 3;
+        // cam.position.z = glm::cos(time) * 3;
+        cam.position = glm::vec3(3, 3, 3);
         cam.lookAt(vec3(0));
         cam.update();
 
         GLuint mvpId = glGetUniformLocation(shaderProgram.getProgramId(), "MVP");
         
-        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+        model = glm::rotate(model, 3.14f/2.f, glm::vec3(1, 0, 0));
+        // model = glm::scale(model, glm::vec3(glm::sin(time)));
         glm::mat4 mvp = cam.combined * model;
 
 

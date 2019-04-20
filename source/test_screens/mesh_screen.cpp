@@ -51,6 +51,7 @@ class MeshScreen : public Screen
         buffer->upload(true);
 
         meshInstance = new MeshInstance(mesh);
+        meshInstance->scale(1, 3, 1);
     }
 
     void render(double deltaTime)
@@ -65,7 +66,12 @@ class MeshScreen : public Screen
         glClearColor(.4, .3, .7, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // glUseProgram(shaderProgram.getProgramId());
+        glUseProgram(shaderProgram.getProgramId());
+        GLuint mvpId = glGetUniformLocation(shaderProgram.getProgramId(), "MVP");
+
+        glm::mat4 mvp = cam.combined * meshInstance->transform;
+
+        glUniformMatrix4fv(mvpId, 1, GL_FALSE, &mvp[0][0]);
 
         meshInstance->mesh->render();
     }
