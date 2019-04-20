@@ -15,6 +15,9 @@ class VertBuffer
     // creates a VertBuffer for meshes with these attributes
     static VertBuffer* with(VertAttributes &attributes);
 
+    // adds mesh to Meshes that are going to be uploaded when upload() is called.
+    VertBuffer* add(SharedMesh mesh);
+
     /**
      * upload all added Meshes to OpenGL, after uploading the Meshes can be drawn.
      * 
@@ -22,8 +25,7 @@ class VertBuffer
      **/
     void upload(bool disposeOfflineData);
 
-    // adds mesh to Meshes that are going to be uploaded when upload() is called.
-    VertBuffer* add(SharedMesh mesh);
+    bool isUploaded() const;
 
     void bind();
 
@@ -36,7 +38,7 @@ class VertBuffer
     VertBuffer(VertAttributes &attributes);
 
     // returns wether the stored vertex data is actually used by Meshes
-    bool inUse();
+    bool inUse() const;
 
     void setAttrPointersAndEnable();
 
@@ -48,6 +50,8 @@ class VertBuffer
     std::vector<std::weak_ptr<Mesh>> meshes;
 
     VertAttributes attrs;
+
+    bool uploaded = false;
 
     static GLuint currentlyBoundVao;
 

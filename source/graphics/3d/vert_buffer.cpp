@@ -86,6 +86,7 @@ void VertBuffer::upload(bool disposeOfflineData)
     }
 
     setAttrPointersAndEnable();
+    uploaded = true;
 
     /* To confirm the uploaded data is correct:
 
@@ -132,7 +133,12 @@ void VertBuffer::onMeshDestroyed()
     if (!inUse()) delete this;
 }
 
-bool VertBuffer::inUse()
+bool VertBuffer::isUploaded() const
+{
+    return uploaded;
+}
+
+bool VertBuffer::inUse() const
 {
     for (std::weak_ptr<Mesh> m : meshes) 
         if (!m.expired()) return true;

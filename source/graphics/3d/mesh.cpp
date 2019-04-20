@@ -25,7 +25,7 @@ void Mesh::disposeOfflineData()
 
 void Mesh::render()
 {
-    if (!vertBuffer) throw std::runtime_error(name + " is not uploaded. Upload it first with a VertBuffer");
+    if (!vertBuffer || !vertBuffer->isUploaded()) throw std::runtime_error(name + " is not uploaded. Upload it first with a VertBuffer");
     vertBuffer->bind();
     glDrawElementsBaseVertex(
         GL_TRIANGLES,
