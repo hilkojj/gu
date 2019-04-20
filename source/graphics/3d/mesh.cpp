@@ -15,6 +15,27 @@ Mesh::Mesh(std::string name, unsigned int nrOfVertices, unsigned int nrOfIndices
     std::cout << "Mesh created: " << name << std::endl;
 }
 
+void Mesh::disposeOfflineData()
+{
+    vertices.resize(0);
+    vertices.shrink_to_fit();
+    indices.resize(0);
+    indices.shrink_to_fit();
+}
+
+void Mesh::render()
+{
+    if (!vertBuffer) throw std::runtime_error(name + " is not uploaded. Upload it first with a VertBuffer");
+    vertBuffer->bind();
+    glDrawElementsBaseVertex(
+        GL_TRIANGLES,
+        nrOfIndices,
+        GL_UNSIGNED_SHORT,
+        (void *)(uintptr_t)indicesBufferOffset,
+        baseVertex
+    );
+}
+
 Mesh::~Mesh()
 {
     std::cout << "Mesh destroyed: " << name << std::endl;

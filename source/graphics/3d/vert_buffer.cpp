@@ -2,9 +2,12 @@
 #include <iostream>
 #include <memory>
 
+#include "glad/glad.h"
 #include "vert_buffer.h"
 #include "mesh.h"
 #include "vert_attributes.h"
+
+GLuint VertBuffer::currentlyBoundVao = 0;
 
 VertBuffer *VertBuffer::with(VertAttributes &attributes)
 {
@@ -12,22 +15,19 @@ VertBuffer *VertBuffer::with(VertAttributes &attributes)
 }
 
 VertBuffer::VertBuffer(VertAttributes &attributes)
-    : vertSize(attributes.getVertSize())
+
+    : vertSize(attributes.getVertSize()), attrs(attributes)
 {
     glGenVertexArrays(1, &vaoId);
-    glBindVertexArray(vaoId);
+}
 
-    for (int i = 0; i < attributes.nrOfAttributes(); i++)
+void VertBuffer::bind()
+{
+    if (currentlyBoundVao != vaoId) // todo: this will break when glBindVertexArray() is called from another place.
     {
-        VertAttr &attr = attributes.get(i);
-        glVertexAttribPointer(
-            i,                                    // location of VertexPosition that is used in vertex shader. 'layout(location = 0)'
-            attr.size,                            // size.
-            GL_FLOAT,                             // type
-            attr.normalized ? GL_TRUE : GL_FALSE, // normalized?
-            0,                                    // stride
-            (void *)0                             // offset
-        );
+        glBindVertexArray(vaoId);
+        currentlyBoundVao = vaoId;
+        // vbo and ibo should still be bound at this point.
     }
 }
 
@@ -38,63 +38,104 @@ VertBuffer *VertBuffer::add(SharedMesh mesh)
 
     std::cout << "Adding " << mesh->name << " to VertBuffer\n";
     meshes.push_back(mesh);
+
+    mesh->baseVertex = nrOfVerts;
     nrOfVerts += mesh->nrOfVertices;
+
+    mesh->indicesBufferOffset = nrOfIndices;
+    nrOfIndices += mesh->nrOfIndices;
+
     mesh->vertBuffer = this;
     return this;
 }
 
-void VertBuffer::upload()
+void VertBuffer::upload(bool disposeOfflineData)
 {
     if (vboId)
         throw std::runtime_error("VertBuffer already uploaded");
 
     std::cout << "Uploading vbo\n";
-    glBindVertexArray(vaoId);
+    bind();
 
-    glGenBuffers(1, &vboId);
+    glGenBuffers(1, &vboId);    // create VertexBuffer
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * nrOfVerts * vertSize, NULL, GL_STATIC_DRAW);
 
-    GLuint offset = 0;
+    glGenBuffers(1, &iboId);    // create IndexBuffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * nrOfIndices, NULL, GL_STATIC_DRAW);
+
+    GLuint vertsOffset = 0, indicesOffset = 0;
     for (std::weak_ptr<Mesh> m : meshes)
     {
         if (m.expired())
             throw std::runtime_error("Trying to upload a VertBuffer whose Meshes are already destroyed");
 
         SharedMesh mesh = m.lock();
-        GLuint size = mesh->nrOfVertices * sizeof(GLfloat) * vertSize;
+        GLuint
+            vertsSize = mesh->nrOfVertices * sizeof(GLfloat) * vertSize,
+            indicesSize = mesh->nrOfIndices * sizeof(GLushort);
 
-        glBufferSubData(GL_ARRAY_BUFFER, offset, size, mesh->vertices.data());
+        glBufferSubData(GL_ARRAY_BUFFER, vertsOffset, vertsSize, mesh->vertices.data());
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indicesOffset, indicesSize, mesh->indices.data());
 
-        offset += size;
+        if (disposeOfflineData) mesh->disposeOfflineData();
+
+        vertsOffset += vertsSize;
+        indicesOffset += indicesSize;
     }
+
+    setAttrPointersAndEnable();
 
     /* To confirm the uploaded data is correct:
 
-    float data[nrOfVerts * vertSize];
+    float dataV[nrOfVerts * vertSize];
+    glGetBufferSubData(GL_ARRAY_BUFFER, 0, vertsOffset, dataV);
 
-    glGetBufferSubData(GL_ARRAY_BUFFER, 0, offset, data);
-
+    std::cout << "Vertex data: ";
     for (int i = 0; i < nrOfVerts * vertSize; i++)
-        std::cout << data[i];
+        std::cout << dataV[i] << ", ";
+    std::cout << std::endl;
 
+    GLushort dataI[nrOfIndices];
+    glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indicesOffset, dataI);
+
+    std::cout << "Indices: ";
+    for (int i = 0; i < nrOfIndices; i++)
+        std::cout << dataI[i] << ", ";
     std::cout << std::endl;
     */
+}
+
+void VertBuffer::setAttrPointersAndEnable()
+{
+    GLint offset = 0;
+    for (int i = 0; i < attrs.nrOfAttributes(); i++)
+    {
+        VertAttr &attr = attrs.get(i);
+        glVertexAttribPointer(
+            i,                                    // location of attribute that can be used in vertex shaders. eg: 'layout(location = 0) in vec3 position'
+            attr.size,                            // size.
+            GL_FLOAT,                             // type
+            attr.normalized ? GL_TRUE : GL_FALSE, // normalized?
+            vertSize * sizeof(GLfloat),           // stride
+            (void *)(uintptr_t)offset             // offset
+        );
+        glEnableVertexAttribArray(i);
+        offset += attr.size * sizeof(GLfloat);
+    }
 }
 
 void VertBuffer::onMeshDestroyed()
 {
     std::cout << "A mesh in this VB was destroyed\n";
-
-    if (!inUse())
-        delete this;
+    if (!inUse()) delete this;
 }
 
 bool VertBuffer::inUse()
 {
-    for (std::weak_ptr<Mesh> m : meshes)
-        if (!m.expired())
-            return true;
+    for (std::weak_ptr<Mesh> m : meshes) 
+        if (!m.expired()) return true;
     return false;
 }
 
@@ -115,8 +156,8 @@ VertBuffer::~VertBuffer()
             }
         std::cerr << "]\n";
     }
-
-    std::cout << "Deleting VertBuffer: vao & vbo\n";
+    std::cout << "Deleting VertBuffer: vao & vbo & ibo\n";
     glDeleteVertexArrays(1, &vaoId);
     glDeleteBuffers(1, &vboId);
+    glDeleteBuffers(1, &iboId);
 }

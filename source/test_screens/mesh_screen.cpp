@@ -28,24 +28,27 @@ class MeshScreen : public Screen
 
         VertAttributes attrs;
         attrs.add(VertAttributes::POSITION);
-        attrs.add(VertAttributes::NORMAL);
+        // attrs.add(VertAttributes::NORMAL);
 
         SharedMesh mesh = SharedMesh(new Mesh("testMesh", 3, 3, attrs));
         SharedMesh mesh2 = SharedMesh(new Mesh("testMesh2", 3, 3, attrs));
 
-        mesh->vertices[0] = 4;
+        mesh->vertices.insert(mesh->vertices.begin(), {-1.0f, -1.0f, 0.0f,
+                                                       1.0f, -1.0f, 0.0f,
+                                                       0.0f, 1.0f, 0.0f});
 
-        mesh->vertices[17] = 3;
+        mesh2->vertices.insert(mesh2->vertices.begin(), {-0.4f, -0.7f, 0.0f,
+                                                       0.2f, -0.3f, 0.0f,
+                                                       0.1f, 1.0f, 0.0f});
 
-        mesh2->vertices[0] = 2;
+        mesh->indices.insert(mesh->indices.begin(), {0, 1, 2});
+        mesh2->indices.insert(mesh2->indices.begin(), {0, 1, 2});
 
-        mesh2->vertices[17] = 1;
-
-        VertBuffer* buffer = VertBuffer::with(attrs);
+        VertBuffer *buffer = VertBuffer::with(attrs);
 
         buffer->add(mesh)->add(mesh2);
 
-        buffer->upload();
+        buffer->upload(true);
 
         meshInstance = new MeshInstance(mesh);
     }
@@ -58,6 +61,13 @@ class MeshScreen : public Screen
         cam.position.z = glm::cos(time) * 3;
         cam.lookAt(vec3(0));
         cam.update();
+
+        glClearColor(.4, .3, .7, 1);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // glUseProgram(shaderProgram.getProgramId());
+
+        meshInstance->mesh->render();
     }
 
     ~MeshScreen()

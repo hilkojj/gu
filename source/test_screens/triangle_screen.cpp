@@ -15,12 +15,13 @@ class TriangleScreen : public Screen
   public:
     ShaderProgram shaderProgram;
     GLuint vaoId;
-    GLuint vertBufferId;
+    GLuint vertBufferId, iboId;
     GLfloat verts[9] {
         -1.0f, -1.0f, 0.0f,
         1.0f, -1.0f, 0.0f,
         0.0f,  1.0f, 0.0f
     };
+    GLushort indices[3] = {0, 1, 2};
     PerspectiveCamera cam;
     float time;
 
@@ -31,8 +32,12 @@ class TriangleScreen : public Screen
         glGenVertexArrays(1, &vaoId);
         glBindVertexArray(vaoId);
         glGenBuffers(1, &vertBufferId);
+        glGenBuffers(1, &iboId);
         glBindBuffer(GL_ARRAY_BUFFER, vertBufferId);
         glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
         glVertexAttribPointer(
             0, // location of VertexPosition that is used in vertex shader. 'layout(location = 0)'
@@ -42,6 +47,7 @@ class TriangleScreen : public Screen
             0, // stride
             (void*)0 // offset
         );
+        glEnableVertexAttribArray(0);
     }
 
     void render(double deltaTime)
@@ -66,14 +72,10 @@ class TriangleScreen : public Screen
 
         glUniformMatrix4fv(mvpId, 1, GL_FALSE, &mvp[0][0]);
 
-        // enable & bind vertex positions
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, vertBufferId);    // bind VBO
-        // end
+        // glDrawArrays(GL_TRIANGLES, 0, 3); // draw
 
-        glDrawArrays(GL_TRIANGLES, 0, 3); // draw
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, (void*)0);
 
-        glDisableVertexAttribArray(0); // disable vertex positions
     }
 
 };

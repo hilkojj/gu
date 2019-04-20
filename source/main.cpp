@@ -10,6 +10,13 @@
 #include "files/file.h"
 using json = nlohmann::json;
 
+void APIENTRY glMessageCallback(GLenum source, GLenum type, GLuint id,
+                            GLenum severity, GLsizei length,
+                            const GLchar *msg, const void *data)
+{
+    std::cerr << "\n====== OpenGL Message. ID: " << id << " ======" << std::endl << msg << std::endl << "======================================\n\n";
+}
+
 int main()
 {
     // json j = json::parse(File::readString("assets/models/example.g3dj"));
@@ -46,6 +53,9 @@ int main()
         std::cerr << "Failed to initialize OpenGL context\n";
         return -1;
     }
+
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(glMessageCallback, NULL);
 
     glfwSwapInterval(0); // a way to disable vsync.
 
