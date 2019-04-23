@@ -6,20 +6,20 @@
 #include "../files/file.h"
 using json = nlohmann::json;
 
-std::vector<SharedModel> JsonModelLoader::fromJsonFile(const char *path)
+std::vector<SharedModel> JsonModelLoader::fromJsonFile(const char *path, VertAttributes *predefinedAttrs)
 {
-    JsonModelLoader loader(json::parse(File::readString(path)), path);
+    JsonModelLoader loader(json::parse(File::readString(path)), path, predefinedAttrs);
     return loader.models;
 }
 
-std::vector<SharedModel> JsonModelLoader::fromUbjsonFile(const char *path)
+std::vector<SharedModel> JsonModelLoader::fromUbjsonFile(const char *path, VertAttributes *predefinedAttrs)
 {
-    JsonModelLoader loader(json::from_ubjson(File::readBinary(path)), path);
+    JsonModelLoader loader(json::from_ubjson(File::readBinary(path)), path, predefinedAttrs);
     return loader.models;
 }
 
-JsonModelLoader::JsonModelLoader(const json &obj, std::string id)
-: obj(obj), id(id)
+JsonModelLoader::JsonModelLoader(const json &obj, std::string id, VertAttributes *predefinedAttrs)
+: obj(obj), id(id), predefinedAttrs(predefinedAttrs)
 {   
     loadMeshes();
     loadModels();
@@ -31,15 +31,20 @@ void JsonModelLoader::loadMeshes()
 
     for (json meshJson : obj["meshes"])
     {
-        VertAttributes attrs;
+        VertAttributes originalAttrs;
         for (std::string attrStr : meshJson["attributes"])
-            attrs.add(attrFromString(attrStr));
+            originalAttrs.add(attrFromString(attrStr));
 
         json info = meshJson["parts"][0];
         json indicesJson = info["indices"];
         json verticesJson = meshJson["vertices"];
 
-        SharedMesh mesh = SharedMesh(new Mesh(info["id"], verticesJson.size(), indicesJson.size(), attrs));
+        SharedMesh mesh = SharedMesh(new Mesh(
+            info["id"], 
+            verticesJson.size() / originalAttrs.getVertSize(), 
+            indicesJson.size(), 
+            predefinedAttrs ? *predefinedAttrs : originalAttrs
+        ));
 
         unsigned int i = 0;
         for (unsigned short index : indicesJson)
@@ -47,11 +52,36 @@ void JsonModelLoader::loadMeshes()
             mesh->indices[i] = index;
             i++;
         }
-        i = 0;
-        for (float vert : verticesJson)
+
+        if (!predefinedAttrs)  // load vertices as laid out in JSON
         {
-            mesh->vertices[i] = vert;
-            i++;
+            i = 0;
+            for (float vert : verticesJson)
+            {
+                mesh->vertices[i] = vert;
+                i++;
+            }
+        }
+        else                    // load vertices as laid out in predefinedAttrs
+        {
+            for (int i = 0; i < predefinedAttrs->nrOfAttributes(); i++)
+            {
+                VertAttr &attr = predefinedAttrs->get(i);
+                if (!originalAttrs.contains(attr)) continue;
+
+                int originalOffset = originalAttrs.getOffset(attr);
+                int newOffset = predefinedAttrs->getOffset(attr);
+
+                for (int v = 0; v < mesh->nrOfVertices; v++)
+                {
+                    for (int j = 0; j < attr.size; j++)
+                    {
+                        int originalIndex = originalOffset + j + v * originalAttrs.getVertSize();
+                        int newIndex = newOffset + j + v * predefinedAttrs->getVertSize();
+                        mesh->vertices[newIndex] = verticesJson[originalIndex];
+                    }
+                }
+            }
         }
         meshes.push_back(mesh);
     }

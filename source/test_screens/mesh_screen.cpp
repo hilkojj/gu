@@ -46,7 +46,11 @@ class MeshScreen : public Screen
         // VertBuffer *buffer = VertBuffer::with(attrs);
         // buffer->add(mesh)->upload(true);
 
-        SharedModel loadedModel = JsonModelLoader::fromUbjsonFile("assets/models/example.ubj")[0];
+        SharedModel loadedModel = JsonModelLoader::fromUbjsonFile(
+            "assets/models/example.ubj", &attrs
+        )[0];
+
+        std::cout << loadedModel->parts[0].mesh->attributes << std::endl;
 
         VertBuffer *buffer = VertBuffer::with(loadedModel->parts[0].mesh->attributes);
         buffer->add(loadedModel->parts[0].mesh)->upload(true);        

@@ -5,6 +5,7 @@
 #include "../../external/json.hpp"
 #include "../graphics/3d/mesh.h"
 #include "../graphics/3d/model.h"
+#include "../graphics/3d/vert_attributes.h"
 using json = nlohmann::json;
 
 /**
@@ -12,19 +13,21 @@ using json = nlohmann::json;
  **/
 class JsonModelLoader
 {
-
   public:
-    static std::vector<SharedModel> fromJsonFile(const char *path);
-    static std::vector<SharedModel> fromUbjsonFile(const char *path);
+    // predefinedAttrs should be NULL unless you want to define the vertex layout youself.
+    static std::vector<SharedModel> fromJsonFile(const char *path, VertAttributes *predefinedAttrs);
+    // predefinedAttrs should be NULL unless you want to define the vertex layout youself.
+    static std::vector<SharedModel> fromUbjsonFile(const char *path, VertAttributes *predefinedAttrs);
 
-    // note: 'id' is only used for error messages
-    JsonModelLoader(const json &obj, std::string id);
+    // note: 'id' is only used for error messages, predefinedAttrs should be NULL unless you want to define the vertex layout youself.
+    JsonModelLoader(const json &obj, std::string id, VertAttributes *predefinedAttrs);
 
     std::vector<SharedModel> models;
     std::vector<SharedMesh> meshes;
 
   private:
     
+    VertAttributes *predefinedAttrs;
     const json &obj;
     std::string id;
 

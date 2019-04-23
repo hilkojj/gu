@@ -50,6 +50,14 @@ unsigned int VertAttributes::getOffset(const VertAttr &attr) const
     throw std::runtime_error(attr.name + " is not in VertAttributes, add it first with .add(attribute)");
 }
 
+bool VertAttributes::contains(const VertAttr &attr) const
+{
+    for (VertAttr a : attributes)
+        if (a.normalized == attr.normalized && a.size == attr.size && a.name == attr.name)
+            return true;
+    return false;
+}
+
 std::ostream &operator<<(std::ostream &stream, const VertAttributes &attrs)
 {
     stream << "[ ";
