@@ -9,7 +9,7 @@ class Camera
   public:
     Camera(float near, float far, float viewportWidth, float viewportHeight);
 
-    vec3 position, direction, up;
+    vec3 position, direction, up, right;
 
     mat4 projection, view, combined;
 
@@ -18,7 +18,17 @@ class Camera
         far,
         viewportWidth, viewportHeight;
 
-    void lookAt(vec3 position);
+    /**
+     * sets 'direction', 'up' and 'right' so that the Camera looks at the 'target'. 
+     * 'up' will be uppish in relation to the Y axis.
+     */
+    void lookAt(vec3 target);
+
+    /**
+     * sets 'direction', 'up' and 'right' so that the Camera looks at the 'target'. 
+     * 'up' will be uppish in relation to 'localYAxis'.
+     */
+    void lookAt(vec3 target, vec3 localYAxis);
 
     virtual void update() = 0;
 };

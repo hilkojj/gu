@@ -11,6 +11,8 @@
 #include "../graphics/shader_program.h"
 #include "../graphics/3d/perspective_camera.h"
 #include "../utils/json_model_loader.h"
+#include "../utils/camera/flying_camera_controller.h"
+#include "../utils/math_utils.h"
 #include "glm/glm.hpp"
 using namespace glm;
 
@@ -21,16 +23,17 @@ class MeshScreen : public Screen
     ModelInstance *modelInstance;
     ShaderProgram shaderProgram;
     PerspectiveCamera cam;
+    FlyingCameraController camController;
     float time;
 
     MeshScreen()
-        : shaderProgram(ShaderProgram::fromFiles("Testshader", "assets/shaders/test.vert", "assets/shaders/test.frag")),
-          cam(PerspectiveCamera(.1, 100, 1600, 900, 75))
+        : shaderProgram(ShaderProgram::fromFiles("NormalTestShader", "assets/shaders/test.vert", "assets/shaders/normaltest.frag")),
+          cam(PerspectiveCamera(.1, 100, 1600, 900, 75)), camController(&cam)
     {
 
         VertAttributes attrs;
         attrs.add(VertAttributes::POSITION);
-        // attrs.add(VertAttributes::NORMAL);
+        attrs.add(VertAttributes::NORMAL);
 
         SharedMesh mesh = SharedMesh(new Mesh("testMesh", 3, 3, attrs));
 
@@ -57,19 +60,29 @@ class MeshScreen : public Screen
 
         modelInstance = new ModelInstance(loadedModel);
         // modelInstance->scale(1, 3, 1);
+
+        cam.position = glm::vec3(0, 0, 3);
+        cam.update();
     }
 
     void render(double deltaTime)
     {
         time += deltaTime;
+        // /* circular camera movement:
         cam.position.x = glm::sin(time) * 3;
         cam.position.y = 3;
         cam.position.z = glm::cos(time) * 3;
-        cam.lookAt(vec3(0));
+        cam.lookAt(vec3(0), -mu::Y);
         cam.update();
+        // */
+
+        // camController.update(); // free camera movement
 
         glClearColor(.4, .3, .7, 1);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
 
         glUseProgram(shaderProgram.getProgramId());
         GLuint mvpId = glGetUniformLocation(shaderProgram.getProgramId(), "MVP");
