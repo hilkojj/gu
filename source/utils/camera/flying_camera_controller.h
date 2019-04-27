@@ -13,7 +13,7 @@ class FlyingCameraController
 
     FlyingCameraController(Camera *cam);
 
-    void update();
+    void update(double deltaTime);
 
 };
 

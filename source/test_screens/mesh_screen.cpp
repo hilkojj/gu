@@ -62,21 +62,22 @@ class MeshScreen : public Screen
         // modelInstance->scale(1, 3, 1);
 
         cam.position = glm::vec3(0, 0, 3);
+        cam.lookAt(glm::vec3(0));
         cam.update();
     }
 
     void render(double deltaTime)
     {
         time += deltaTime;
-        // /* circular camera movement:
+        /* circular camera movement:
         cam.position.x = glm::sin(time) * 3;
         cam.position.y = 3;
         cam.position.z = glm::cos(time) * 3;
         cam.lookAt(vec3(0), -mu::Y);
         cam.update();
-        // */
+        */
 
-        // camController.update(); // free camera movement
+        camController.update(deltaTime); // free camera movement
 
         glClearColor(.4, .3, .7, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

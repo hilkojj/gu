@@ -24,10 +24,4 @@ void Camera::lookAt(vec3 target, vec3 localYAxis)
     direction = glm::normalize(target - position);
     right = glm::normalize(glm::cross(direction, localYAxis));
     up = glm::normalize(glm::cross(right, direction));
-
-    view = glm::lookAt(
-        position,
-        position + direction,
-        up
-    );
 }

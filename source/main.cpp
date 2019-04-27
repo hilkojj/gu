@@ -3,6 +3,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "game/game.h"
+#include "input/key_input.h"
 
 #include "test_screens/triangle_screen.cpp"
 #include "test_screens/mesh_screen.cpp"
@@ -46,7 +47,7 @@ int main()
     }
     glfwMakeContextCurrent(window);
 
-    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+    glfwSetKeyCallback(window, KeyInput::glfwCallback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -83,6 +84,7 @@ int main()
         }
 
         Game::render(std::min(deltaTime, .1));
+        KeyInput::update();
 
         // Swap buffers
         glfwSwapBuffers(window);
