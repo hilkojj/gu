@@ -8,7 +8,7 @@ class File
 {
   public:
     static std::string readString(const char *path);
-    static std::vector<u_char> readBinary(const char *path);
+    static std::vector<unsigned char> readBinary(const char *path);
 };
 
 #endif

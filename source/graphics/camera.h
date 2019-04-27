@@ -7,15 +7,14 @@ using namespace glm;
 class Camera
 {
   public:
-    Camera(float near, float far, float viewportWidth, float viewportHeight);
+    Camera(float near_, float far_, float viewportWidth, float viewportHeight);
 
     vec3 position, direction, up, right;
 
     mat4 projection, view, combined;
 
-    float
-        near,
-        far,
+    float 
+        near_, far_, // 'near' and 'far' are reserved keywords on wInDOwS, thats why they are called 'near_' and 'far_'
         viewportWidth, viewportHeight;
 
     /**

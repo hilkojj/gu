@@ -18,13 +18,13 @@ std::string File::readString(const char *path)
     return sstr.str();
 }
 
-std::vector<u_char> File::readBinary(const char *path)
+std::vector<unsigned char> File::readBinary(const char *path)
 {
     std::ifstream stream(path, std::ios::binary);
 
     if (!stream.is_open())
         throw std::runtime_error("Could not open: " + std::string(path));
 
-    std::vector<u_char> buffer(std::istreambuf_iterator<char>(stream), {});
+    std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(stream), {});
     return buffer;
 }

@@ -6,11 +6,11 @@
 #include "../utils/math_utils.h"
 using namespace glm;
 
-Camera::Camera(float near, float far, float viewportWidth, float viewportHeight)
+Camera::Camera(float near_, float far_, float viewportWidth, float viewportHeight)
     : direction(vec3(0, 0, -1)),
       up(vec3(0, 1, 0)),
       right(vec3(1, 0, 0)),
-      near(near), far(far),
+      near_(near_), far_(far_),
       viewportWidth(viewportWidth), viewportHeight(viewportHeight)
 {
 }

@@ -7,7 +7,7 @@ class PerspectiveCamera : public Camera {
 
   public:
 
-    PerspectiveCamera(float near, float far, float viewportWidth, float viewportHeight, float fOV);
+    PerspectiveCamera(float near_, float far_, float viewportWidth, float viewportHeight, float fOV);
 
     float fOV;
 
