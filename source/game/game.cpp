@@ -4,6 +4,13 @@
 
 namespace Game
 {
+
+GLFWwindow *window = nullptr;
+
+// size of the window:
+// width & height are in screen coordinates, widthPixels & heightPixels are in pixels.
+int width = 0, height = 0, widthPixels = 0, heightPixels = 0;
+
 namespace
 {
 Screen *screen;
@@ -20,8 +27,10 @@ void render(double deltaTime)
         screen->render(deltaTime);
 }
 
-void end()
+void onResize()
 {
+    if (screen)
+        screen->onResize();
 }
 
 } // namespace Game

@@ -1,6 +1,7 @@
 
 #include "camera.h"
 #include "glm/glm.hpp"
+#include "glm/gtx/rotate_vector.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "../utils/math_utils.h"
 using namespace glm;
@@ -24,4 +25,12 @@ void Camera::lookAt(vec3 target, vec3 localYAxis)
     direction = glm::normalize(target - position);
     right = glm::normalize(glm::cross(direction, localYAxis));
     up = glm::normalize(glm::cross(right, direction));
+}
+
+void Camera::rotate(float degrees, vec3 axis)
+{
+    float rads = degrees * mu::DEGREES_TO_RAD;
+    direction = glm::rotate(direction, rads, axis);
+    right = glm::rotate(right, rads, axis);
+    up = glm::rotate(up, rads, axis);
 }

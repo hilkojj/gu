@@ -4,12 +4,11 @@
 #include "GLFW/glfw3.h"
 #include "game/game.h"
 #include "input/key_input.h"
+#include "input/mouse_input.h"
 
 #include "test_screens/triangle_screen.cpp"
 #include "test_screens/mesh_screen.cpp"
-#include "../external/json.hpp"
 #include "files/file.h"
-using json = nlohmann::json;
 
 void APIENTRY glMessageCallback(GLenum source, GLenum type, GLuint id,
                             GLenum severity, GLsizei length,
@@ -18,10 +17,24 @@ void APIENTRY glMessageCallback(GLenum source, GLenum type, GLuint id,
     std::cerr << "\n====== OpenGL Message. ID: " << id << " ======" << std::endl << msg << std::endl << "======================================\n\n";
 }
 
+bool resized = true;
+int nextWidth, nextHeight, nextWidthPixels, nextHeightPixels;
+
+void window_size_callback(GLFWwindow* window, int width, int height)
+{
+    nextWidth = width;
+    nextHeight = height;
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    nextWidthPixels = width;
+    nextHeightPixels = height;
+    resized = true;
+}
+
 int main()
 {
-    // json j = json::parse(File::readString("assets/models/example.g3dj"));
-    // json j = json::from_ubjson(File::readBinary("assets/models/example.ubj"));
 
     // Initialise GLFW
     if (!glfwInit())
@@ -47,8 +60,6 @@ int main()
     }
     glfwMakeContextCurrent(window);
 
-    glfwSetKeyCallback(window, KeyInput::glfwCallback);
-
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cerr << "Failed to initialize OpenGL context\n";
@@ -60,7 +71,17 @@ int main()
 
     glfwSwapInterval(0); // a way to disable vsync.
 
-    glViewport(0, 0, 1600, 900);
+    glfwSetWindowSizeCallback(window, window_size_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    glfwGetWindowSize(window, &nextWidth, &nextHeight);
+    glfwGetFramebufferSize(window, &nextWidthPixels, &nextHeightPixels);
+
+
+    Game::window = window;
+    
+    KeyInput::setInputWindow(window);
+    MouseInput::setInputWindow(window);
 
     double prevTime = glfwGetTime();
     int framesInSecond = 0;
@@ -83,8 +104,20 @@ int main()
             remainingSecond = 1;
         }
 
+        if (resized)
+        {
+            Game::width = nextWidth;
+            Game::height = nextHeight;
+            Game::widthPixels = nextWidthPixels;
+            Game::heightPixels = nextHeightPixels;
+            resized = false;
+            glViewport(0, 0, nextWidthPixels, nextHeightPixels);
+            Game::onResize();
+        }
+
         Game::render(std::min(deltaTime, .1));
         KeyInput::update();
+        MouseInput::update();
 
         // Swap buffers
         glfwSwapBuffers(window);
@@ -93,10 +126,7 @@ int main()
         prevTime = currTime;
 
     } // Check if the ESC key was pressed or the window was closed
-    while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-           !glfwWindowShouldClose(window));
-
-    Game::end();
+    while (!glfwWindowShouldClose(window));
 
     // glfwTerminate(); // todo: causes seg fault. ShaderProgram calls openGL to delete program AFTER glfw has terminated.
     return 0;

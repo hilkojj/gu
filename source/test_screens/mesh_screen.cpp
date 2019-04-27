@@ -28,7 +28,7 @@ class MeshScreen : public Screen
 
     MeshScreen()
         : shaderProgram(ShaderProgram::fromFiles("NormalTestShader", "assets/shaders/test.vert", "assets/shaders/normaltest.frag")),
-          cam(PerspectiveCamera(.1, 100, 1600, 900, 75)), camController(&cam)
+          cam(PerspectiveCamera(.1, 100, 1, 1, 75)), camController(&cam)
     {
 
         VertAttributes attrs;
@@ -94,6 +94,12 @@ class MeshScreen : public Screen
 
         for (ModelPart part : modelInstance->model->parts)
             part.mesh->render();
+    }
+
+    void onResize()
+    {
+        cam.viewportWidth = Game::widthPixels;
+        cam.viewportHeight = Game::heightPixels;
     }
 
     ~MeshScreen()

@@ -9,7 +9,7 @@
 namespace KeyInput
 {
 
-void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+void setInputWindow(GLFWwindow* window);
 
 void update();
 
@@ -19,6 +19,6 @@ bool pressed(int key);
 
 bool justReleased(int key);
 
-}; // namespace KeyInput
+} // namespace KeyInput
 
 #endif

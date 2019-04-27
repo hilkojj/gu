@@ -17,7 +17,6 @@ enum KeyStatus
 };
 
 std::map<int, KeyStatus> keyStatuses;
-} // namespace
 
 void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
@@ -27,6 +26,13 @@ void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mod
     // printf("%s was %s\n", glfwGetKeyName(key, 0), action == GLFW_PRESS ? "pressed" : "released");
 
     keyStatuses[key] = action == GLFW_PRESS ? JUST_PRESSED : JUST_RELEASED;
+}
+
+} // namespace
+
+void setInputWindow(GLFWwindow* window)
+{
+    glfwSetKeyCallback(window, KeyInput::glfwCallback);
 }
 
 void update()

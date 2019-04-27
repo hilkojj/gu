@@ -30,6 +30,8 @@ class Camera
      */
     void lookAt(vec3 target, vec3 localYAxis);
 
+    void rotate(float degrees, vec3 axis);
+
     virtual void update() = 0;
 };
 
