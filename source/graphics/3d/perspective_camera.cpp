@@ -4,16 +4,16 @@
 #include "glm/gtc/matrix_transform.hpp"
 using namespace glm;
 
-PerspectiveCamera::PerspectiveCamera(float near, float far, float viewportWidth, float viewportHeight, float fOV)
+PerspectiveCamera::PerspectiveCamera(float near_, float far_, float viewportWidth, float viewportHeight, float fOV)
     
-    : Camera(near, far, viewportWidth, viewportHeight),
+    : Camera(near_, far_, viewportWidth, viewportHeight),
       fOV(fOV)
 {
 }
 
 void PerspectiveCamera::update()
 {
-    projection = glm::perspective(glm::radians(fOV), viewportWidth / viewportHeight, near, far);
+    projection = glm::perspective(glm::radians(fOV), viewportWidth / viewportHeight, near_, far_);
     view = glm::lookAt(
         position,
         position + direction,

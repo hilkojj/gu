@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <string>
 
 #include "model_instance.h"
 #include "glm/glm.hpp"
