@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(game)
+project(gameutils)
 set(EXECUTABLE_OUTPUT_PATH "bin")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
 
 file(GLOB_RECURSE source source/*)
-add_executable(game ${source})
-set_target_properties(game PROPERTIES LINKER_LANGUAGE CXX)
+add_library(gameutils ${source})
+add_executable(gutest ${source})
+set_target_properties(gameutils PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(gutest PROPERTIES LINKER_LANGUAGE CXX)
 
 find_package(OpenGL REQUIRED)
 
@@ -33,4 +36,7 @@ add_subdirectory(glad/)
 # -no-pie is used to get 'application/x-application' as mime type instead of 'application/x-sharedlib'
 set(CMAKE_CXX_FLAGS  "-no-pie")
 
-target_link_libraries(game glad glfw glm)
+target_link_libraries(gameutils glad glfw glm)
+target_include_directories(gameutils PUBLIC source/)
+
+target_link_libraries(gutest glad glfw glm)
