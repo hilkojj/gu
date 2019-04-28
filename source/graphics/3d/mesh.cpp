@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <string>
 
 #include "mesh.h"
 #include "vert_buffer.h"    

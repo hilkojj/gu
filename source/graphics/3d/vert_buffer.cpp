@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <memory>
+#include <string>
 
 #include "glad/glad.h"
 #include "vert_buffer.h"

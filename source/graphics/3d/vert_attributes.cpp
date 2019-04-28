@@ -1,5 +1,7 @@
 
 #include <iostream>
+#include <ostream>
+#include <string>
 
 #include "vert_attributes.h"
 #include "glad/glad.h"
