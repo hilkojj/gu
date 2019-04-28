@@ -10,8 +10,11 @@ add_executable(gutest ${source})
 set_target_properties(gameutils PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(gutest PROPERTIES LINKER_LANGUAGE CXX)
 
-set_property(TARGET game PROPERTY CXX_STANDARD 17)
-set_property(TARGET game PROPERTY CXX_STANDARD_REQUIRED ON)
+set_property(TARGET gameutils PROPERTY CXX_STANDARD 17)
+set_property(TARGET gameutils PROPERTY CXX_STANDARD_REQUIRED ON)
+
+set_property(TARGET gutest PROPERTY CXX_STANDARD 17)
+set_property(TARGET gutest PROPERTY CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenGL REQUIRED)
 

@@ -8,8 +8,8 @@
 
 4. Download `json.hpp` from [JSON for Modern C++ (version 3.6.1)](https://github.com/nlohmann/json/releases/tag/v3.6.1) and place it in `./external`
 
-3. Run `cmake .`
+5. Add the library to a CMake project:
+   
+    `add_subdirectory(cpp-game-utils/)`
 
-4. Run `make && ./bin/game`
-
-5. enjoy.
+    `target_link_libraries(myprojectname gameutils)`

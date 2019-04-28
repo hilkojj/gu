@@ -1,8 +1,8 @@
 
+#include "../../gu/game_utils.h"
 #include "flying_camera_controller.h"
 #include "../../input/key_input.h"
 #include "../../input/mouse_input.h"
-#include "../../game/game.h"
 #include "../../utils/math_utils.h"
 
 FlyingCameraController::FlyingCameraController(PerspectiveCamera *cam)
@@ -35,10 +35,10 @@ void FlyingCameraController::update(double deltaTime)
         cam->position.y += deltaTime * speedMultiplier;
 
     if (MouseInput::deltaMouseX != 0)
-        cam->rotate(MouseInput::deltaMouseX / Game::width * -100 * mouseSensivity, mu::Y);
+        cam->rotate(MouseInput::deltaMouseX / gu::width * -100 * mouseSensivity, mu::Y);
 
     if (MouseInput::deltaMouseY != 0)
-        cam->rotate(MouseInput::deltaMouseY / Game::height * -100 * mouseSensivity, cam->right);
+        cam->rotate(MouseInput::deltaMouseY / gu::height * -100 * mouseSensivity, cam->right);
     
 
     cam->update();

@@ -6,8 +6,8 @@
 #include "../graphics/3d/mesh.h"
 #include "../graphics/3d/model.h"
 #include "../graphics/3d/model_instance.h"
-#include "../game/screen.h"
-#include "../game/game.h"
+#include "../gu/screen.h"
+#include "../gu/game_utils.h"
 #include "../graphics/shader_program.h"
 #include "../graphics/3d/perspective_camera.h"
 #include "../utils/json_model_loader.h"
@@ -98,8 +98,8 @@ class MeshScreen : public Screen
 
     void onResize()
     {
-        cam.viewportWidth = Game::widthPixels;
-        cam.viewportHeight = Game::heightPixels;
+        cam.viewportWidth = gu::widthPixels;
+        cam.viewportHeight = gu::heightPixels;
     }
 
     ~MeshScreen()

@@ -2,8 +2,7 @@
 
 #include "glad/glad.h"
 #include "../graphics/3d/vert_attributes.h"
-#include "../game/screen.h"
-#include "../game/game.h"
+#include "../gu/screen.h"
 #include "../graphics/shader_program.h"
 #include "../graphics/3d/perspective_camera.h"
 #include "glm/glm.hpp"
