@@ -167,4 +167,6 @@ VertBuffer::~VertBuffer()
     glDeleteVertexArrays(1, &vaoId);
     glDeleteBuffers(1, &vboId);
     glDeleteBuffers(1, &iboId);
+    if (vaoId == currentlyBoundVao)
+        currentlyBoundVao = 0;
 }
