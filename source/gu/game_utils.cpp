@@ -153,7 +153,7 @@ void run()
 
         prevTime = currTime;
 
-    } // Check if the ESC key was pressed or the window was closed
+    } // Check if the window was closed
     while (!glfwWindowShouldClose(window));
 
     // glfwTerminate();

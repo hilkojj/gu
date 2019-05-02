@@ -3,6 +3,7 @@
 #define MODEL_INSTANCE_H
 
 #include <vector>
+#include <memory>
 
 #include "model.h"
 #include "glm/glm.hpp"
