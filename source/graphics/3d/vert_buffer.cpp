@@ -43,7 +43,7 @@ VertBuffer *VertBuffer::add(SharedMesh mesh)
     mesh->baseVertex = nrOfVerts;
     nrOfVerts += mesh->nrOfVertices;
 
-    mesh->indicesBufferOffset = nrOfIndices;
+    mesh->indicesBufferOffset = nrOfIndices * sizeof(GLushort);
     nrOfIndices += mesh->nrOfIndices;
 
     mesh->vertBuffer = this;
@@ -85,7 +85,6 @@ void VertBuffer::upload(bool disposeOfflineData)
         vertsOffset += vertsSize;
         indicesOffset += indicesSize;
     }
-
     setAttrPointersAndEnable();
     uploaded = true;
 
@@ -95,8 +94,12 @@ void VertBuffer::upload(bool disposeOfflineData)
     glGetBufferSubData(GL_ARRAY_BUFFER, 0, vertsOffset, dataV);
 
     std::cout << "Vertex data: ";
-    for (int i = 0; i < nrOfVerts * vertSize; i++)
-        std::cout << dataV[i] << ", ";
+    for (int i = 0; i < nrOfVerts * vertSize; i += vertSize)
+    {
+        for (int j = 0; j < vertSize; j++)
+            std::cout << dataV[i + j] << ", ";
+        std::cout << std::endl;
+    }
     std::cout << std::endl;
 
     GLushort dataI[nrOfIndices];
@@ -106,7 +109,7 @@ void VertBuffer::upload(bool disposeOfflineData)
     for (int i = 0; i < nrOfIndices; i++)
         std::cout << dataI[i] << ", ";
     std::cout << std::endl;
-    */
+    // */
 }
 
 void VertBuffer::setAttrPointersAndEnable()

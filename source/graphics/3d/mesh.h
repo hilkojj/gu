@@ -17,6 +17,7 @@ class Mesh
     std::string name;
     std::vector<float> vertices;
     std::vector<unsigned short> indices;
+    GLenum mode = GL_TRIANGLES;
 
     unsigned int nrOfVertices, nrOfIndices;
 

@@ -3,6 +3,7 @@
 #define MATH_UTILS_H
 
 #include <stdlib.h>
+#include <string>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/constants.hpp"
@@ -52,6 +53,16 @@ inline int randomInt(int min, int max)
 inline glm::vec3 calculateNormal(glm::vec3 &p0, glm::vec3 &p1, glm::vec3 &p2)
 {
     return glm::normalize(glm::cross(p1 - p0, p2 - p0));
+}
+
+inline std::string toString(glm::vec3 &p)
+{
+    return "(" + std::to_string(p.x) + ", " + std::to_string(p.y) + ", " + std::to_string(p.z) + ")";
+}
+
+inline std::string toString(glm::vec2 &p)
+{
+    return "(" + std::to_string(p.x) + ", " + std::to_string(p.y) + ")";
 }
 
 } // namespace mu

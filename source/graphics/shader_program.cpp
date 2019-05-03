@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include <vector>
-#include <string>
 
 #include "shader_program.h"
 #include "../files/file.h"
