@@ -40,7 +40,7 @@ include_directories(./external/glm-0.9.9.5/glm)
 add_subdirectory(glad/)
 
 # -no-pie is used to get 'application/x-application' as mime type instead of 'application/x-sharedlib'
-set(CMAKE_CXX_FLAGS  "-no-pie")
+set(CMAKE_CXX_FLAGS  "-no-pie -O3")
 
 target_link_libraries(gameutils glad glfw glm)
 target_include_directories(gameutils PUBLIC source/)

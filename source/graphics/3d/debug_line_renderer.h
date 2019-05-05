@@ -14,12 +14,11 @@ class DebugLineRenderer
 
     glm::mat4 projection;
 
-    GLuint u_colorId, p0Id, p1Id, MVPId;
-
     void line(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
 
   private:
     ShaderProgram shaderProgram;
+    GLuint u_colorId, p0Id, p1Id, MVPId;
     SharedMesh lineMesh;
 };
 

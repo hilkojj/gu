@@ -7,6 +7,8 @@
 #include <iostream>
 
 #include "vert_attributes.h"
+#include "glm/glm.hpp"
+using namespace glm;
 
 class VertBuffer;
 
@@ -42,6 +44,19 @@ class Mesh
     void render();
 
     ~Mesh();
+
+    vec3 getVec3(int vertI, int attrOffset);
+    vec2 getVec2(int vertI, int attrOffset);
+
+    void setVec3(const vec3 &v, int vertI, int attrOffset);
+    void setVec2(const vec2 &v, int vertI, int attrOffset);
+
+    void addVec3(const vec3 &v, int vertI, int attrOffset);
+    void addVec2(const vec2 &v, int vertI, int attrOffset);
+
+    void normalizeVec3Attribute(int attrOffset);
+    void normalizeVec2Attribute(int attrOffset);
+
 };
 
 typedef std::shared_ptr<Mesh> SharedMesh;
