@@ -2,7 +2,7 @@
 
 1. Download GLFW (version 3.2.1) from [here](https://www.glfw.org/) and extract it to `./external/glfw-3.2.1`
 
-2. Generate & download the OpenGL loader with [Glad](https://glad.dav1d.de/) (select gl Version 4.3) and extract the .zip to `./external/glad`
+2. Generate & download the OpenGL loader with [Glad](https://glad.dav1d.de/) (select gl Version 4.3 and add extention 'GL_EXT_texture_compression_s3tc') and extract the .zip to `./external/glad`
 
 3. Download [GLM (OpenGL Mathematics for C++) version 0.9.9.5](https://github.com/g-truc/glm/releases) and extract to `./external/glm-0.9.9.5`
 

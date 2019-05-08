@@ -37,7 +37,9 @@ include_directories(./external/glm-0.9.9.5/glm)
 
 
 # ---GLAD---
-add_subdirectory(glad/)
+add_library(glad ./external/glad/include/glad/glad.h ./external/glad/src/glad.c)
+target_include_directories(glad PUBLIC ./external/glad/include/)
+
 
 # -no-pie is used to get 'application/x-application' as mime type instead of 'application/x-sharedlib'
 set(CMAKE_CXX_FLAGS  "-no-pie -O3")

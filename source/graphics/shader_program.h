@@ -16,6 +16,8 @@ class ShaderProgram
     bool compiled() const;
     GLuint getProgramId() const;
 
+    void use();
+
   private:
     GLuint programId;
     std::string name;

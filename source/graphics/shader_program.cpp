@@ -57,6 +57,11 @@ GLuint ShaderProgram::getProgramId() const
     return programId;
 }
 
+void ShaderProgram::use()
+{
+    glUseProgram(programId);
+}
+
 ShaderProgram ShaderProgram::fromFiles(std::string name, const char *vertPath, const char *fragPath)
 {
     std::string vertCode = File::readString(vertPath);
