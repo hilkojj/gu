@@ -1,16 +1,6 @@
 
 #include "tangent_calculator.h"
 
-vec2 delta(vec2 p0, vec2 p1)
-{
-    float minX = min(p0.x, p1.x), maxX = max(p0.x, p1.x);
-    float minY = min(p0.y, p1.y), maxY = max(p0.y, p1.y);
-
-    float deltaX = min(abs(minX - maxX), minX + 1 - maxX);
-    float deltaY = min(abs(minY - maxY), minY + 1 - maxY);
-    return vec2(deltaX, deltaY);
-}
-
 namespace TangentCalculator
 {
 
@@ -26,8 +16,8 @@ vec3 calculateTangent(
     vec3 deltaPos1 = vec3(p1 - p0);
     vec3 deltaPos2 = vec3(p2 - p0);
 
-    vec2 deltaUv1 = delta(uv1, uv0);
-    vec2 deltaUv2 = delta(uv2, uv0);
+    vec2 deltaUv1 = vec2(uv1 - uv0);
+    vec2 deltaUv2 = vec2(uv2 - uv0);
 
     float r = 1 / (deltaUv1.x * deltaUv2.y - deltaUv1.y * deltaUv2.x);
     vec3 tangent = vec3(deltaPos1 * deltaUv2.y) - vec3(deltaPos2 * deltaUv1.y);
