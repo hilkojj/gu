@@ -87,7 +87,7 @@ SharedTexture Texture::fromDDSFile(const char *path)
 Texture::Texture(GLuint id, GLuint width, GLuint height)
     : id(id), width(width), height(height)
 {
-    std::cout << "Texture " << id << " created\n";
+    std::cout << "Texture (" << width << "x" << height << ") id: " << id << " created\n";
 }
 
 void Texture::bind(GLuint unit)

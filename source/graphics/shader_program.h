@@ -14,7 +14,7 @@ class ShaderProgram
     ~ShaderProgram();
 
     bool compiled() const;
-    GLuint getProgramId() const;
+    GLuint id() const;
 
     void use();
 

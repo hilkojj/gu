@@ -52,7 +52,7 @@ bool ShaderProgram::compiled() const
     return compiled_;
 }
 
-GLuint ShaderProgram::getProgramId() const
+GLuint ShaderProgram::id() const
 {
     return programId;
 }

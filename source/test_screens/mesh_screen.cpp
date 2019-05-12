@@ -85,8 +85,8 @@ class MeshScreen : public Screen
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
 
-        glUseProgram(shaderProgram.getProgramId());
-        GLuint mvpId = glGetUniformLocation(shaderProgram.getProgramId(), "MVP");
+        glUseProgram(shaderProgram.id());
+        GLuint mvpId = glGetUniformLocation(shaderProgram.id(), "MVP");
 
         glm::mat4 mvp = cam.combined * modelInstance->transform;
 

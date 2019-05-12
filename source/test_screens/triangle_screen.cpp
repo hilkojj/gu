@@ -59,7 +59,7 @@ class TriangleScreen : public Screen
         cam.lookAt(vec3(0));
         cam.update();
 
-        GLuint mvpId = glGetUniformLocation(shaderProgram.getProgramId(), "MVP");
+        GLuint mvpId = glGetUniformLocation(shaderProgram.id(), "MVP");
         
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
         model = glm::rotate(model, 3.14f/2.f, glm::vec3(1, 0, 0));
@@ -70,7 +70,7 @@ class TriangleScreen : public Screen
         glClearColor(.1, .3, .7, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram.getProgramId());
+        glUseProgram(shaderProgram.id());
 
         glUniformMatrix4fv(mvpId, 1, GL_FALSE, &mvp[0][0]);
 

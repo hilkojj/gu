@@ -47,15 +47,15 @@ DebugLineRenderer::DebugLineRenderer()
     lineMesh->mode = GL_LINES;
     buffer->add(lineMesh)->upload(false);
 
-    u_colorId = glGetUniformLocation(shaderProgram.getProgramId(), "u_color");
-    MVPId = glGetUniformLocation(shaderProgram.getProgramId(), "MVP");
-    p0Id = glGetUniformLocation(shaderProgram.getProgramId(), "p0");
-    p1Id = glGetUniformLocation(shaderProgram.getProgramId(), "p1");
+    u_colorId = glGetUniformLocation(shaderProgram.id(), "u_color");
+    MVPId = glGetUniformLocation(shaderProgram.id(), "MVP");
+    p0Id = glGetUniformLocation(shaderProgram.id(), "p0");
+    p1Id = glGetUniformLocation(shaderProgram.id(), "p1");
 }
 
 void DebugLineRenderer::line(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
 {
-    glUseProgram(shaderProgram.getProgramId());
+    glUseProgram(shaderProgram.id());
     glUniform3f(u_colorId, color.r, color.g, color.b);
     glUniform3f(p0Id, p0.x, p0.y, p0.z);
     glUniform3f(p1Id, p1.x, p1.y, p1.z);
