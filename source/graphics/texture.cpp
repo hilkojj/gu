@@ -10,6 +10,7 @@
 #define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
 
 // http://www.opengl-tutorial.org/beginners-tutorials/tutorial-5-a-textured-cube/
+// https://gist.github.com/tilkinsc/13191c0c1e5d6b25fbe79bbd2288a673
 SharedTexture Texture::fromDDSFile(const char *path)
 {
     FILE *fp;
@@ -41,7 +42,6 @@ SharedTexture Texture::fromDDSFile(const char *path)
     s = fread(buffer, 1, bufsize, fp);
     fclose(fp);
 
-    unsigned int components = (fourCC == FOURCC_DXT1) ? 3 : 4;
     unsigned int format;
     switch (fourCC)
     {
@@ -61,19 +61,25 @@ SharedTexture Texture::fromDDSFile(const char *path)
     GLuint id;
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
-
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipMapCount - 1); // opengl likes array length of mipmaps
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // don't forget to enable mipmaping
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    
     unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16;
     unsigned int offset = 0, w = width, h = height;
     for (unsigned int level = 0; level < mipMapCount && (width || height); ++level)
     {
-        unsigned int size = ((width + 3) / 4) * ((height + 3) / 4) * blockSize;
+        unsigned int size = ((w + 3) / 4) * ((h + 3) / 4) * blockSize;
         glCompressedTexImage2D(GL_TEXTURE_2D, level, format, w, h,
                                0, size, buffer + offset);
         offset += size;
         w /= 2;
         h /= 2;
     }
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, mipMapCount - 1); // https://gist.github.com/tilkinsc/13191c0c1e5d6b25fbe79bbd2288a673
+
     free(buffer);
     return SharedTexture(new Texture(id, width, height));
 }
