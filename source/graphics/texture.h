@@ -32,7 +32,7 @@ class DDSData
 {
   public:
 
-    GLuint height, width, linearSize, mipMapCount, fourCC, format;
+    GLuint height, width, linearSize, mipMapCount, fourCC, format, bufsize;
 
     unsigned char *buffer;
 

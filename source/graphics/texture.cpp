@@ -80,7 +80,6 @@ DDSData::DDSData(const char *path)
     mipMapCount = *(unsigned int *)&(header[24]);
     fourCC = *(unsigned int *)&(header[80]);
 
-    unsigned int bufsize;
     /* how big is it going to be including all mipmaps? */
     bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
     buffer = (unsigned char *)malloc(bufsize * sizeof(unsigned char));
