@@ -25,6 +25,12 @@ unsigned int VertAttributes::add(VertAttr attr)
     return offset;
 }
 
+VertAttributes &VertAttributes::add_(VertAttr attr)
+{
+    add(attr);
+    return *this;
+}
+
 VertAttr &VertAttributes::get(unsigned int i)
 {
     return attributes[i];

@@ -38,14 +38,13 @@ DebugLineRenderer::DebugLineRenderer()
 {
     VertAttributes attrs;
     attrs.add({"nr", 1, GL_FALSE});
-    VertBuffer *buffer = VertBuffer::with(attrs);
     lineMesh = SharedMesh(new Mesh("debug_line", 2, 2, attrs));
     lineMesh->vertices[0] = 0;
     lineMesh->vertices[1] = 1;
     lineMesh->indices[0] = 0;
     lineMesh->indices[1] = 1;
     lineMesh->mode = GL_LINES;
-    buffer->add(lineMesh)->upload(false);
+    VertBuffer::uploadSingleMesh(lineMesh);
 
     u_colorId = glGetUniformLocation(shaderProgram.id(), "u_color");
     MVPId = glGetUniformLocation(shaderProgram.id(), "MVP");

@@ -15,6 +15,9 @@ class VertBuffer
     // creates a VertBuffer for meshes with these attributes
     static VertBuffer* with(VertAttributes &attributes);
 
+    // try not to use this. It is more efficient to put more meshes (with the same VertAttributes) in 1 VertBuffer
+    static void uploadSingleMesh(SharedMesh mesh);
+
     // adds mesh to Meshes that are going to be uploaded when upload() is called.
     VertBuffer* add(SharedMesh mesh);
 

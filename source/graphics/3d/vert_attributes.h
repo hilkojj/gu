@@ -23,6 +23,9 @@ class VertAttributes
     // adds the attribute, and returns the offset that can be used in an interleaved vertices array (VNCVNCVNCVNC https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices#Formatting_VBO_Data)
     unsigned int add(VertAttr attr);
 
+    // same as above but returns this.
+    VertAttributes &add_(VertAttr attr);
+
     VertAttr &get(unsigned int i);
 
     unsigned int nrOfAttributes() const;

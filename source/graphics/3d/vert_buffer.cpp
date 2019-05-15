@@ -15,6 +15,12 @@ VertBuffer *VertBuffer::with(VertAttributes &attributes)
     return new VertBuffer(attributes);
 }
 
+void VertBuffer::uploadSingleMesh(SharedMesh mesh)
+{
+    VertBuffer *buffer = with(mesh->attributes);
+    buffer->add(mesh)->upload(false);
+}
+
 VertBuffer::VertBuffer(VertAttributes &attributes)
 
     : vertSize(attributes.getVertSize()), attrs(attributes)

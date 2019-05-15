@@ -28,4 +28,17 @@ class Texture
 
 };
 
+class DDSData
+{
+  public:
+
+    GLuint height, width, linearSize, mipMapCount, fourCC, format;
+
+    unsigned char *buffer;
+
+    DDSData(const char *path);
+
+    ~DDSData();
+};
+
 #endif
