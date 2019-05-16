@@ -82,7 +82,7 @@ DDSData::DDSData(const char *path)
 
     /* how big is it going to be including all mipmaps? */
     bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize;
-    buffer = (unsigned char *)malloc(bufsize * sizeof(unsigned char));
+    buffer = new unsigned char[bufsize];
     s = fread(buffer, 1, bufsize, fp);
     fclose(fp);
 
@@ -98,12 +98,12 @@ DDSData::DDSData(const char *path)
         format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
         break;
     default:
-        free(buffer);
+        delete[] buffer;
         throw gu_err("DDS texture is not DXT1 DXT3 or DXT5: " + std::string(path));
     }
 }
 
 DDSData::~DDSData()
 {
-    free(buffer);
+    delete[] buffer;
 }

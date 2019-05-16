@@ -14,6 +14,7 @@ SharedTexArray TextureArray::fromDDSFiles(const std::vector<std::string> &paths)
     glBindTexture(GL_TEXTURE_2D_ARRAY, id);
 
     std::vector<DDSData> datas;
+    datas.reserve(paths.size());
     for (auto &path : paths)
         datas.emplace_back(path.c_str());
 
