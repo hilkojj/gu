@@ -16,7 +16,7 @@ static std::string vertSource = MULTILINE(
     {
         gl_Position = MVP * vec4(nr == 0 ? p0 : p1, 1);
     }
-        
+
 );
 
 static std::string fragSource = MULTILINE(

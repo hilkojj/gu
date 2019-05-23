@@ -47,9 +47,11 @@ class Mesh
 
     vec3 getVec3(int vertI, int attrOffset);
     vec2 getVec2(int vertI, int attrOffset);
+    float getFloat(int vertI, int attrOffset);
 
     void setVec3(const vec3 &v, int vertI, int attrOffset);
     void setVec2(const vec2 &v, int vertI, int attrOffset);
+    void setFloat(float v, int vertI, int attrOffset);
 
     void addVec3(const vec3 &v, int vertI, int attrOffset);
     void addVec2(const vec2 &v, int vertI, int attrOffset);

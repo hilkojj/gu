@@ -64,6 +64,11 @@ vec2 Mesh::getVec2(int vertI, int attrOffset)
     );
 }
 
+float Mesh::getFloat(int vertI, int attrOffset)
+{
+    return vertices[vertI * attributes.getVertSize() + attrOffset];
+}
+
 void Mesh::setVec3(const vec3 &v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] = v.x;
@@ -75,6 +80,11 @@ void Mesh::setVec2(const vec2 &v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] = v.x;
     vertices[vertI * attributes.getVertSize() + attrOffset + 1] = v.y;
+}
+
+void Mesh::setFloat(float v, int vertI, int attrOffset)
+{
+    vertices[vertI * attributes.getVertSize() + attrOffset] = v;
 }
 
 void Mesh::addVec3(const vec3 &v, int vertI, int attrOffset)

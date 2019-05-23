@@ -15,6 +15,7 @@ class ShaderProgram
 
     bool compiled() const;
     GLuint id() const;
+    GLuint location(const char *uniformName);
 
     void use();
 

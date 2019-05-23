@@ -57,6 +57,11 @@ GLuint ShaderProgram::id() const
     return programId;
 }
 
+GLuint ShaderProgram::location(const char *uniformName)
+{
+    return glGetUniformLocation(programId, uniformName);
+}
+
 void ShaderProgram::use()
 {
     glUseProgram(programId);

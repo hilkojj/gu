@@ -150,7 +150,7 @@ bool VertBuffer::isUploaded() const
 
 bool VertBuffer::inUse() const
 {
-    for (std::weak_ptr<Mesh> m : meshes) 
+    for (std::weak_ptr<Mesh> m : meshes)
         if (!m.expired()) return true;
     return false;
 }
