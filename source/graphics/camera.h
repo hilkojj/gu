@@ -32,6 +32,11 @@ class Camera
     void rotate(float degrees, vec3 axis);
 
     virtual void update() = 0;
+
+    vec3 getCursorRayDirection() const;
+
+    vec3 getRayDirection(float viewportX, float viewportY) const;
+
 };
 
 #endif
