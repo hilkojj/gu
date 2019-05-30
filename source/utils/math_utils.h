@@ -4,9 +4,11 @@
 
 #include <stdlib.h>
 #include <string>
+#include <functional>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/constants.hpp"
+#include "glm/gtx/string_cast.hpp"
 using namespace glm;
 
 namespace mu
@@ -124,6 +126,53 @@ inline bool lineSegmentsIntersect(const vec2 &p1, const vec2 &q1, const vec2 &p2
     if (o4 == 0 && onSegment(p2, q1, q2)) return true;
 
     return false; // Doesn't fall in any of the above cases
+}
+
+inline float sign(const vec2 &p0, const vec2 &p1, const vec2 &p2)
+{
+    return (p0.x - p2.x) * (p1.y - p2.y) - (p1.x - p2.x) * (p0.y - p2.y);
+}
+
+inline bool pointInTriangle(const vec2 &point, const vec2 &p0, const vec2 &p1, const vec2 &p2)
+{
+    float d1 = sign(point, p0, p1),
+        d2 = sign(point, p1, p2),
+        d3 = sign(point, p2, p0);
+
+    bool has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+    bool has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+    return !(has_neg && has_pos);
+}
+
+/**
+ * Executes 'callback' size^2 times in a spiral loop.
+ * 'callback' must return true to continue, or false to beak the loop.
+ * 
+ * Example:
+ * if size is 3 then 'callback' will be called 9 times with these positions:
+ * (0, 0) (1, 0) (1, 1) (0, 1) (-1, 1) (-1, 0) (-1, -1) (0, -1) (1, -1)
+ */
+inline void spiral(int size, std::function<bool(ivec2 pos)> callback)
+{
+    ivec2 pos(0), dir(1, 0);
+    int steps = 1, stepsToDo = 1, changeSteps = 2;
+    for (int i = 0; i < size * size; i++)
+    {
+        if (!callback(pos)) break;
+
+        pos += dir;
+        if (--stepsToDo == 0)
+        {
+            dir = ivec2(-dir.y, dir.x);
+            if (--changeSteps == 0)
+            {
+                changeSteps = 2;
+                steps++;
+            }
+            stepsToDo = steps;
+        }
+    }
 }
 
 } // namespace mu

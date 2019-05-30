@@ -55,7 +55,7 @@ SharedMesh generate(const std::string &meshName, float radius, int segments, int
     if (attrs.contains(VertAttributes::TANGENT))
     {
         int tanOffset = attrs.getOffset(VertAttributes::TANGENT);
-        TangentCalculator::addTangentsToMesh(mesh.get());
+        TangentCalculator::addTangentsToMesh(mesh);
         for (int y = 0; y < rings; y++)
         {
             int i0 = y, i1 = y + (segments * rings);

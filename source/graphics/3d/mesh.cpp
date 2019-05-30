@@ -47,6 +47,16 @@ Mesh::~Mesh()
         vertBuffer->onMeshDestroyed();
 }
 
+vec4 Mesh::getVec4(int vertI, int attrOffset)
+{
+    return vec4(
+        vertices[vertI * attributes.getVertSize() + attrOffset],
+        vertices[vertI * attributes.getVertSize() + attrOffset + 1],
+        vertices[vertI * attributes.getVertSize() + attrOffset + 2],
+        vertices[vertI * attributes.getVertSize() + attrOffset + 3]
+    );
+}
+
 vec3 Mesh::getVec3(int vertI, int attrOffset)
 {
     return vec3(
@@ -69,6 +79,15 @@ float Mesh::getFloat(int vertI, int attrOffset)
     return vertices[vertI * attributes.getVertSize() + attrOffset];
 }
 
+void Mesh::setVec4(const vec4 &v, int vertI, int attrOffset)
+{
+    vertices[vertI * attributes.getVertSize() + attrOffset] = v.x;
+    vertices[vertI * attributes.getVertSize() + attrOffset + 1] = v.y;
+    vertices[vertI * attributes.getVertSize() + attrOffset + 2] = v.z;
+    vertices[vertI * attributes.getVertSize() + attrOffset + 3] = v.w;
+}
+
+
 void Mesh::setVec3(const vec3 &v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] = v.x;
@@ -85,6 +104,14 @@ void Mesh::setVec2(const vec2 &v, int vertI, int attrOffset)
 void Mesh::setFloat(float v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] = v;
+}
+
+void Mesh::addVec4(const vec4 &v, int vertI, int attrOffset)
+{
+    vertices[vertI * attributes.getVertSize() + attrOffset] += v.x;
+    vertices[vertI * attributes.getVertSize() + attrOffset + 1] += v.y;
+    vertices[vertI * attributes.getVertSize() + attrOffset + 2] += v.z;
+    vertices[vertI * attributes.getVertSize() + attrOffset + 3] += v.w;
 }
 
 void Mesh::addVec3(const vec3 &v, int vertI, int attrOffset)

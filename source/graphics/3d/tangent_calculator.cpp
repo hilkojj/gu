@@ -25,6 +25,11 @@ vec3 calculateTangent(
     return normalize(tangent);
 }
 
+void addTangentsToMesh(SharedMesh mesh)
+{
+    addTangentsToMesh(mesh.get());
+}
+
 void addTangentsToMesh(Mesh *mesh)
 {
     VertAttributes &attrs = mesh->attributes;
