@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "glad/glad.h"
+#include "shader_program.h"
 
 class Texture;
 
@@ -23,6 +24,9 @@ class Texture
     Texture(GLuint id, GLuint width, GLuint height);
 
     void bind(GLuint unit);
+
+    // same as bind() but also sets sampler uniform for shader.
+    void bind(GLuint unit, const ShaderProgram &shader, const char* name);
 
     ~Texture();
 

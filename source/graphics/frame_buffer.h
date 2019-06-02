@@ -9,27 +9,34 @@ class FrameBuffer
 
   public:
 
-    // unbinds current FrameBuffer
-    static void unbindCurrent();
-
-    const GLuint id, width, height;
+    const GLuint id, width, height, samples;
 
     SharedTexture colorTexture;
     SharedTexture depthTexture;
 
     FrameBuffer(GLuint width, GLuint height);
 
+    FrameBuffer(GLuint width, GLuint height, GLuint samples);
+
     ~FrameBuffer();
 
     void bind();
 
+    void unbind();
+
     // format can be GL_RGB or GL_RGBA. magFilter and minFilter can be GL_LINEAR for example.
     void addColorTexture(GLuint format, GLuint magFilter, GLuint minFilter);
 
-    // use this if you want the depth rendered to a texture, use addDepthBuffer() if you do not want that.
+    void addColorBuffer(GLuint format);
+
     void addDepthTexture(GLuint magFilter, GLuint minFilter);
 
     void addDepthBuffer();
+
+  private:
+    FrameBuffer *sampled = NULL;
+
+    static void unbindCurrent();
 
 };
 

@@ -60,7 +60,19 @@ vec3 Camera::project(const vec3 &p, bool &inViewport) const
     return h3;
 }
 
+bool blah = true;
+
+vec3 Camera::project(const vec3 &p) const
+{
+    return project(p, blah);
+}
+
 vec3 Camera::projectPixels(const vec3 &p, bool &inViewport) const
 {
     return (project(p, inViewport) + vec3(1, -1, 0)) * vec3(.5, -.5, 1) * vec3(viewportWidth, viewportHeight, 1);
+}
+
+vec3 Camera::projectPixels(const vec3 &p) const
+{
+    return projectPixels(p, blah);
 }

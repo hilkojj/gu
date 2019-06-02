@@ -12,10 +12,10 @@ namespace gu
 struct Config
 {
 
-    Config() : vsync(false), title("Game"), width(1600), height(900), showFPSInTitleBar(true), printOpenGLMessages(true) {}
+    Config() : vsync(false), title("Game"), width(1600), height(900), samples(4), showFPSInTitleBar(true), printOpenGLMessages(true) {}
 
     std::string title;
-    int width, height;
+    int width, height, samples;
     bool 
         vsync, 
         showFPSInTitleBar,

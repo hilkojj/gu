@@ -6,6 +6,28 @@
 #include "vert_buffer.h"    
 #include "vert_attributes.h"
 
+SharedMesh Mesh::quad;
+
+SharedMesh Mesh::getQuad()
+{
+    if (!quad)
+    {
+        quad = SharedMesh(new Mesh("quad", 4, 6, VertAttributes().add_(VertAttributes::POSITION)));
+        quad->vertices.insert(quad->vertices.begin(), {
+            -1, -1, 0,
+            -1, 1, 0,
+            1, 1, 0,
+            1, -1, 0,
+        });
+        quad->indices.insert(quad->indices.begin(), {
+            2, 1, 0,
+            0, 3, 2,
+        });
+        VertBuffer::uploadSingleMesh(quad);
+    }
+    return quad;
+}
+
 Mesh::Mesh(std::string name, unsigned int nrOfVertices, unsigned int nrOfIndices, VertAttributes attributes)
 
     : name(name), nrOfVertices(nrOfVertices), nrOfIndices(nrOfIndices),

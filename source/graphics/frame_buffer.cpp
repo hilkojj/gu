@@ -15,15 +15,21 @@ GLuint create()
     return id;
 }
 
-FrameBuffer::FrameBuffer(GLuint width, GLuint height) : id(create()), width(width), height(height)
+FrameBuffer::FrameBuffer(GLuint width, GLuint height) : FrameBuffer(width, height, 0)
+{}
+
+FrameBuffer::FrameBuffer(GLuint width, GLuint height, GLuint samples) : id(create()), width(width), height(height), samples(samples)
 {
-    std::cout << "FrameBuffer " << id << " created\n";
+    std::cout << "FrameBuffer " << id << " created with " << samples << " samples\n";
+
+    if (samples) sampled = new FrameBuffer(width, height);
 }
 
 FrameBuffer::~FrameBuffer()
 {
     glDeleteFramebuffers(1, &id);
     std::cout << "FrameBuffer " << id << " destroyed\n";
+    if (sampled) delete sampled;
 }
 
 void FrameBuffer::bind()
@@ -33,8 +39,32 @@ void FrameBuffer::bind()
     glViewport(0, 0, width, height);
 }
 
+void FrameBuffer::unbind()
+{
+    unbindCurrent();
+    if (!sampled) return;
+
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, sampled->id);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
+
+    GLbitfield mask = 0;
+    if (colorTexture) mask |= GL_COLOR_BUFFER_BIT;
+    if (depthTexture) mask |= GL_DEPTH_BUFFER_BIT;
+
+    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, mask, GL_NEAREST);
+
+    unbindCurrent();
+}
+
 void FrameBuffer::addColorTexture(GLuint format, GLuint magFilter, GLuint minFilter)
 {
+    if (sampled)
+    {
+        addColorBuffer(format);
+        sampled->addColorTexture(format, magFilter, minFilter);
+        colorTexture = sampled->colorTexture;
+        return;
+    }
     glBindFramebuffer(GL_FRAMEBUFFER, id);
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
@@ -51,9 +81,33 @@ void FrameBuffer::addColorTexture(GLuint format, GLuint magFilter, GLuint minFil
     unbindCurrent();
 }
 
-// use this if you want the depth rendered to a texture, use addDepthBuffer() if you do not want that.
+void FrameBuffer::addColorBuffer(GLuint format)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, id);
+
+    GLuint id;
+    glGenRenderbuffers(1, &id);
+    glBindRenderbuffer(GL_RENDERBUFFER, id);
+
+    if (!sampled)
+        glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
+    else
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, format, width, height);
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, id);
+
+    unbindCurrent();
+}
+
 void FrameBuffer::addDepthTexture(GLuint magFilter, GLuint minFilter)
 {
+    if (sampled)
+    {
+        addDepthBuffer();
+        sampled->addDepthTexture(magFilter, minFilter);
+        depthTexture = sampled->depthTexture;
+        return;
+    }
     glBindFramebuffer(GL_FRAMEBUFFER, id);
 
     GLuint texId;
@@ -76,7 +130,12 @@ void FrameBuffer::addDepthBuffer()
     GLuint id;
     glGenRenderbuffers(1, &id);
     glBindRenderbuffer(GL_RENDERBUFFER, id);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+
+    if (!sampled)
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+    else
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, width, height);
+
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id);
 
     unbindCurrent();

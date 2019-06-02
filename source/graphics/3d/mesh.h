@@ -11,11 +11,18 @@
 using namespace glm;
 
 class VertBuffer;
+class Mesh;
+
+typedef std::shared_ptr<Mesh> SharedMesh;
 
 class Mesh
 {
 
   public:
+
+    // returns a shared(!) quad mesh with only the Position attribute. (position attribute can also be used for texture coordinates)
+    static SharedMesh getQuad();
+
     std::string name;
     std::vector<float> vertices;
     std::vector<unsigned short> indices;
@@ -62,8 +69,10 @@ class Mesh
     void normalizeVec3Attribute(int attrOffset);
     void normalizeVec2Attribute(int attrOffset);
 
-};
+  private:
 
-typedef std::shared_ptr<Mesh> SharedMesh;
+    static SharedMesh quad;
+
+};
 
 #endif
