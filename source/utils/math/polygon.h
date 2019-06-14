@@ -5,21 +5,21 @@
 #include <string>
 #include <vector>
 
-#include "glm/glm.hpp"
+#include "../math_utils.h"
 
 class Polygon
 {
 
   public:
 
-    std::vector<glm::vec2> points;
+    std::vector<vec2> points;
 
     Polygon();
     Polygon(int points);
 
-    bool contains(float x, float y);
+    bool contains(float x, float y) const;
 
-    std::string toString();
+    std::string toString() const;
 
 };
 

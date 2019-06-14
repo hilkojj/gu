@@ -24,7 +24,14 @@ std::vector<unsigned char> File::readBinary(const char *path)
 
     if (!stream.is_open())
         throw std::runtime_error("Could not open: " + std::string(path));
+        
+    return std::vector<unsigned char>(std::istreambuf_iterator<char>(stream), {});
+}
 
-    std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(stream), {});
-    return buffer;
+void File::writeBinary(const char *path, std::vector<unsigned char> data)
+{
+    std::ofstream out(path, std::ios::out | std::ios::binary);
+    out.write((const char *)&data[0], data.size());
+
+    out.close();
 }

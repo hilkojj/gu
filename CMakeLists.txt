@@ -18,7 +18,8 @@ set_property(TARGET gutest PROPERTY CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenGL REQUIRED)
 
-
+string(LENGTH "${CMAKE_SOURCE_DIR}/" SOURCE_PATH_SIZE)
+add_definitions("-DSOURCE_PATH_SIZE=${SOURCE_PATH_SIZE}")
 
 # ---GLFW---
 

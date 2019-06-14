@@ -6,7 +6,7 @@ Polygon::Polygon()
 Polygon::Polygon(int points) : points(points)
 {}
 
-bool Polygon::contains(float x, float y)
+bool Polygon::contains(float x, float y) const
 {
 
     int intersections = 0;
@@ -14,7 +14,7 @@ bool Polygon::contains(float x, float y)
 
     for (int i = 0; i < size; i++)
     {
-        glm::vec2 &p1 = points[i], &p2 = points[(i + 1) % size];
+        const vec2 &p1 = points[i], &p2 = points[(i + 1) % size];
         
         if (((p1.y <= y && y < p2.y) || (p2.y <= y && y < p1.y)) && x < ((p2.x - p1.x) / (p2.y - p1.y) * (y - p1.y) + p1.x))
             intersections++;
@@ -22,15 +22,15 @@ bool Polygon::contains(float x, float y)
     return (intersections & 1) == 1;
 }
 
-std::string Polygon::toString()
+std::string Polygon::toString() const
 {
     std::string s = "";
     bool first = true;
-    for (glm::vec2 &p : points)
+    for (const vec2 &p : points)
     {
         if (!first) s += ", ";
         first = false;
-        s += "(" + std::to_string(p.x) + ", " + std::to_string(p.y) + ")";
+        s += to_string(p);
     }
     return s;
 }

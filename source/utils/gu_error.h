@@ -4,14 +4,36 @@
 #include <iostream>
 #include <string>
 
-class gu_err : public std::runtime_error
+class _gu_err : public std::runtime_error
 {
   public:
-    gu_err(const std::string &msg)
+    _gu_err(const std::string &msg, const char *caller, const char *file, const unsigned int line)
     : std::runtime_error(msg)
     {
-        std::cerr << "gu_err: " <<  msg << std::endl;
+        #ifdef linux
+        std::cerr << "\033[1m\033[31m";
+        #endif
+
+        std::cerr << "\n------ gu_err ------\n" <<  msg << "\n\n";
+
+        #ifdef linux
+        std::cerr << "\033[1m\033[35m";
+        #endif
+
+        std::cerr << "at " << caller << "\n\n";
+
+        #ifdef linux
+        std::cerr << "\033[1m\033[32m";
+        #endif
+        
+        std::cerr << file << ":" << line << "\n\n";
+
+        #ifdef linux
+        std::cerr << "\033[0m";
+        #endif
     }
 };
+
+#define gu_err(msg) _gu_err(msg, __PRETTY_FUNCTION__, __FILE__, __LINE__)
 
 #endif
