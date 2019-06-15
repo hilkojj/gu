@@ -8,10 +8,18 @@
 
 int main()
 {
-    if (!gu::init({}))
+    gu::Config config;
+    #ifdef EMSCRIPTEN
+    config.width = 900;
+    config.height = 506;
+    #endif
+
+    if (!gu::init(config))
         return -1;
 
-    WebAssemblyScreen scr;
+    std::cout << glGetString(GL_VERSION) << "\n";
+
+    MeshScreen scr;
     gu::setScreen(&scr);
 
     gu::run();

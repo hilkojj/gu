@@ -101,9 +101,7 @@ bool init(Config config_)
 
     if (config.printOpenGLMessages)
     {
-        #ifdef EMSCRIPTEN
-        std::cout << "Config.printOpenGLMessages is not supported in EMSCRIPTEN\n";
-        #else
+        #ifndef EMSCRIPTEN
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(glMessageCallback, NULL);
         #endif
@@ -171,7 +169,7 @@ void run()
     remainingSecond = 1;
 
     #ifdef EMSCRIPTEN
-    emscripten_set_main_loop(mainLoop, 0, 1);
+    emscripten_set_main_loop(mainLoop, 99999, 1);
     #else
 
     do mainLoop();

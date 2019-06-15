@@ -24,7 +24,7 @@ class ShaderProgram
     std::string name;
     bool compiled_;
 
-    void compileAndAttach(const char *source, GLuint shaderId);
+    void compileAndAttach(const char *source, GLuint shaderId, const char *shaderType);
 };
 
 #endif

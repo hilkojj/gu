@@ -27,27 +27,13 @@ class MeshScreen : public Screen
     float time;
 
     MeshScreen()
-        : shaderProgram(ShaderProgram::fromFiles("NormalTestShader", "assets/shaders/test.vert", "assets/shaders/normaltest.frag")),
+        : shaderProgram(ShaderProgram::fromFiles("NormalTestShader", "assets/shaders/test.vert", "assets/shaders/test.frag")),
           cam(PerspectiveCamera(.1, 100, 1, 1, 75)), camController(&cam)
     {
 
         VertAttributes attrs;
         attrs.add(VertAttributes::POSITION);
         attrs.add(VertAttributes::NORMAL);
-
-        SharedMesh mesh = SharedMesh(new Mesh("testMesh", 3, 3, attrs));
-
-        mesh->vertices.insert(mesh->vertices.begin(), {-1.0f, -1.0f, 0.0f,
-                                                       1.0f, -1.0f, 0.0f,
-                                                       0.0f, 1.0f, 0.0f});
-
-        mesh->indices.insert(mesh->indices.begin(), {0, 1, 2});
-
-        SharedModel model = SharedModel(new Model("testModel"));
-        model->parts.push_back({mesh});
-
-        // VertBuffer *buffer = VertBuffer::with(attrs);
-        // buffer->add(mesh)->upload(true);
 
         SharedModel loadedModel = JsonModelLoader::fromUbjsonFile(
             "assets/models/example.ubj", &attrs
@@ -73,7 +59,7 @@ class MeshScreen : public Screen
         cam.position.x = glm::sin(time) * 3;
         cam.position.y = 3;
         cam.position.z = glm::cos(time) * 3;
-        cam.lookAt(vec3(0), -mu::Y);
+        cam.lookAt(vec3(0), mu::Y);
         cam.update();
         */
 
@@ -85,8 +71,8 @@ class MeshScreen : public Screen
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
 
-        glUseProgram(shaderProgram.id());
-        GLuint mvpId = glGetUniformLocation(shaderProgram.id(), "MVP");
+        shaderProgram.use();
+        GLuint mvpId = shaderProgram.location("MVP");
 
         glm::mat4 mvp = cam.combined * modelInstance->transform;
 

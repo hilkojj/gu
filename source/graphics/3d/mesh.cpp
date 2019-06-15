@@ -52,12 +52,11 @@ void Mesh::render()
 {
     if (!vertBuffer || !vertBuffer->isUploaded()) throw std::runtime_error(name + " is not uploaded. Upload it first with a VertBuffer");
     vertBuffer->bind();
-    glDrawElementsBaseVertex(
+    glDrawElements(
         mode,
         nrOfIndices,
         GL_UNSIGNED_SHORT,
-        (void *)(uintptr_t)indicesBufferOffset,
-        baseVertex
+        (void *)(uintptr_t)indicesBufferOffset
     );
 }
 

@@ -8,7 +8,6 @@
 
 std::string File::readString(const char *path)
 {
-    std::cout << "read file\n";
     std::ifstream stream(path, std::ios::in);
 
     if (!stream.is_open())
@@ -17,7 +16,6 @@ std::string File::readString(const char *path)
     std::stringstream sstr;
     sstr << stream.rdbuf();
     stream.close();
-    std::cout << "read done\n";
     return sstr.str();
 }
 

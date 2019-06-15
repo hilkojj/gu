@@ -46,6 +46,6 @@ target_include_directories(glad PUBLIC ./external/glad/include/)
 #target_include_directories(gameutils PUBLIC source/)
 
 set_target_properties(gutest PROPERTIES SUFFIX ".html")
-set_target_properties(gutest PROPERTIES LINK_FLAGS "-Werror -s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm'")
+set_target_properties(gutest PROPERTIES LINK_FLAGS "-s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm' --preload-file assets")
 
 target_link_libraries(gutest glad glm)
