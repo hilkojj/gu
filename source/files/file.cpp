@@ -4,17 +4,20 @@
 #include <vector>
 
 #include "file.h"
+#include "../utils/gu_error.h"
 
 std::string File::readString(const char *path)
 {
+    std::cout << "read file\n";
     std::ifstream stream(path, std::ios::in);
 
     if (!stream.is_open())
-        throw std::runtime_error("Could not open: " + std::string(path));
+        throw gu_err("Could not open: " + std::string(path));
 
     std::stringstream sstr;
     sstr << stream.rdbuf();
     stream.close();
+    std::cout << "read done\n";
     return sstr.str();
 }
 

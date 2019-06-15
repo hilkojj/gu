@@ -2,7 +2,13 @@
 #include <iostream>
 #include "glad/glad.h"
 #include "game_utils.h"
-#include "GLFW/glfw3.h"
+
+#ifdef EMSCRIPTEN
+#include<emscripten/emscripten.h>
+#define GLFW_INCLUDE_ES3
+#endif
+#include<GLFW/glfw3.h>
+
 #include "../input/key_input.h"
 #include "../input/mouse_input.h"
 
@@ -69,10 +75,13 @@ bool init(Config config_)
     }
 
     glfwWindowHint(GLFW_SAMPLES, config.samples);
+
+    #ifndef EMSCRIPTEN
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // To make MacOS happy; should not be needed
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
+    #endif
 
     window = glfwCreateWindow(config.width, config.height, config.title.c_str(), NULL, NULL);
 
@@ -92,10 +101,13 @@ bool init(Config config_)
 
     if (config.printOpenGLMessages)
     {
+        #ifdef EMSCRIPTEN
+        std::cout << "Config.printOpenGLMessages is not supported in EMSCRIPTEN\n";
+        #else
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(glMessageCallback, NULL);
+        #endif
     }
-
     if (!config.vsync)
         glfwSwapInterval(0); // a way to disable vsync.
 
@@ -111,51 +123,61 @@ bool init(Config config_)
     return true;
 }
 
+double prevTime;
+int framesInSecond;
+double remainingSecond;
+
+void mainLoop()
+{
+    double currTime = glfwGetTime();
+    double deltaTime = currTime - prevTime;
+
+    framesInSecond++;
+
+    if (config.showFPSInTitleBar && (remainingSecond -= deltaTime) <= 0)
+    {
+        std::string fps = std::to_string(framesInSecond) + "fps";
+        glfwSetWindowTitle(window, fps.c_str());
+        framesInSecond = 0;
+        remainingSecond = 1;
+    }
+
+    if (resized)
+    {
+        width = nextWidth;
+        height = nextHeight;
+        widthPixels = nextWidthPixels;
+        heightPixels = nextHeightPixels;
+        resized = false;
+        glViewport(0, 0, nextWidthPixels, nextHeightPixels);
+        onResize();
+    }
+
+    render(std::min(deltaTime, .1));
+    KeyInput::update();
+    MouseInput::update();
+
+    // Swap buffers
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+
+    prevTime = currTime;
+}
+
 void run()
 {
-    double prevTime = glfwGetTime();
-    int framesInSecond = 0;
-    double remainingSecond = 1;
+    prevTime = glfwGetTime();
+    framesInSecond = 0;
+    remainingSecond = 1;
 
-    do
-    {
-        double currTime = glfwGetTime();
-        double deltaTime = currTime - prevTime;
+    #ifdef EMSCRIPTEN
+    emscripten_set_main_loop(mainLoop, 0, 1);
+    #else
 
-        framesInSecond++;
-
-        if (config.showFPSInTitleBar && (remainingSecond -= deltaTime) <= 0)
-        {
-            std::string fps = std::to_string(framesInSecond) + "fps";
-            glfwSetWindowTitle(window, fps.c_str());
-            framesInSecond = 0;
-            remainingSecond = 1;
-        }
-
-        if (resized)
-        {
-            width = nextWidth;
-            height = nextHeight;
-            widthPixels = nextWidthPixels;
-            heightPixels = nextHeightPixels;
-            resized = false;
-            glViewport(0, 0, nextWidthPixels, nextHeightPixels);
-            onResize();
-        }
-
-        render(std::min(deltaTime, .1));
-        KeyInput::update();
-        MouseInput::update();
-
-        // Swap buffers
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-
-        prevTime = currTime;
-
-    } // Check if the window was closed
+    do mainLoop();
     while (!glfwWindowShouldClose(window));
 
+    #endif
     // glfwTerminate();
 }
 
