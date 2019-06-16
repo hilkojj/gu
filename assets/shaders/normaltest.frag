@@ -1,8 +1,10 @@
-#version 330 core
-out vec3 color;
+#version 300 es
+precision mediump float;
+
+out vec4 color;
 in vec3 v_normal;
 
 void main()
 {
-    color = v_normal;
+    color = vec4(v_normal, 1);
 }

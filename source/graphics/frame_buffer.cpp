@@ -66,7 +66,7 @@ void FrameBuffer::addColorTexture(GLuint format, GLuint magFilter, GLuint minFil
         return;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, id);
-    glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    // glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
     GLuint texId;
     glGenTextures(1, &texId);
@@ -75,7 +75,7 @@ void FrameBuffer::addColorTexture(GLuint format, GLuint magFilter, GLuint minFil
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texId, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId, 0);
     colorTexture = SharedTexture(new Texture(texId, width, height));
 
     unbindCurrent();
@@ -117,7 +117,7 @@ void FrameBuffer::addDepthTexture(GLuint magFilter, GLuint minFilter)
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texId, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texId, 0);
     depthTexture = SharedTexture(new Texture(texId, width, height));
 
     unbindCurrent();
