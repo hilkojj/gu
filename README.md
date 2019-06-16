@@ -1,4 +1,29 @@
-## Installation
+This is a C++ game library for creating games with OpenGL for Desktop and Web.
+
+## Web demo
+
+A simple online demo using the game library can be seen [here](https://hilkojj.github.io/cpp-game-utils/emscripten_test/gutest.html).
+
+Controls: WASD + mouse (click on the screen to lock cursor)
+
+## Usage
+
+Clone/fork [this template](https://github.com/hilkojj/cpp-game-utils-template) and follow the instructions in the readme to create a minimal project that uses this library.
+
+## Features
+
+- Graphics:
+    - Textures (loading .DDS files, TextureArrays, CubeMap etc.)
+    - FrameBuffers
+    - ShaderPrograms
+    - Meshes, Models & ModelInstances
+    - Cameras
+- Mouse & key input
+- Loading models from Blender (use [this Blender addon](https://github.com/hilkojj/blender_UBJSON_exporter) and load the exported files with the JsonModelLoader)
+- Some utilities (Math, TangentCalculator, etc.)
+
+## Manual installation
+(Not recommended, use the template above instead)
 
 1. Download GLFW (version 3.2.1) from [here](https://www.glfw.org/) and extract it to `./external/glfw-3.2.1`
 
@@ -10,6 +35,6 @@
 
 5. Add the library to a CMake project:
    
-    `add_subdirectory(cpp-game-utils/)`
+    `add_subdirectory(cpp-game-utils/library/)`
 
     `target_link_libraries(myprojectname gameutils)`
