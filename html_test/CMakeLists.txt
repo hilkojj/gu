@@ -23,6 +23,17 @@ add_library(glad ../external/glad/include/glad/glad.h ../external/glad/src/glad.
 target_include_directories(glad PUBLIC ../external/glad/include/)
 
 set_target_properties(gutest PROPERTIES SUFFIX ".html")
-set_target_properties(gutest PROPERTIES LINK_FLAGS "-s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm' --preload-file ../assets")
+set_target_properties(gutest PROPERTIES LINK_FLAGS "-s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm' --preload-file ../assets --shell-file index.html")
 
 target_link_libraries(gutest glad glm)
+
+# creates the "out" directory:
+add_custom_command(
+    TARGET gutest PRE_LINK
+    COMMAND ${CMAKE_COMMAND} -E make_directory out)
+
+add_custom_target(
+    removeOut
+    COMMAND ${CMAKE_COMMAND} -E remove_directory out)
+
+add_dependencies(gutest removeOut)

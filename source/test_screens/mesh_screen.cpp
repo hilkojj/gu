@@ -63,6 +63,7 @@ class MeshScreen : public Screen
         cam.update();
         */
 
+        camController.speedMultiplier = 1;
         camController.update(deltaTime); // free camera movement
 
         glClearColor(.4, .3, .7, 1);
