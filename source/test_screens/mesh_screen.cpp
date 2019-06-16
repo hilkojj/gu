@@ -27,7 +27,7 @@ class MeshScreen : public Screen
     float time;
 
     MeshScreen()
-        : shaderProgram(ShaderProgram::fromFiles("NormalTestShader", "assets/shaders/test.vert", "assets/shaders/test.frag")),
+        : shaderProgram(ShaderProgram::fromFiles("NormalTestShader", "assets/shaders/test.vert", "assets/shaders/normaltest.frag")),
           cam(PerspectiveCamera(.1, 100, 1, 1, 75)), camController(&cam)
     {
 
