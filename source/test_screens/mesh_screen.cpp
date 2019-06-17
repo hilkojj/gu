@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "glad/glad.h"
+#include "../gl_includes.h"
 #include "../graphics/3d/vert_buffer.h"
 #include "../graphics/3d/vert_attributes.h"
 #include "../graphics/3d/mesh.h"
@@ -14,6 +14,8 @@
 #include "../utils/camera/flying_camera_controller.h"
 #include "../utils/math_utils.h"
 #include "glm/glm.hpp"
+
+#include "graphics/3d/debug_line_renderer.h"
 using namespace glm;
 
 class MeshScreen : public Screen
@@ -25,6 +27,8 @@ class MeshScreen : public Screen
     PerspectiveCamera cam;
     FlyingCameraController camController;
     float time;
+
+    DebugLineRenderer lineRenderer;
 
     MeshScreen()
         : shaderProgram(ShaderProgram::fromFiles("NormalTestShader", "assets/shaders/test.vert", "assets/shaders/normaltest.frag")),
@@ -81,6 +85,13 @@ class MeshScreen : public Screen
 
         for (ModelPart part : modelInstance->model->parts)
             part.mesh->render();
+
+        glDisable(GL_BLEND);
+
+        lineRenderer.projection = cam.combined;
+        lineRenderer.line(glm::vec3(-300, 0, 0), glm::vec3(300, 0, 0), mu::X);
+        lineRenderer.line(glm::vec3(0, -300, 0), glm::vec3(0, 300, 0), mu::Y);
+        lineRenderer.line(glm::vec3(0, 0, -300), glm::vec3(0, 0, 300), mu::Z);
     }
 
     void onResize()

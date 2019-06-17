@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "glad/glad.h"
+#include "../../gl_includes.h"
 #include "vert_attributes.h"
 #include "mesh.h"
 

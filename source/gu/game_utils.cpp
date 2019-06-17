@@ -1,16 +1,4 @@
-
-#include <iostream>
-#include "glad/glad.h"
 #include "game_utils.h"
-
-#ifdef EMSCRIPTEN
-#include<emscripten/emscripten.h>
-#define GLFW_INCLUDE_ES3
-#endif
-#include<GLFW/glfw3.h>
-
-#include "../input/key_input.h"
-#include "../input/mouse_input.h"
 
 namespace gu
 {
@@ -169,7 +157,7 @@ void run()
     remainingSecond = 1;
 
     #ifdef EMSCRIPTEN
-    emscripten_set_main_loop(mainLoop, 99999, 1);
+    emscripten_set_main_loop(mainLoop, config.vsync ? 0 : 99999, 1);
     #else
 
     do mainLoop();

@@ -24,7 +24,7 @@ std::vector<unsigned char> File::readBinary(const char *path)
     std::ifstream stream(path, std::ios::binary);
 
     if (!stream.is_open())
-        throw std::runtime_error("Could not open: " + std::string(path));
+        throw gu_err("Could not open: " + std::string(path));
         
     return std::vector<unsigned char>(std::istreambuf_iterator<char>(stream), {});
 }

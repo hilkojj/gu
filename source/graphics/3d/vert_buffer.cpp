@@ -3,10 +3,11 @@
 #include <memory>
 #include <string>
 
-#include "glad/glad.h"
+#include "../../gl_includes.h"
 #include "vert_buffer.h"
 #include "mesh.h"
 #include "vert_attributes.h"
+#include "../../utils/gu_error.h"
 
 GLuint VertBuffer::currentlyBoundVao = 0;
 
@@ -41,7 +42,7 @@ void VertBuffer::bind()
 VertBuffer *VertBuffer::add(SharedMesh mesh)
 {
     if (mesh->vertBuffer)
-        throw std::runtime_error(mesh->name + " was already added to a VertBuffer");
+        throw gu_err(mesh->name + " was already added to a VertBuffer");
 
     std::cout << "Adding " << mesh->name << " to VertBuffer\n";
     meshes.push_back(mesh);
@@ -59,7 +60,7 @@ VertBuffer *VertBuffer::add(SharedMesh mesh)
 void VertBuffer::upload(bool disposeOfflineData)
 {
     if (vboId)
-        throw std::runtime_error("VertBuffer already uploaded");
+        throw gu_err("VertBuffer already uploaded");
 
     std::cout << "Uploading vbo\n";
     bind();
@@ -76,7 +77,7 @@ void VertBuffer::upload(bool disposeOfflineData)
     for (std::weak_ptr<Mesh> m : meshes)
     {
         if (m.expired())
-            throw std::runtime_error("Trying to upload a VertBuffer whose Meshes are already destroyed");
+            throw gu_err("Trying to upload a VertBuffer whose Meshes are already destroyed");
 
         SharedMesh mesh = m.lock();
         GLuint

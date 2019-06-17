@@ -2,7 +2,7 @@
 #define TEXTURE_H
 
 #include <memory>
-#include "glad/glad.h"
+#include "../gl_includes.h"
 #include "shader_program.h"
 
 class Texture;

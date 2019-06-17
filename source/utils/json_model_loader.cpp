@@ -4,6 +4,7 @@
 #include "../graphics/3d/model.h"
 #include "../graphics/3d/vert_attributes.h"
 #include "../files/file.h"
+#include "gu_error.h"
 using json = nlohmann::json;
 
 std::vector<SharedModel> JsonModelLoader::fromJsonFile(const char *path, VertAttributes *predefinedAttrs)
@@ -93,7 +94,7 @@ VertAttr JsonModelLoader::attrFromString(std::string str)
         return VertAttributes::POSITION;
     if (str == "NORMAL")
         return VertAttributes::NORMAL;
-    else throw std::runtime_error("Vertex Attribute " + str + " not recognized. (" + id + ")");
+    else throw gu_err("Vertex Attribute " + str + " not recognized. (" + id + ")");
 }
 
 void JsonModelLoader::loadModels()

@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include "glad/glad.h"
+#include "../gl_includes.h"
 
 class CubeMap;
 

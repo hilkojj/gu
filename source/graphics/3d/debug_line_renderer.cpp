@@ -14,12 +14,14 @@ static std::string vertSource = MULTILINE(
 
     void main()
     {
-        gl_Position = MVP * vec4(nr == 0 ? p0 : p1, 1);
+        gl_Position = MVP * vec4(nr == 0. ? p0 : p1, 1);
     }
 
 );
 
 static std::string fragSource = MULTILINE(
+
+    precision mediump float;
 
     uniform vec3 u_color;
     out vec3 color;
@@ -34,7 +36,7 @@ static std::string fragSource = MULTILINE(
 } // namespace
 
 DebugLineRenderer::DebugLineRenderer()
-    : shaderProgram("DebugLineShader", ("#version 330 core\n" + vertSource).c_str(), ("#version 330 core\n" + fragSource).c_str())
+    : shaderProgram("DebugLineShader", ("#version 300 es\n" + vertSource).c_str(), ("#version 300 es\n" + fragSource).c_str())
 {
     VertAttributes attrs;
     attrs.add({"nr", 1, GL_FALSE});

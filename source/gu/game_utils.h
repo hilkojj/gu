@@ -2,8 +2,9 @@
 #define GAME_UTILS_H
 
 #include <iostream>
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
+#include "../gl_includes.h"
+#include "../input/key_input.h"
+#include "../input/mouse_input.h"
 #include "screen.h"
 
 namespace gu

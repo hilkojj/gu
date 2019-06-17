@@ -5,6 +5,7 @@
 #include "mesh.h"
 #include "vert_buffer.h"    
 #include "vert_attributes.h"
+#include "utils/gu_error.h"
 
 SharedMesh Mesh::quad;
 
@@ -50,7 +51,7 @@ void Mesh::disposeOfflineData()
 
 void Mesh::render()
 {
-    if (!vertBuffer || !vertBuffer->isUploaded()) throw std::runtime_error(name + " is not uploaded. Upload it first with a VertBuffer");
+    if (!vertBuffer || !vertBuffer->isUploaded()) throw gu_err(name + " is not uploaded. Upload it first with a VertBuffer");
     vertBuffer->bind();
     glDrawElements(
         mode,

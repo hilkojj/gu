@@ -3,7 +3,7 @@
 #define SHADER_PROGRAM_H
 
 #include <string>
-#include "glad/glad.h"
+#include "../gl_includes.h"
 
 class ShaderProgram
 {

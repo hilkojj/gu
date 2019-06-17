@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "glad/glad.h"
+#include "../gl_includes.h"
 #include "../graphics/3d/vert_attributes.h"
 #include "../gu/screen.h"
 #include "../graphics/shader_program.h"

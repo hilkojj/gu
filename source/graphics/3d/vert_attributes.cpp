@@ -4,7 +4,8 @@
 #include <string>
 
 #include "vert_attributes.h"
-#include "glad/glad.h"
+#include "../../gl_includes.h"
+#include "../../utils/gu_error.h"
 
 const struct VertAttr
     VertAttributes::POSITION = {"POSITION", 3, GL_FALSE},
@@ -55,7 +56,7 @@ unsigned int VertAttributes::getOffset(const VertAttr &attr) const
             return offset;
         offset += a.size;
     }
-    throw std::runtime_error(attr.name + " is not in VertAttributes, add it first with .add(attribute)");
+    throw gu_err(attr.name + " is not in VertAttributes, add it first with .add(attribute)");
 }
 
 bool VertAttributes::contains(const VertAttr &attr) const

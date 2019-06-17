@@ -2,7 +2,7 @@
 #define FRAME_BUFFER_H
 
 #include "texture.h"
-#include "glad/glad.h"
+#include "../gl_includes.h"
 
 class FrameBuffer
 {
