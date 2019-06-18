@@ -18,7 +18,15 @@ GLuint create()
 FrameBuffer::FrameBuffer(GLuint width, GLuint height) : FrameBuffer(width, height, 0)
 {}
 
-FrameBuffer::FrameBuffer(GLuint width, GLuint height, GLuint samples) : id(create()), width(width), height(height), samples(samples)
+FrameBuffer::FrameBuffer(GLuint width, GLuint height, GLuint samples_)
+    : id(create()), width(width), height(height),
+      samples(
+          #ifdef EMSCRIPTEN
+          0
+          #else
+          samples_
+          #endif
+      )
 {
     std::cout << "FrameBuffer " << id << " created with " << samples << " samples\n";
 
@@ -136,11 +144,31 @@ void FrameBuffer::addDepthBuffer()
     glBindRenderbuffer(GL_RENDERBUFFER, id);
 
     if (!sampled)
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, width, height);
     else
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, width, height);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT32F, width, height);
 
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id);
 
     unbindCurrent();
+}
+
+void FrameBuffer::bindAndGetPixels(GLenum format, std::vector<GLubyte> &out, unsigned int outOffset)
+{
+    GLuint components = -1;
+    switch(format)
+    {
+        case GL_BGR:
+        case GL_RGB:
+            components = 3; break;
+        case GL_BGRA:
+        case GL_RGBA:
+            components = 4; break;
+        case GL_ALPHA:
+        case GL_LUMINANCE:
+            components = 1; break;
+    }
+    out.resize(components * width * height + outOffset);
+    bind();
+    glReadPixels(0, 0, width, height, format, GL_UNSIGNED_BYTE, &out[outOffset]);
 }

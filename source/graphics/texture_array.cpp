@@ -2,12 +2,56 @@
 #include <iostream>
 #include "texture_array.h"
 #include "texture.h"
+#include "frame_buffer.h"
 #include "../utils/gu_error.h"
+#include "../utils/quad_renderer.h"
+
+SharedTexArray TextureArray::fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLsizei depth)
+{
+    GLuint id;
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, id);
+
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, format, width, height, depth, 0, format, GL_UNSIGNED_BYTE, data);
+
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // don't forget to enable mipmaping
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    return SharedTexArray(new TextureArray(id, width, height, depth));
+}
 
 SharedTexArray TextureArray::fromDDSFiles(const std::vector<std::string> &paths)
 {
     if (paths.size() == 0)
         throw gu_err("TextureArray::fromDDSFiles needs at least 1 DDS file");
+
+    #if EMSCRIPTEN
+    // DIRTY HACK ALERT (read the comment in header file)
+    FrameBuffer *fb = NULL;
+    std::vector<GLubyte> data;
+    int width_, height_;
+    for (auto p : paths)
+    {
+        SharedTexture tex = Texture::fromDDSFile(p.c_str());
+        if (!fb)
+        {
+            fb = new FrameBuffer(tex->width, tex->height);
+            fb->addColorTexture(GL_RGBA, GL_NEAREST, GL_NEAREST);
+            fb->bind();
+        }
+        width_ = tex->width;
+        height_ = tex->height;
+        QuadRenderer::render(tex);
+        fb->bindAndGetPixels(GL_RGBA, data, data.size());
+    }
+    fb->unbind();
+    delete fb;
+    return TextureArray::fromByteData(&data[0], GL_RGBA, width_, height_, paths.size());
+    #endif
 
     GLuint id;
     glGenTextures(1, &id);

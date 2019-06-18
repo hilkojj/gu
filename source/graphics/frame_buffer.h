@@ -16,6 +16,10 @@ class FrameBuffer
 
     FrameBuffer(GLuint width, GLuint height);
 
+    /**
+     * Constructor for Multisampled FrameBuffer.
+     * NOTE: not supported in WebGL, samples will automatically be set to 0.
+     */
     FrameBuffer(GLuint width, GLuint height, GLuint samples);
 
     ~FrameBuffer();
@@ -32,6 +36,9 @@ class FrameBuffer
     void addDepthTexture(GLuint magFilter, GLuint minFilter);
 
     void addDepthBuffer();
+
+    // function to get the color pixels. Note: it binds the FrameBuffer
+    void bindAndGetPixels(GLenum format, std::vector<GLubyte> &out, unsigned int outOffset);
 
   private:
     FrameBuffer *sampled = NULL;
