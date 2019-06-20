@@ -1,6 +1,8 @@
 #ifndef FRAME_BUFFER_H
 #define FRAME_BUFFER_H
 
+#include <vector>
+
 #include "texture.h"
 #include "../gl_includes.h"
 
