@@ -53,12 +53,22 @@ void Mesh::render()
 {
     if (!vertBuffer || !vertBuffer->isUploaded()) throw gu_err(name + " is not uploaded. Upload it first with a VertBuffer");
     vertBuffer->bind();
+    #ifdef EMSCRIPTEN
     glDrawElements(
         mode,
         nrOfIndices,
         GL_UNSIGNED_SHORT,
         (void *)(uintptr_t)indicesBufferOffset
     );
+    #else
+    glDrawElementsBaseVertex(
+        mode,
+        nrOfIndices,
+        GL_UNSIGNED_SHORT,
+        (void *)(uintptr_t)indicesBufferOffset,
+        baseVertex
+    );
+    #endif
 }
 
 Mesh::~Mesh()

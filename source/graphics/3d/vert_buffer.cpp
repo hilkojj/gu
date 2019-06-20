@@ -2,6 +2,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <limits>
 
 #include "../../gl_includes.h"
 #include "vert_buffer.h"
@@ -44,7 +45,16 @@ VertBuffer *VertBuffer::add(SharedMesh mesh)
     if (mesh->vertBuffer)
         throw gu_err(mesh->name + " was already added to a VertBuffer");
 
-    std::cout << "Adding " << mesh->name << " to VertBuffer\n";
+    #ifdef EMSCRIPTEN
+    if (next || nrOfVerts + mesh->nrOfVertices > std::numeric_limits<GLushort>::max())
+    {
+        if (!next) next = VertBuffer::with(attrs);
+        next->add(mesh);
+        return this;
+    }
+    #endif
+
+    std::cout << "Adding " << mesh->name << " to VertBuffer " << vaoId << "\n";
     meshes.push_back(mesh);
 
     mesh->baseVertex = nrOfVerts;
@@ -84,8 +94,15 @@ void VertBuffer::upload(bool disposeOfflineData)
             vertsSize = mesh->nrOfVertices * sizeof(GLfloat) * vertSize,
             indicesSize = mesh->nrOfIndices * sizeof(GLushort);
 
+        auto &indices = mesh->indices;
+        #if EMSCRIPTEN
+        if (!disposeOfflineData) indices = *&indices;
+
+        for (auto &i : indices) i += mesh->baseVertex;
+        #endif
+
         glBufferSubData(GL_ARRAY_BUFFER, vertsOffset, vertsSize, mesh->vertices.data());
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indicesOffset, indicesSize, mesh->indices.data());
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indicesOffset, indicesSize, indices.data());
 
         if (disposeOfflineData) mesh->disposeOfflineData();
 
@@ -94,6 +111,7 @@ void VertBuffer::upload(bool disposeOfflineData)
     }
     setAttrPointersAndEnable();
     uploaded = true;
+    if (next) next->upload(disposeOfflineData);
 
     /* To confirm the uploaded data is correct:
 

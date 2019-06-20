@@ -38,6 +38,9 @@ class VertBuffer
 
   private:
 
+    // in WebGL there's a limit for the amount of vertices in a VertBuffer, when exceeding this amount the remaining meshes will be uploaded to 'next'
+    VertBuffer *next = NULL;
+
     VertBuffer(VertAttributes &attributes);
 
     // returns wether the stored vertex data is actually used by Meshes
