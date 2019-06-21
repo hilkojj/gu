@@ -33,7 +33,9 @@ Clone/fork [this template](https://github.com/hilkojj/cpp-game-utils-template) a
 
 4. Download `json.hpp` from [JSON for Modern C++ (version 3.6.1)](https://github.com/nlohmann/json/releases/tag/v3.6.1) and place it in `./external`
 
-5. Add the library to a CMake project:
+5. Download [ImGUI version 1.71](https://github.com/ocornut/imgui/archive/v1.71.zip) and extract to `./external`
+
+6. Add the library to a CMake project:
    
     `add_subdirectory(cpp-game-utils/library/)`
 

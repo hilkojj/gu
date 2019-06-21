@@ -1,5 +1,10 @@
 #include "game_utils.h"
 
+#include "imgui.h"
+
+#include "examples/imgui_impl_glfw.h"
+#include "examples/imgui_impl_opengl3.h"
+
 namespace gu
 {
 
@@ -103,6 +108,13 @@ bool init(Config config_)
     glfwGetWindowSize(window, &nextWidth, &nextHeight);
     glfwGetFramebufferSize(window, &nextWidthPixels, &nextHeightPixels);
 
+    ImGui::CreateContext();
+    const char* glsl_version = "#version 300 es";
+
+    // Initialize helper Platform and Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
     KeyInput::setInputWindow(window);
     MouseInput::setInputWindow(window);
 
@@ -143,6 +155,19 @@ void mainLoop()
     KeyInput::update();
     MouseInput::update();
 
+    // Feed inputs to dear imgui, start new frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // Any application code here
+    bool showDemoWindow = true;
+    ImGui::ShowDemoWindow(&showDemoWindow);
+
+    // Render dear imgui into screen
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
     // Swap buffers
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -162,6 +187,8 @@ void run()
 
     do mainLoop();
     while (!glfwWindowShouldClose(window));
+
+    ImGui_ImplGlfw_Shutdown();
 
     #endif
     // glfwTerminate();

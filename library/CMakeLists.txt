@@ -37,4 +37,31 @@ add_subdirectory(../external/glm-0.9.9.5/glm ./bin/glm)
 include_directories(../external/glm-0.9.9.5/glm)
 target_link_libraries(gameutils glm)
 
+
+# ---IMGUI---
+
+set(IMGUI_DIR ../external/imgui-1.71)
+file(GLOB IMGUI_SOURCES ${IMGUI_DIR}/*.cpp)
+file(GLOB IMGUI_HEADERS ${IMGUI_DIR}/*.h)
+
+add_library(imgui ${IMGUI_SOURCES} ${IMGUI_HEADERS}
+    ${IMGUI_DIR}/examples/imgui_impl_glfw.h
+    ${IMGUI_DIR}/examples/imgui_impl_glfw.cpp
+    ${IMGUI_DIR}/examples/imgui_impl_opengl3.h
+    ${IMGUI_DIR}/examples/imgui_impl_opengl3.cpp
+)
+
+if (NOT DEFINED EMSCRIPTEN)
+    add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD) # tell IMGUI that we use glad on desktop
+    target_link_libraries(imgui glad)
+else ()
+    add_definitions(-DIMGUI_IMPL_OPENGL_ES3)
+endif ()
+
+target_include_directories(imgui PUBLIC ${IMGUI_DIR})
+target_link_libraries(imgui glfw)
+target_link_libraries(gameutils imgui)
+
+
+
 target_include_directories(gameutils PUBLIC ../source/)
