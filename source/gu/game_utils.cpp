@@ -1,9 +1,10 @@
 #include "game_utils.h"
-
-#include "imgui.h"
+#include "../utils/math_utils.h"
 
 #include "examples/imgui_impl_glfw.h"
 #include "examples/imgui_impl_opengl3.h"
+
+#include "node_editor.h"
 
 namespace gu
 {
@@ -56,6 +57,16 @@ void onResize()
 
 
 } // namespace
+
+Nodes nodes;
+NodeEditor nodeEditor(nodes, {
+    std::make_shared<NodeType_>(NodeType_{
+        "test1", "very nice", 
+    }),
+    std::make_shared<NodeType_>(NodeType_{
+        "test2", "not so nice"
+    })
+});
 
 bool init(Config config_)
 {
@@ -111,8 +122,11 @@ bool init(Config config_)
     ImGui::CreateContext();
     const char* glsl_version = "#version 300 es";
 
+    ImGui::GetIO().ConfigWindowsMoveFromTitleBarOnly = true;
+    ImGui::GetIO().IniFilename = NULL;
+
     // Initialize helper Platform and Renderer bindings
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(window, false);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     KeyInput::setInputWindow(window);
@@ -163,6 +177,14 @@ void mainLoop()
     // Any application code here
     bool showDemoWindow = true;
     ImGui::ShowDemoWindow(&showDemoWindow);
+
+    ImGuiWindowFlags window_flags = 0;// ImGuiWindowFlags_NoMove;
+
+    ImGui::Begin("node-editor-test");
+
+    nodeEditor.draw(ImGui::GetWindowDrawList());
+
+    ImGui::End();
 
     // Render dear imgui into screen
     ImGui::Render();

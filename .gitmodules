@@ -1,0 +1,3 @@
+[submodule "external/node-editor"]
+	path = external/node-editor
+	url = https://github.com/hilkojj/node-editor.git

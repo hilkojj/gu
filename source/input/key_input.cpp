@@ -1,6 +1,8 @@
 
 #include <map>
 #include "key_input.h"
+#include "imgui.h"
+#include "examples/imgui_impl_glfw.h"
 
 namespace KeyInput
 {
@@ -18,8 +20,13 @@ enum KeyStatus
 
 std::map<int, KeyStatus> keyStatuses;
 
-void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void glfwCallbackKey(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) // glfwCallbackCharacter() does not get called on Chrome when spacebar is pressed, so do it manually
+        ImGui::GetIO().AddInputCharacter(' ');
+
     if (action == GLFW_REPEAT)
         return;
 
@@ -28,11 +35,18 @@ void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mod
     keyStatuses[key] = action == GLFW_PRESS ? JUST_PRESSED : JUST_RELEASED;
 }
 
+void glfwCallbackCharacter(GLFWwindow *window, unsigned int c)
+{
+    if (c == ' ') return; // spacebar is handled in glfwCallbackKey()
+    ImGui_ImplGlfw_CharCallback(window, c);
+}
+
 } // namespace
 
 void setInputWindow(GLFWwindow* window)
 {
-    glfwSetKeyCallback(window, KeyInput::glfwCallback);
+    glfwSetKeyCallback(window, glfwCallbackKey);
+    glfwSetCharCallback(window, glfwCallbackCharacter);
 }
 
 void update()

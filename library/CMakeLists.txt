@@ -58,10 +58,24 @@ else ()
     add_definitions(-DIMGUI_IMPL_OPENGL_ES3)
 endif ()
 
+add_definitions(-DIMGUI_DEFINE_MATH_OPERATORS)
+
 target_include_directories(imgui PUBLIC ${IMGUI_DIR})
 target_link_libraries(imgui glfw)
 target_link_libraries(gameutils imgui)
 
+
+
+# ---Node-editor---
+set(NODE_EDITOR_DIR ../external/node-editor)
+file(GLOB NODE_EDITOR_SOURCES ${NODE_EDITOR_DIR}/*.cpp)
+file(GLOB NODE_EDITOR_HEADERS ${NODE_EDITOR_DIR}/*.h)
+
+add_library(node-editor ${NODE_EDITOR_SOURCES} ${NODE_EDITOR_HEADERS})
+
+target_include_directories(node-editor PUBLIC ${NODE_EDITOR_DIR})
+target_link_libraries(node-editor imgui)
+target_link_libraries(gameutils node-editor)
 
 
 target_include_directories(gameutils PUBLIC ../source/)

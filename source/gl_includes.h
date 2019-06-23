@@ -1,7 +1,7 @@
 
 #include "glad/glad.h"
-#include<GLFW/glfw3.h>
+#include <GLFW/glfw3.h>
 
 #ifdef EMSCRIPTEN
-#include<emscripten/emscripten.h>
+#include <emscripten/emscripten.h>
 #endif

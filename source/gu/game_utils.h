@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "../gl_includes.h"
+#include "imgui_includes.h"
 #include "../input/key_input.h"
 #include "../input/mouse_input.h"
 #include "screen.h"
