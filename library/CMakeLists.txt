@@ -73,6 +73,9 @@ file(GLOB NODE_EDITOR_HEADERS ${NODE_EDITOR_DIR}/*.h)
 
 add_library(node-editor ${NODE_EDITOR_SOURCES} ${NODE_EDITOR_HEADERS})
 
+set_property(TARGET node-editor PROPERTY CXX_STANDARD 17)
+set_property(TARGET node-editor PROPERTY CXX_STANDARD_REQUIRED ON)
+
 target_include_directories(node-editor PUBLIC ${NODE_EDITOR_DIR})
 target_link_libraries(node-editor imgui)
 target_link_libraries(gameutils node-editor)

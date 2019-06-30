@@ -8,7 +8,7 @@
 FlyingCameraController::FlyingCameraController(PerspectiveCamera *cam)
 : cam(cam)
 {
-    MouseInput::setLockedMode(true);
+//    MouseInput::setLockedMode(true);
 }
 
 void FlyingCameraController::update(double deltaTime)

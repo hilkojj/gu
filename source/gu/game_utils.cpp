@@ -58,15 +58,51 @@ void onResize()
 
 } // namespace
 
+NodeValueType nodeValType = createNodeValueType({
+    "vec3", vec3(.1, 0, 1)
+});
+
+NodeValueType nodeValType1 = createNodeValueType({
+    "float", vec3(0, .8, .4)
+});
+
 Nodes nodes;
 NodeEditor nodeEditor(nodes, {
-    std::make_shared<NodeType_>(NodeType_{
-        "test1", "very nice", 
+    createNodeType({
+        "test1", "very nice",
+        // inputs:
+        {
+            createNodeConnector({
+                "yees", "cool", nodeValType
+            }),
+            createNodeConnector({
+                "yees2", "cool2", nodeValType1
+            })
+        },
+        // outputs:
+        {
+            createNodeConnector({
+                "out", "mmm", nodeValType
+            })
+        }
     }),
-    std::make_shared<NodeType_>(NodeType_{
-        "test2", "not so nice"
+    createNodeType({
+        "group", "hello",
+        // inputs:
+        {
+            createNodeConnector({
+                "yees", "cool", nodeValType
+            })
+        },
+        // outputs:
+        {
+            createNodeConnector({
+                "out", "mmm", nodeValType
+            })
+        },
+        true // can have children
     })
-});
+}, {nodeValType, nodeValType1});
 
 bool init(Config config_)
 {
