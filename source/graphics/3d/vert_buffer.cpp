@@ -19,8 +19,7 @@ VertBuffer *VertBuffer::with(VertAttributes &attributes)
 
 void VertBuffer::uploadSingleMesh(SharedMesh mesh)
 {
-    VertBuffer *buffer = with(mesh->attributes);
-    buffer->add(mesh)->upload(false);
+    with(mesh->attributes)->add(mesh)->upload(false);
 }
 
 VertBuffer::VertBuffer(VertAttributes &attributes)
@@ -109,7 +108,7 @@ void VertBuffer::upload(bool disposeOfflineData)
         vertsOffset += vertsSize;
         indicesOffset += indicesSize;
     }
-    setAttrPointersAndEnable();
+    setAttrPointersAndEnable(attrs);
     uploaded = true;
     if (next) next->upload(disposeOfflineData);
 
@@ -137,23 +136,44 @@ void VertBuffer::upload(bool disposeOfflineData)
     // */
 }
 
-void VertBuffer::setAttrPointersAndEnable()
+void VertBuffer::setAttrPointersAndEnable(VertAttributes &attrs, unsigned int divisor, unsigned int locationOffset)
 {
     GLint offset = 0;
-    for (int i = 0; i < attrs.nrOfAttributes(); i++)
+    for (int i = locationOffset; i < locationOffset + attrs.nrOfAttributes(); i++)
     {
-        VertAttr &attr = attrs.get(i);
+        VertAttr &attr = attrs.get(i - locationOffset);
         glVertexAttribPointer(
             i,                                    // location of attribute that can be used in vertex shaders. eg: 'layout(location = 0) in vec3 position'
             attr.size,                            // size.
             GL_FLOAT,                             // type
             attr.normalized ? GL_TRUE : GL_FALSE, // normalized?
-            vertSize * sizeof(GLfloat),           // stride
+            attrs.getVertSize() * sizeof(GLfloat),// stride
             (void *)(uintptr_t)offset             // offset
         );
         glEnableVertexAttribArray(i);
         offset += attr.size * sizeof(GLfloat);
+
+        if (divisor)
+        {
+            #ifdef EMSCRIPTEN
+            EM_ASM({
+                gl.vertexAttribDivisor($0, $1);
+            }, i, divisor);
+            #else
+            glVertexAttribDivisor(i, divisor);
+            #endif
+        }
     }
+}
+
+void VertBuffer::uploadPerInstanceData(VertData data, unsigned int advanceRate)
+{   // todo: make updating data more efficient.
+    bind();
+    if (!perInstanceDataVboId) glGenBuffers(1, &perInstanceDataVboId);
+
+    glBindBuffer(GL_ARRAY_BUFFER, perInstanceDataVboId);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.vertices.size(), &data.vertices[0], GL_STATIC_DRAW);
+    setAttrPointersAndEnable(data.attributes, advanceRate, attrs.nrOfAttributes());
 }
 
 void VertBuffer::onMeshDestroyed()

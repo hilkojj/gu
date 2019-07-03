@@ -5,7 +5,7 @@
 #include "mesh.h"
 #include "vert_buffer.h"    
 #include "vert_attributes.h"
-#include "utils/gu_error.h"
+#include "../../utils/gu_error.h"
 
 SharedMesh Mesh::quad;
 
@@ -29,14 +29,16 @@ SharedMesh Mesh::getQuad()
     return quad;
 }
 
+VertData::VertData(VertAttributes attrs, std::vector<float> vertices)
+    : attributes(attrs), vertices(vertices)
+{}
+
 Mesh::Mesh(std::string name, unsigned int nrOfVertices, unsigned int nrOfIndices, VertAttributes attributes)
 
     : name(name), nrOfVertices(nrOfVertices), nrOfIndices(nrOfIndices),
 
-      vertices(nrOfVertices * attributes.getVertSize()),
-      indices(nrOfIndices),
-
-      attributes(attributes)
+      VertData(attributes, std::vector<float>(nrOfVertices * attributes.getVertSize())),
+      indices(nrOfIndices)
 {
     std::cout << "Mesh created: " << name << std::endl;
 }
@@ -71,6 +73,34 @@ void Mesh::render()
     #endif
 }
 
+void Mesh::renderInstances(GLsizei count)
+{
+    if (!vertBuffer || !vertBuffer->isUploaded()) throw gu_err(name + " is not uploaded. Upload it first with a VertBuffer");
+    vertBuffer->bind();
+    #ifdef EMSCRIPTEN
+    EM_ASM({
+        gl.drawElementsInstanced($0, $1, $2, $3, $4);
+    },
+    // glDrawElementsInstanced(
+        mode,
+        nrOfIndices,
+        GL_UNSIGNED_SHORT,
+        (void *)(uintptr_t)indicesBufferOffset,
+        count
+    // );
+    );
+    #else
+    glDrawElementsInstancedBaseVertex(
+        mode,
+        nrOfIndices,
+        GL_UNSIGNED_SHORT,
+        (void *)(uintptr_t)indicesBufferOffset,
+        count,
+        baseVertex
+    );
+    #endif
+}
+
 Mesh::~Mesh()
 {
     std::cout << "Mesh destroyed: " << name << std::endl;
@@ -79,7 +109,7 @@ Mesh::~Mesh()
         vertBuffer->onMeshDestroyed();
 }
 
-vec4 Mesh::getVec4(int vertI, int attrOffset)
+vec4 VertData::getVec4(int vertI, int attrOffset)
 {
     return vec4(
         vertices[vertI * attributes.getVertSize() + attrOffset],
@@ -89,7 +119,7 @@ vec4 Mesh::getVec4(int vertI, int attrOffset)
     );
 }
 
-vec3 Mesh::getVec3(int vertI, int attrOffset)
+vec3 VertData::getVec3(int vertI, int attrOffset)
 {
     return vec3(
         vertices[vertI * attributes.getVertSize() + attrOffset],
@@ -98,7 +128,7 @@ vec3 Mesh::getVec3(int vertI, int attrOffset)
     );
 }
 
-vec2 Mesh::getVec2(int vertI, int attrOffset)
+vec2 VertData::getVec2(int vertI, int attrOffset)
 {
     return vec2(
         vertices[vertI * attributes.getVertSize() + attrOffset],
@@ -106,12 +136,12 @@ vec2 Mesh::getVec2(int vertI, int attrOffset)
     );
 }
 
-float Mesh::getFloat(int vertI, int attrOffset)
+float VertData::getFloat(int vertI, int attrOffset)
 {
     return vertices[vertI * attributes.getVertSize() + attrOffset];
 }
 
-void Mesh::setVec4(const vec4 &v, int vertI, int attrOffset)
+void VertData::setVec4(const vec4 &v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] = v.x;
     vertices[vertI * attributes.getVertSize() + attrOffset + 1] = v.y;
@@ -120,25 +150,25 @@ void Mesh::setVec4(const vec4 &v, int vertI, int attrOffset)
 }
 
 
-void Mesh::setVec3(const vec3 &v, int vertI, int attrOffset)
+void VertData::setVec3(const vec3 &v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] = v.x;
     vertices[vertI * attributes.getVertSize() + attrOffset + 1] = v.y;
     vertices[vertI * attributes.getVertSize() + attrOffset + 2] = v.z;
 }
 
-void Mesh::setVec2(const vec2 &v, int vertI, int attrOffset)
+void VertData::setVec2(const vec2 &v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] = v.x;
     vertices[vertI * attributes.getVertSize() + attrOffset + 1] = v.y;
 }
 
-void Mesh::setFloat(float v, int vertI, int attrOffset)
+void VertData::setFloat(float v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] = v;
 }
 
-void Mesh::addVec4(const vec4 &v, int vertI, int attrOffset)
+void VertData::addVec4(const vec4 &v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] += v.x;
     vertices[vertI * attributes.getVertSize() + attrOffset + 1] += v.y;
@@ -146,27 +176,27 @@ void Mesh::addVec4(const vec4 &v, int vertI, int attrOffset)
     vertices[vertI * attributes.getVertSize() + attrOffset + 3] += v.w;
 }
 
-void Mesh::addVec3(const vec3 &v, int vertI, int attrOffset)
+void VertData::addVec3(const vec3 &v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] += v.x;
     vertices[vertI * attributes.getVertSize() + attrOffset + 1] += v.y;
     vertices[vertI * attributes.getVertSize() + attrOffset + 2] += v.z;
 }
 
-void Mesh::addVec2(const vec2 &v, int vertI, int attrOffset)
+void VertData::addVec2(const vec2 &v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] += v.x;
     vertices[vertI * attributes.getVertSize() + attrOffset + 1] += v.y;
 }
 
-void Mesh::normalizeVec3Attribute(int attrOffset)
+void VertData::normalizeVec3Attribute(int attrOffset)
 {
-    for (int vertI = 0; vertI < nrOfVertices; vertI++)
+    for (int vertI = 0; vertI < vertices.size() / attributes.getVertSize(); vertI++)
         setVec3(normalize(getVec3(vertI, attrOffset)), vertI, attrOffset);
 }
 
-void Mesh::normalizeVec2Attribute(int attrOffset)
+void VertData::normalizeVec2Attribute(int attrOffset)
 {
-    for (int vertI = 0; vertI < nrOfVertices; vertI++)
+    for (int vertI = 0; vertI < vertices.size() / attributes.getVertSize(); vertI++)
         setVec2(normalize(getVec2(vertI, attrOffset)), vertI, attrOffset);
 }

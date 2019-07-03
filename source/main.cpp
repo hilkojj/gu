@@ -4,6 +4,7 @@
 
 #include "test_screens/triangle_screen.cpp"
 #include "test_screens/mesh_screen.cpp"
+#include "test_screens/instanced_mesh_screen.cpp"
 #include "test_screens/web_assembly_screen.cpp"
 
 int main()

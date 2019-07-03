@@ -8,6 +8,9 @@
 #include "vert_attributes.h"
 #include "mesh.h"
 
+/**
+ * A class that encapsulates OpenGL VertexArrayObjects, VertexBufferObjects, IndexBufferObjects and Instanced Arrays
+ */
 class VertBuffer
 {
   public:
@@ -32,7 +35,16 @@ class VertBuffer
 
     void bind();
 
-    void onMeshDestroyed();
+    void onMeshDestroyed(); // Called by ~Mesh()
+
+    /**
+     * upload vertex-attributes that do not advance per vertex, but per instance (glDrawElementsInstanced() & glVertexAttribDivisor())
+     *
+     * useful for when you want to render a mesh multiple times in 1 draw call, but each on a different position.
+     *
+     * if advanceRate == 1 then the attributes are per instance, if advanceRate == 2 then the attributes are per 2 instances etc..
+     **/
+    void uploadPerInstanceData(VertData data, unsigned int advanceRate=1);
 
     ~VertBuffer();
 
@@ -46,10 +58,12 @@ class VertBuffer
     // returns wether the stored vertex data is actually used by Meshes
     bool inUse() const;
 
-    void setAttrPointersAndEnable();
+    void setAttrPointersAndEnable(VertAttributes &attributes, unsigned int divisor=0, unsigned int locationOffset=0);
 
     // ids of the VertexArrayObject, VertexBufferObject and IndexBufferObject
     GLuint vaoId = 0, vboId = 0, iboId;
+
+    GLuint perInstanceDataVboId = 0;
     
     GLuint nrOfVerts = 0, vertSize = 0, nrOfIndices = 0;
 

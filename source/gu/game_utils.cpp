@@ -106,6 +106,14 @@ bool init(Config config_)
     KeyInput::setInputWindow(window);
     MouseInput::setInputWindow(window);
 
+    #ifdef EMSCRIPTEN
+    // make the WebGL context accessible in Javascript using 'window.gl' or 'gl'
+    EM_ASM({
+        window["gl"] = document.getElementById(UTF8ToString($0)).getContext("webgl2");
+
+    }, config.htmlCanvasId.c_str());
+    #endif
+
     return true;
 }
 

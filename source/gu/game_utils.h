@@ -12,15 +12,15 @@ namespace gu
 
 struct Config
 {
-
-    Config() : vsync(false), title("Game"), width(1600), height(900), samples(4), showFPSInTitleBar(true), printOpenGLMessages(true) {}
-
-    std::string title;
-    int width, height, samples;
+    std::string title = "Game";
+    int width = 1600, height = 900, samples = 4;
     bool 
-        vsync, 
-        showFPSInTitleBar,
-        printOpenGLMessages;
+        vsync = false,
+        showFPSInTitleBar = true,
+        printOpenGLMessages = true;
+
+    // the id of the HTML <canvas> element:
+    std::string htmlCanvasId = "canvas";
 };
 
 extern Config config;

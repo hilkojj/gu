@@ -11,7 +11,7 @@ struct VertAttr
 {
     std::string name;
     GLint size;
-    GLboolean normalized;
+    GLboolean normalized = GL_FALSE;
 };
 
 class VertAttributes

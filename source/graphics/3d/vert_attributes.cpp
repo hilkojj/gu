@@ -8,13 +8,13 @@
 #include "../../utils/gu_error.h"
 
 const struct VertAttr
-    VertAttributes::POSITION = {"POSITION", 3, GL_FALSE},
-    VertAttributes::RGB = {"RGB", 3, GL_FALSE},
-    VertAttributes::RGBA = {"RGBA", 4, GL_FALSE},
-    VertAttributes::TEX_COORDS = {"TEX_COORDS", 2, GL_FALSE},
-    VertAttributes::NORMAL = {"NORMAL", 3, GL_FALSE},
-    VertAttributes::TANGENT = {"TANGENT", 3, GL_FALSE},
-    VertAttributes::BI_NORMAL = {"BI_NORMAL", 3, GL_FALSE};
+    VertAttributes::POSITION = {"POSITION", 3},
+    VertAttributes::RGB = {"RGB", 3},
+    VertAttributes::RGBA = {"RGBA", 4},
+    VertAttributes::TEX_COORDS = {"TEX_COORDS", 2},
+    VertAttributes::NORMAL = {"NORMAL", 3},
+    VertAttributes::TANGENT = {"TANGENT", 3},
+    VertAttributes::BI_NORMAL = {"BI_NORMAL", 3};
 
 unsigned int VertAttributes::add(VertAttr attr)
 {

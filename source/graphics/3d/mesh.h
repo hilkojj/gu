@@ -10,27 +10,49 @@
 #include "glm/glm.hpp"
 using namespace glm;
 
+class VertData
+{
+  public:
+    VertData(VertAttributes attrs, std::vector<float> vertices);
+
+    VertAttributes attributes;
+    std::vector<float> vertices;
+
+    vec4 getVec4(int vertI, int attrOffset);
+    vec3 getVec3(int vertI, int attrOffset);
+    vec2 getVec2(int vertI, int attrOffset);
+    float getFloat(int vertI, int attrOffset);
+
+    void setVec4(const vec4 &v, int vertI, int attrOffset);
+    void setVec3(const vec3 &v, int vertI, int attrOffset);
+    void setVec2(const vec2 &v, int vertI, int attrOffset);
+    void setFloat(float v, int vertI, int attrOffset);
+
+    void addVec4(const vec4 &v, int vertI, int attrOffset);
+    void addVec3(const vec3 &v, int vertI, int attrOffset);
+    void addVec2(const vec2 &v, int vertI, int attrOffset);
+
+    void normalizeVec3Attribute(int attrOffset);
+    void normalizeVec2Attribute(int attrOffset);
+};
+
 class VertBuffer;
 class Mesh;
 
 typedef std::shared_ptr<Mesh> SharedMesh;
 
-class Mesh
+class Mesh : public VertData
 {
-
   public:
 
     // returns a shared(!) quad mesh with only the Position attribute. (position attribute can also be used for texture coordinates)
     static SharedMesh getQuad();
 
     std::string name;
-    std::vector<float> vertices;
     std::vector<unsigned short> indices;
     GLenum mode = GL_TRIANGLES;
 
     unsigned int nrOfVertices, nrOfIndices;
-
-    VertAttributes attributes;
 
     VertBuffer *vertBuffer = nullptr;
 
@@ -50,29 +72,12 @@ class Mesh
 
     void render();
 
+    void renderInstances(GLsizei count);
+
     ~Mesh();
 
-    vec4 getVec4(int vertI, int attrOffset);
-    vec3 getVec3(int vertI, int attrOffset);
-    vec2 getVec2(int vertI, int attrOffset);
-    float getFloat(int vertI, int attrOffset);
-
-    void setVec4(const vec4 &v, int vertI, int attrOffset);
-    void setVec3(const vec3 &v, int vertI, int attrOffset);
-    void setVec2(const vec2 &v, int vertI, int attrOffset);
-    void setFloat(float v, int vertI, int attrOffset);
-
-    void addVec4(const vec4 &v, int vertI, int attrOffset);
-    void addVec3(const vec3 &v, int vertI, int attrOffset);
-    void addVec2(const vec2 &v, int vertI, int attrOffset);
-
-    void normalizeVec3Attribute(int attrOffset);
-    void normalizeVec2Attribute(int attrOffset);
-
   private:
-
     static SharedMesh quad;
-
 };
 
 #endif
