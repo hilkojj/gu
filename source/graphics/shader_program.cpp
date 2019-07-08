@@ -5,11 +5,18 @@
 #include "shader_program.h"
 #include "../files/file.h"
 
-ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *fragSource)
+bool ShaderProgram::reloadFromFile = false;
 
-    : name(name),
-      programId(glCreateProgram())
+ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *fragSource, std::string vertPath, std::string fragPath)
+
+    : name(name), vertPath(vertPath), fragPath(fragPath)
 {
+    compile(vertSource, fragSource);
+}
+
+void ShaderProgram::compile(const char *vertSource, const char *fragSource)
+{
+    programId = glCreateProgram();
     GLuint vertShaderId = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -79,14 +86,27 @@ GLuint ShaderProgram::location(const char *uniformName) const
 
 void ShaderProgram::use()
 {
+    if (reloadFromFile)
+    {
+        if (!reloadedFromFile && vertPath.size())
+        {
+            std::string vertCode = File::readString(vertPath.c_str());
+            std::string fragCode = File::readString(fragPath.c_str());
+            glDeleteProgram(programId);
+            compile(vertCode.c_str(), fragCode.c_str());
+        }
+        reloadedFromFile = true;
+    }
+    else reloadedFromFile = false;
+    
     glUseProgram(programId);
 }
 
-ShaderProgram ShaderProgram::fromFiles(std::string name, const char *vertPath, const char *fragPath)
+ShaderProgram ShaderProgram::fromFiles(std::string name, const std::string vertPath, const std::string fragPath)
 {
-    std::string vertCode = File::readString(vertPath);
-    std::string fragCode = File::readString(fragPath);
-    return ShaderProgram(name, vertCode.c_str(), fragCode.c_str());
+    std::string vertCode = File::readString(vertPath.c_str());
+    std::string fragCode = File::readString(fragPath.c_str());
+    return ShaderProgram(name, vertCode.c_str(), fragCode.c_str(), vertPath, fragPath);
 }
 
 ShaderProgram::~ShaderProgram()

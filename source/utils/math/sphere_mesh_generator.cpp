@@ -16,6 +16,7 @@ SharedMesh generate(const std::string &meshName, float radius, int segments, int
 
     int posOffset = attrs.getOffset(VertAttributes::POSITION);
     int norOffset = attrs.contains(VertAttributes::NORMAL) ? attrs.getOffset(VertAttributes::NORMAL) : -1;
+    int tanOffset = attrs.contains(VertAttributes::TANGENT) ? attrs.getOffset(VertAttributes::TANGENT) : -1;
     int texOffset = attrs.contains(VertAttributes::TEX_COORDS) ? attrs.getOffset(VertAttributes::TEX_COORDS) : -1;
 
     int vertI = 0;
@@ -31,6 +32,11 @@ SharedMesh generate(const std::string &meshName, float radius, int segments, int
             pos.z *= m;
             mesh->setVec3(pos, vertI, posOffset);
             if (norOffset != -1) mesh->setVec3(pos / radius, vertI, norOffset);
+            if (tanOffset != -1)
+            {
+                vec3 tan = vec3(cos(lon * mu::DEGREES_TO_RAD - .5 * mu::PI), 0, sin(lon * mu::DEGREES_TO_RAD - .5 * mu::PI));
+                mesh->setVec3(tan, vertI, tanOffset);
+            }
             if (texOffset != -1) mesh->setVec2(vec2(lon / 360, lat / 180 + .5), vertI, texOffset);
             vertI++;
         }
@@ -51,19 +57,6 @@ SharedMesh generate(const std::string &meshName, float radius, int segments, int
         }
     }
     assert(mesh->nrOfIndices == i);
-
-    if (attrs.contains(VertAttributes::TANGENT))
-    {
-        int tanOffset = attrs.getOffset(VertAttributes::TANGENT);
-        TangentCalculator::addTangentsToMesh(mesh);
-        for (int y = 0; y < rings; y++)
-        {
-            int i0 = y, i1 = y + (segments * rings);
-            vec3 tan = normalize(mesh->getVec3(i0, tanOffset) + mesh->getVec3(i1, tanOffset));
-            mesh->setVec3(tan, i0, tanOffset);
-            mesh->setVec3(tan, i1, tanOffset);
-        }
-    }
     return mesh;
 }
 

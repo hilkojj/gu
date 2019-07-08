@@ -8,9 +8,10 @@
 class ShaderProgram
 {
   public:
-    static ShaderProgram fromFiles(std::string name, const char *vertPath, const char *fragPath);
+    static bool reloadFromFile;
+    static ShaderProgram fromFiles(std::string name, const std::string vertPath, const std::string fragPath);
 
-    ShaderProgram(std::string name, const char *vertSource, const char *fragSource);
+    ShaderProgram(std::string name, const char *vertSource, const char *fragSource, std::string vertPath="", std::string fragPath="");
     ~ShaderProgram();
 
     bool compiled() const;
@@ -21,8 +22,10 @@ class ShaderProgram
 
   private:
     GLuint programId;
-    std::string name;
-    bool compiled_;
+    std::string name, vertPath, fragPath;
+    bool compiled_, reloadedFromFile = false;
+
+    void compile(const char *vertSource, const char *fragSource);
 
     void compileAndAttach(const char *source, GLuint shaderId, const char *shaderType);
 };

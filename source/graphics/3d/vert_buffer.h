@@ -39,6 +39,7 @@ class VertBuffer
 
     /**
      * upload vertex-attributes that do not advance per vertex, but per instance (glDrawElementsInstanced() & glVertexAttribDivisor())
+     * also known as Instanced Arrays (https://www.khronos.org/opengl/wiki/Vertex_Specification#Instanced_arrays)
      *
      * useful for when you want to render a mesh multiple times in 1 draw call, but each on a different position.
      *
