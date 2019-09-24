@@ -7,6 +7,9 @@
 #include "vert_attributes.h"
 #include "vert_buffer.h"
 
+/**
+ * THIS LINE RENDERER IS VEEEEEEEEEERYYYY SLOOOOOOW, so only use it for debugging
+ **/
 class DebugLineRenderer
 {
   public:
@@ -14,6 +17,7 @@ class DebugLineRenderer
 
     glm::mat4 projection;
 
+    // make sure to set 'projection' before calling this.
     void line(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
 
   private:

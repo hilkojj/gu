@@ -1,10 +1,8 @@
 #include "camera.h"
-#include "glm/glm.hpp"
-#include "glm/gtx/rotate_vector.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 #include "../utils/math_utils.h"
 #include "../input/mouse_input.h"
-using namespace glm;
+
+#include <iostream>
 
 Camera::Camera(float near_, float far_, float viewportWidth, float viewportHeight)
     : direction(vec3(0, 0, -1)),

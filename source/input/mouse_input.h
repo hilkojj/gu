@@ -9,7 +9,7 @@ namespace MouseInput
 
 extern double 
     xScroll, yScroll, 
-    // mouse coordinates are NOT in pixels, but screen coordinates.
+    // mouse coordinates are NOT in pixels, but screen coordinates (which are often the same as pixels).
     mouseX, mouseY, deltaMouseX, deltaMouseY;
 
 void setInputWindow(GLFWwindow* window);

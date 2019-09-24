@@ -18,7 +18,8 @@ namespace mu
 const vec3
     X = vec3(1, 0, 0),
     Y = vec3(0, 1, 0),
-    Z = vec3(0, 0, 1);
+    Z = vec3(0, 0, 1),
+    ZERO_3 = vec3(0);
 
 const float
 
