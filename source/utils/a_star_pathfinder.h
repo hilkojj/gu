@@ -59,7 +59,6 @@ bool findAStarPath(
             }
             return true;
         }
-        std::cout << to_string(current->lonLat) << "\n";
         // remove 'current' from openSet:
         openSet.erase(std::find(openSet.begin(), openSet.end(), current));
 

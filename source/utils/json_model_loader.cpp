@@ -94,6 +94,8 @@ VertAttr JsonModelLoader::attrFromString(std::string str)
         return VertAttributes::POSITION;
     if (str == "NORMAL")
         return VertAttributes::NORMAL;
+    if (str == "TEXCOORD0")
+        return VertAttributes::TEX_COORDS;
     else throw gu_err("Vertex Attribute " + str + " not recognized. (" + id + ")");
 }
 

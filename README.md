@@ -2,7 +2,7 @@ This is a C++ game library for creating games with OpenGL for Desktop and Web.
 
 ## Web demo
 
-A simple online demo using the game library can be seen [here](https://hilkojj.github.io/cpp-game-utils/emscripten_test/gutest.html).
+A *very* simple online demo using the game library can be seen [here](https://hilkojj.github.io/cpp-game-utils/emscripten_test/gutest.html).
 
 Controls: WASD + mouse (click on the screen to lock cursor)
 
@@ -20,7 +20,7 @@ Clone/fork [this template](https://github.com/hilkojj/cpp-game-utils-template) a
     - Cameras
 - Mouse & key input
 - Loading models from Blender (use [this Blender addon](https://github.com/hilkojj/blender_UBJSON_exporter) and load the exported files with the JsonModelLoader)
-- Some utilities (Math, TangentCalculator, etc.)
+- Some utilities (Math, TangentCalculator, A* pathfinder, etc.)
 
 ## Manual installation
 (Not recommended, use the template above instead)
