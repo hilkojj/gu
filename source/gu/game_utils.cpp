@@ -1,4 +1,18 @@
 #include "game_utils.h"
+#include "../utils/math_utils.h"
+#include <string>
+
+// enable dedicated graphics for NVIDIA:
+extern "C"
+{
+	__declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
+}
+
+// enable dedicated graphics for AMD Radeon: (untested)
+extern "C"
+{
+	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
 
 namespace gu
 {
@@ -147,7 +161,7 @@ void mainLoop()
         onResize();
     }
 
-    render(std::min(deltaTime, .1));
+    render(min(deltaTime, .1));
     KeyInput::update();
     MouseInput::update();
 

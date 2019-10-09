@@ -34,6 +34,12 @@ class _gu_err : public std::runtime_error
     }
 };
 
+#ifdef linux
 #define gu_err(msg) _gu_err(msg, __PRETTY_FUNCTION__, __FILE__, __LINE__)
+#else
+#define gu_err(msg) _gu_err(msg, __FUNCSIG__, __FILE__, __LINE__)
+#endif
+
+
 
 #endif
