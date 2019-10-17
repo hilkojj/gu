@@ -2,6 +2,7 @@
 #include "../utils/math_utils.h"
 #include <string>
 
+#ifdef _WIN32
 // enable dedicated graphics for NVIDIA:
 extern "C"
 {
@@ -13,6 +14,7 @@ extern "C"
 {
 	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
+#endif
 
 namespace gu
 {

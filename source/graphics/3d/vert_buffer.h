@@ -42,10 +42,12 @@ class VertBuffer
      * also known as Instanced Arrays (https://www.khronos.org/opengl/wiki/Vertex_Specification#Instanced_arrays)
      *
      * useful for when you want to render a mesh multiple times in 1 draw call, but each on a different position.
-     *
-     * if advanceRate == 1 then the attributes are per instance, if advanceRate == 2 then the attributes are per 2 instances etc..
      **/
-    void uploadPerInstanceData(VertData data, unsigned int advanceRate=1);
+    GLuint uploadPerInstanceData(VertData data, GLuint advanceRate=1);
+
+    void usePerInstanceData(GLuint instanceDataId, GLuint advanceRate=1);
+
+    void deletePerInstanceData(GLuint instanceDataId);
 
     ~VertBuffer();
 
@@ -64,7 +66,8 @@ class VertBuffer
     // ids of the VertexArrayObject, VertexBufferObject and IndexBufferObject
     GLuint vaoId = 0, vboId = 0, iboId;
 
-    GLuint perInstanceDataVboId = 0;
+    std::vector<GLuint> instanceVbos;
+    std::vector<VertAttributes> instanceVboAttrs;
     
     GLuint nrOfVerts = 0, vertSize = 0, nrOfIndices = 0;
 

@@ -53,7 +53,7 @@ VertBuffer *VertBuffer::add(SharedMesh mesh)
     }
     #endif
 
-    std::cout << "Adding " << mesh->name << " to VertBuffer " << vaoId << "\n";
+    // std::cout << "Adding " << mesh->name << " to VertBuffer " << vaoId << "\n";
     meshes.push_back(mesh);
 
     mesh->baseVertex = nrOfVerts;
@@ -71,7 +71,7 @@ void VertBuffer::upload(bool disposeOfflineData)
     if (vboId)
         throw gu_err("VertBuffer already uploaded");
 
-    std::cout << "Uploading vbo\n";
+    // std::cout << "Uploading vbo\n";
     bind();
 
     glGenBuffers(1, &vboId);    // create VertexBuffer
@@ -166,14 +166,23 @@ void VertBuffer::setAttrPointersAndEnable(VertAttributes &attrs, unsigned int di
     }
 }
 
-void VertBuffer::uploadPerInstanceData(VertData data, unsigned int advanceRate)
-{   // todo: make updating data more efficient.
+GLuint VertBuffer::uploadPerInstanceData(VertData data, GLuint advanceRate)
+{
     bind();
-    if (!perInstanceDataVboId) glGenBuffers(1, &perInstanceDataVboId);
+    GLuint id = instanceVbos.size();
+    for (int i = 0; i < instanceVbos.size(); i++) if (instanceVbos[i] == -1) id = i;
+    if (id == instanceVbos.size())
+    {
+        instanceVbos.emplace_back();
+        instanceVboAttrs.emplace_back();
+    }
+    glGenBuffers(1, &instanceVbos[id]);
+    instanceVboAttrs[id] = data.attributes;
 
-    glBindBuffer(GL_ARRAY_BUFFER, perInstanceDataVboId);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVbos.back());
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.vertices.size(), &data.vertices[0], GL_STATIC_DRAW);
-    setAttrPointersAndEnable(data.attributes, advanceRate, attrs.nrOfAttributes());
+    usePerInstanceData(id, advanceRate);
+    return id;
 }
 
 void VertBuffer::onMeshDestroyed()
@@ -215,6 +224,22 @@ VertBuffer::~VertBuffer()
     glDeleteVertexArrays(1, &vaoId);
     glDeleteBuffers(1, &vboId);
     glDeleteBuffers(1, &iboId);
+
+    for (auto &id : instanceVbos)
+        if (id != -1) glDeleteBuffers(1, &id);
+
     if (vaoId == currentlyBoundVao)
         currentlyBoundVao = 0;
+}
+
+void VertBuffer::usePerInstanceData(GLuint instanceDataId, GLuint advanceRate)
+{
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVbos[instanceDataId]);
+    setAttrPointersAndEnable(instanceVboAttrs[instanceDataId], advanceRate, attrs.nrOfAttributes());
+}
+
+void VertBuffer::deletePerInstanceData(GLuint instanceDataId)
+{
+    glDeleteBuffers(1, &instanceVbos[instanceDataId]);
+    instanceVbos[instanceDataId] = -1;
 }

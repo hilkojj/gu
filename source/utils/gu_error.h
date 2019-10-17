@@ -31,6 +31,12 @@ class _gu_err : public std::runtime_error
         #ifdef linux
         std::cerr << "\033[0m";
         #endif
+
+        #ifdef EMSCRIPTEN
+        EM_ASM({
+            alert("An error has occured. Check console for more information");
+        });
+        #endif
     }
 };
 

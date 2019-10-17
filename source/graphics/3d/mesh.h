@@ -18,22 +18,44 @@ class VertData
     VertAttributes attributes;
     std::vector<float> vertices;
 
-    vec4 getVec4(int vertI, int attrOffset);
-    vec3 getVec3(int vertI, int attrOffset);
-    vec2 getVec2(int vertI, int attrOffset);
+    template <class vecType>
+    vecType getVec(int vertI, int attrOffset)
+    {
+        vecType v;
+        for (int i = 0; i < vecType::length(); i++)
+        {
+            v[i] = vertices[vertI * attributes.getVertSize() + attrOffset + i];
+        }
+        return v;
+    }
     float getFloat(int vertI, int attrOffset);
 
-    void setVec4(const vec4 &v, int vertI, int attrOffset);
-    void setVec3(const vec3 &v, int vertI, int attrOffset);
-    void setVec2(const vec2 &v, int vertI, int attrOffset);
+    template <class vecType>
+    void setVec(const vecType &v, int vertI, int attrOffset)
+    {
+        for (int i = 0; i < vecType::length(); i++)
+        {
+            vertices[vertI * attributes.getVertSize() + attrOffset + i] = v[i];
+        }
+    }
     void setFloat(float v, int vertI, int attrOffset);
 
-    void addVec4(const vec4 &v, int vertI, int attrOffset);
-    void addVec3(const vec3 &v, int vertI, int attrOffset);
-    void addVec2(const vec2 &v, int vertI, int attrOffset);
+    template <class vecType>
+    void addVec(const vecType &v, int vertI, int attrOffset)
+    {
+        for (int i = 0; i < vecType::length(); i++)
+        {
+            vertices[vertI * attributes.getVertSize() + attrOffset + i] += v[i];
+        }
+    }
 
-    void normalizeVec3Attribute(int attrOffset);
-    void normalizeVec2Attribute(int attrOffset);
+    template <class vecType>
+    void normalizeVecAttribute(int attrOffset)
+    {
+        for (int vertI = 0; vertI < vertices.size() / attributes.getVertSize(); vertI++)
+            setVec(normalize(getVec<vecType>(vertI, attrOffset)), vertI, attrOffset);
+    }
+
 };
 
 class VertBuffer;
