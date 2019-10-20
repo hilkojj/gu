@@ -7,19 +7,19 @@
 #include "gu_error.h"
 using json = nlohmann::json;
 
-std::vector<SharedModel> JsonModelLoader::fromJsonFile(const char *path, VertAttributes *predefinedAttrs)
+std::vector<SharedModel> JsonModelLoader::fromJsonFile(const char *path, const VertAttributes *predefinedAttrs)
 {
     JsonModelLoader loader(json::parse(File::readString(path)), path, predefinedAttrs);
     return loader.models;
 }
 
-std::vector<SharedModel> JsonModelLoader::fromUbjsonFile(const char *path, VertAttributes *predefinedAttrs)
+std::vector<SharedModel> JsonModelLoader::fromUbjsonFile(const char *path, const VertAttributes *predefinedAttrs)
 {
     JsonModelLoader loader(json::from_ubjson(File::readBinary(path)), path, predefinedAttrs);
     return loader.models;
 }
 
-JsonModelLoader::JsonModelLoader(const json &obj, std::string id, VertAttributes *predefinedAttrs)
+JsonModelLoader::JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs)
 : obj(obj), id(id), predefinedAttrs(predefinedAttrs)
 {   
     loadMeshes();
@@ -67,7 +67,7 @@ void JsonModelLoader::loadMeshes()
         {
             for (int i = 0; i < predefinedAttrs->nrOfAttributes(); i++)
             {
-                VertAttr &attr = predefinedAttrs->get(i);
+                auto &attr = predefinedAttrs->get(i);
                 if (!originalAttrs.contains(attr)) continue;
 
                 int originalOffset = originalAttrs.getOffset(attr);

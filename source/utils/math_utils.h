@@ -62,32 +62,20 @@ inline vec3 calculateNormal(const vec3 &p0, const vec3 &p1, const vec3 &p2)
     return normalize(cross(p1 - p0, p2 - p0));
 }
 
-inline std::string toString(const vec3 &p)
-{
-    return "(" + std::to_string(p.x) + ", " + std::to_string(p.y) + ", " + std::to_string(p.z) + ")";
-}
-
-inline std::string toString(const vec2 &p)
-{
-    return "(" + std::to_string(p.x) + ", " + std::to_string(p.y) + ")";
-}
-
 // following 3 functions are 99% copied from: https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 
-// Given three colinear points p, q, r, the function checks if
+// Given three collinear points p, q, r, the function checks if
 // point q lies on line segment 'pr'
 inline bool onSegment(const vec2 &p, const vec2 &q, const vec2 &r)
 {
-    if (q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) &&
-        q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y))
-       return true;
+    return q.x <= max(p.x, r.x) && q.x >= min(p.x, r.x) &&
+           q.y <= max(p.y, r.y) && q.y >= min(p.y, r.y);
 
-    return false;
 }
 
 // To find orientation of ordered triplet (p, q, r).
 // The function returns following values
-// 0 --> p, q and r are colinear
+// 0 --> p, q and r are collinear
 // 1 --> Clockwise
 // 2 --> Counterclockwise
 inline int orientation(const vec2 &p, const vec2 &q, const vec2 &r)
@@ -97,9 +85,9 @@ inline int orientation(const vec2 &p, const vec2 &q, const vec2 &r)
     int val = (q.y - p.y) * (r.x - q.x) -
               (q.x - p.x) * (r.y - q.y);
 
-    if (val == 0) return 0;  // colinear
+    if (val == 0) return 0;  // collinear
 
-    return (val > 0)? 1: 2; // clock or counterclock wise
+    return (val > 0)? 1: 2; // clock or counterclockwise
 }
 
 inline bool lineSegmentsIntersect(const vec2 &p1, const vec2 &q1, const vec2 &p2, const vec2 &q2)
@@ -116,16 +104,16 @@ inline bool lineSegmentsIntersect(const vec2 &p1, const vec2 &q1, const vec2 &p2
         return true;
 
     // Special Cases
-    // p1, q1 and p2 are colinear and p2 lies on segment p1q
+    // p1, q1 and p2 are collinear and p2 lies on segment p1q
     if (o1 == 0 && onSegment(p1, p2, q1)) return true;
 
-    // p1, q1 and q2 are colinear and q2 lies on segment p1q1
+    // p1, q1 and q2 are collinear and q2 lies on segment p1q1
     if (o2 == 0 && onSegment(p1, q2, q1)) return true;
 
-    // p2, q2 and p1 are colinear and p1 lies on segment p2q2
+    // p2, q2 and p1 are collinear and p1 lies on segment p2q2
     if (o3 == 0 && onSegment(p2, p1, q2)) return true;
 
-     // p2, q2 and q1 are colinear and q1 lies on segment p2q2
+     // p2, q2 and q1 are collinear and q1 lies on segment p2q2
     if (o4 == 0 && onSegment(p2, q1, q2)) return true;
 
     return false; // Doesn't fall in any of the above cases
@@ -156,7 +144,7 @@ inline bool pointInTriangle(const vec2 &point, const vec2 &p0, const vec2 &p1, c
  * if size is 3 then 'callback' will be called 9 times with these positions:
  * (0, 0) (1, 0) (1, 1) (0, 1) (-1, 1) (-1, 0) (-1, -1) (0, -1) (1, -1)
  */
-inline void spiral(int size, std::function<bool(ivec2 pos)> callback)
+inline void spiral(int size, const std::function<bool(ivec2 pos)> &callback)
 {
     ivec2 pos(0), dir(1, 0);
     int steps = 1, stepsToDo = 1, changeSteps = 2;

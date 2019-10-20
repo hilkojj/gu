@@ -14,19 +14,19 @@ class JsonModelLoader
 {
   public:
     // predefinedAttrs should be NULL unless you want to define the vertex layout yourself.
-    static std::vector<SharedModel> fromJsonFile(const char *path, VertAttributes *predefinedAttrs=NULL);
+    static std::vector<SharedModel> fromJsonFile(const char *path, const VertAttributes *predefinedAttrs=NULL);
     // predefinedAttrs should be NULL unless you want to define the vertex layout yourself.
-    static std::vector<SharedModel> fromUbjsonFile(const char *path, VertAttributes *predefinedAttrs=NULL);
+    static std::vector<SharedModel> fromUbjsonFile(const char *path, const VertAttributes *predefinedAttrs=NULL);
 
     // note: 'id' is only used for error messages, predefinedAttrs should be NULL unless you want to define the vertex layout yourself.
-    JsonModelLoader(const json &obj, std::string id, VertAttributes *predefinedAttrs);
+    JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs);
 
     std::vector<SharedModel> models;
     std::vector<SharedMesh> meshes;
 
   private:
     
-    VertAttributes *predefinedAttrs;
+    const VertAttributes *predefinedAttrs;
     const json &obj;
     std::string id;
 

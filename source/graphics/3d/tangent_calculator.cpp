@@ -40,16 +40,16 @@ void addTangentsToMesh(Mesh *mesh)
     for (int i = 0; i < mesh->nrOfIndices; i += 3)
     {
         int vertI0 = mesh->indices[i], vertI1 = mesh->indices[i + 1], vertI2 = mesh->indices[i + 2];
-        auto p0 = mesh->getVec<vec3>(vertI0, posOffset),
-             p1 = mesh->getVec<vec3>(vertI1, posOffset),
-             p2 = mesh->getVec<vec3>(vertI2, posOffset);
-        auto uv0 = mesh->getVec<vec2>(vertI0, texOffset),
-             uv1 = mesh->getVec<vec2>(vertI1, texOffset),
-             uv2 = mesh->getVec<vec2>(vertI2, texOffset);
+        auto p0 = mesh->get<vec3>(vertI0, posOffset),
+             p1 = mesh->get<vec3>(vertI1, posOffset),
+             p2 = mesh->get<vec3>(vertI2, posOffset);
+        auto uv0 = mesh->get<vec2>(vertI0, texOffset),
+             uv1 = mesh->get<vec2>(vertI1, texOffset),
+             uv2 = mesh->get<vec2>(vertI2, texOffset);
         auto tangent = calculateTangent(p0, p1, p2, uv0, uv1, uv2);
-        mesh->addVec<vec3>(tangent, vertI0, tanOffset);
-        mesh->addVec<vec3>(tangent, vertI1, tanOffset);
-        mesh->addVec<vec3>(tangent, vertI2, tanOffset);
+        mesh->add<vec3>(tangent, vertI0, tanOffset);
+        mesh->add<vec3>(tangent, vertI1, tanOffset);
+        mesh->add<vec3>(tangent, vertI2, tanOffset);
     }
     mesh->normalizeVecAttribute<vec3>(tanOffset);
 }

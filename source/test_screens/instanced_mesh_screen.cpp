@@ -43,7 +43,7 @@ class InstancedMeshScreen : public Screen
         for (int x = 0; x < 20; x++)
             for (int y = 0; y < 20; y++)
                 for (int z = 0; z < 20; z++)
-                    instanceOffsets.setVec(vec3(x * 2, y * 2, z * 2), i++, 0);
+                    instanceOffsets.set(vec3(x * 2, y * 2, z * 2), i++, 0);
 
         buffer->uploadPerInstanceData(instanceOffsets);
 

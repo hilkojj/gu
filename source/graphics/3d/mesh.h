@@ -19,7 +19,7 @@ class VertData
     std::vector<float> vertices;
 
     template <class vecType>
-    vecType getVec(int vertI, int attrOffset)
+    vecType get(int vertI, int attrOffset)
     {
         vecType v;
         for (int i = 0; i < vecType::length(); i++)
@@ -28,20 +28,44 @@ class VertData
         }
         return v;
     }
+
+    template <class matType>
+    matType getMat(int vertI, int attrOffset)
+    {
+        matType v;
+        float *vp = &(v[0][0]);
+        for (int i = 0; i < matType::length() * matType::length(); i++)
+        {
+            vp[i] = vertices[vertI * attributes.getVertSize() + attrOffset + i];
+        }
+        return v;
+    }
+
     float getFloat(int vertI, int attrOffset);
 
     template <class vecType>
-    void setVec(const vecType &v, int vertI, int attrOffset)
+    void set(const vecType &v, int vertI, int attrOffset)
     {
         for (int i = 0; i < vecType::length(); i++)
         {
             vertices[vertI * attributes.getVertSize() + attrOffset + i] = v[i];
         }
     }
+
+    template <class matType>
+    void setMat(const matType &mat, int vertI, int attrOffset)
+    {
+        const float *vp = &(mat[0][0]);
+        for (int i = 0; i < matType::length() * matType::length(); i++)
+        {
+            vertices[vertI * attributes.getVertSize() + attrOffset + i] = vp[i];
+        }
+    }
+
     void setFloat(float v, int vertI, int attrOffset);
 
     template <class vecType>
-    void addVec(const vecType &v, int vertI, int attrOffset)
+    void add(const vecType &v, int vertI, int attrOffset)
     {
         for (int i = 0; i < vecType::length(); i++)
         {
@@ -53,9 +77,12 @@ class VertData
     void normalizeVecAttribute(int attrOffset)
     {
         for (int vertI = 0; vertI < vertices.size() / attributes.getVertSize(); vertI++)
-            setVec(normalize(getVec<vecType>(vertI, attrOffset)), vertI, attrOffset);
+            set(normalize(get<vecType>(vertI, attrOffset)), vertI, attrOffset);
     }
 
+    void removeVertices(int count);
+
+    void addVertices(int count);
 };
 
 class VertBuffer;

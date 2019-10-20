@@ -7,19 +7,12 @@
 #include "../../gl_includes.h"
 #include "../../utils/gu_error.h"
 
-const struct VertAttr
-    VertAttributes::POSITION = {"POSITION", 3},
-    VertAttributes::RGB = {"RGB", 3},
-    VertAttributes::RGBA = {"RGBA", 4},
-    VertAttributes::TEX_COORDS = {"TEX_COORDS", 2},
-    VertAttributes::NORMAL = {"NORMAL", 3},
-    VertAttributes::TANGENT = {"TANGENT", 3},
-    VertAttributes::BI_NORMAL = {"BI_NORMAL", 3};
-
 unsigned int VertAttributes::add(VertAttr attr)
 {
     unsigned int offset = vertSize;
     vertSize += attr.size;
+
+    if (attr.size > 4) throw gu_err("Tried to add a VertAttr with a size > 4");
 
     attributes.push_back(attr);
 
@@ -32,7 +25,7 @@ VertAttributes &VertAttributes::add_(VertAttr attr)
     return *this;
 }
 
-VertAttr &VertAttributes::get(unsigned int i)
+const VertAttr &VertAttributes::get(unsigned int i) const
 {
     return attributes[i];
 }

@@ -141,7 +141,8 @@ void VertBuffer::setAttrPointersAndEnable(VertAttributes &attrs, unsigned int di
     GLint offset = 0;
     for (int i = locationOffset; i < locationOffset + attrs.nrOfAttributes(); i++)
     {
-        VertAttr &attr = attrs.get(i - locationOffset);
+        auto &attr = attrs.get(i - locationOffset);
+        glDisableVertexAttribArray(i);
         glVertexAttribPointer(
             i,                                    // location of attribute that can be used in vertex shaders. eg: 'layout(location = 0) in vec3 position'
             attr.size,                            // size.
@@ -179,7 +180,7 @@ GLuint VertBuffer::uploadPerInstanceData(VertData data, GLuint advanceRate)
     glGenBuffers(1, &instanceVbos[id]);
     instanceVboAttrs[id] = data.attributes;
 
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVbos.back());
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVbos[id]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.vertices.size(), &data.vertices[0], GL_STATIC_DRAW);
     usePerInstanceData(id, advanceRate);
     return id;
@@ -205,6 +206,7 @@ bool VertBuffer::inUse() const
 
 VertBuffer::~VertBuffer()
 {
+    /*
     if (inUse())
     {
         std::cerr << "WARNING: Deleting a VertBuffer that is still in use by [";
@@ -220,7 +222,7 @@ VertBuffer::~VertBuffer()
             }
         std::cerr << "]\n";
     }
-    std::cout << "Deleting VertBuffer: vao & vbo & ibo\n";
+    std::cout << "Deleting VertBuffer: vao & vbo & ibo\n";*/
     glDeleteVertexArrays(1, &vaoId);
     glDeleteBuffers(1, &vboId);
     glDeleteBuffers(1, &iboId);
@@ -234,12 +236,14 @@ VertBuffer::~VertBuffer()
 
 void VertBuffer::usePerInstanceData(GLuint instanceDataId, GLuint advanceRate)
 {
+    bind();
     glBindBuffer(GL_ARRAY_BUFFER, instanceVbos[instanceDataId]);
     setAttrPointersAndEnable(instanceVboAttrs[instanceDataId], advanceRate, attrs.nrOfAttributes());
 }
 
 void VertBuffer::deletePerInstanceData(GLuint instanceDataId)
 {
+    bind();
     glDeleteBuffers(1, &instanceVbos[instanceDataId]);
     instanceVbos[instanceDataId] = -1;
 }

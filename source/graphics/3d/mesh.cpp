@@ -118,3 +118,13 @@ void VertData::setFloat(float v, int vertI, int attrOffset)
 {
     vertices[vertI * attributes.getVertSize() + attrOffset] = v;
 }
+
+void VertData::removeVertices(int count)
+{
+    vertices.resize(vertices.size() - count * attributes.getVertSize());
+}
+
+void VertData::addVertices(int count)
+{
+    vertices.resize(vertices.size() + count * attributes.getVertSize(), 0);
+}

@@ -30,14 +30,14 @@ SharedMesh generate(const std::string &meshName, float radius, int segments, int
             float m = cos(lat * mu::DEGREES_TO_RAD);
             pos.x *= m;
             pos.z *= m;
-            mesh->setVec<vec3>(pos, vertI, posOffset);
-            if (norOffset != -1) mesh->setVec<vec3>(pos / radius, vertI, norOffset);
+            mesh->set<vec3>(pos, vertI, posOffset);
+            if (norOffset != -1) mesh->set<vec3>(pos / radius, vertI, norOffset);
             if (tanOffset != -1)
             {
                 vec3 tan = vec3(cos(lon * mu::DEGREES_TO_RAD - .5 * mu::PI), 0, sin(lon * mu::DEGREES_TO_RAD - .5 * mu::PI));
-                mesh->setVec<vec3>(tan, vertI, tanOffset);
+                mesh->set<vec3>(tan, vertI, tanOffset);
             }
-            if (texOffset != -1) mesh->setVec<vec2>(vec2(lon / 360, lat / 180 + .5), vertI, texOffset);
+            if (texOffset != -1) mesh->set<vec2>(vec2(lon / 360, lat / 180 + .5), vertI, texOffset);
             vertI++;
         }
     }
