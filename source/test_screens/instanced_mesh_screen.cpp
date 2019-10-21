@@ -3,6 +3,7 @@
 #include "../gl_includes.h"
 #include "../graphics/3d/vert_buffer.h"
 #include "../graphics/3d/mesh.h"
+#include "../graphics/3d/perspective_camera.h"
 #include "../gu/game_utils.h"
 #include "../graphics/shader_program.h"
 #include "../utils/json_model_loader.h"

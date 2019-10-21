@@ -15,9 +15,6 @@ GLuint create()
     return id;
 }
 
-FrameBuffer::FrameBuffer(GLuint width, GLuint height) : FrameBuffer(width, height, 0)
-{}
-
 FrameBuffer::FrameBuffer(GLuint width, GLuint height, GLuint samples_)
     : id(create()), width(width), height(height),
       samples(

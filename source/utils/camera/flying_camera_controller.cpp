@@ -5,7 +5,7 @@
 #include "../../input/mouse_input.h"
 #include "../../utils/math_utils.h"
 
-FlyingCameraController::FlyingCameraController(PerspectiveCamera *cam)
+FlyingCameraController::FlyingCameraController(Camera *cam)
 : cam(cam)
 {
     MouseInput::setLockedMode(true);

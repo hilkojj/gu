@@ -16,13 +16,11 @@ class FrameBuffer
     SharedTexture colorTexture;
     SharedTexture depthTexture;
 
-    FrameBuffer(GLuint width, GLuint height);
-
     /**
-     * Constructor for Multisampled FrameBuffer.
-     * NOTE: not supported in WebGL, samples will automatically be set to 0.
+     * Constructor for a (multisampled) FrameBuffer.
+     * NOTE: multisampling is not supported in WebGL, samples will automatically be set to 0.
      */
-    FrameBuffer(GLuint width, GLuint height, GLuint samples);
+    FrameBuffer(GLuint width, GLuint height, GLuint samples=0);
 
     ~FrameBuffer();
 
