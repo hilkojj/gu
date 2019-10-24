@@ -9,7 +9,7 @@ class ShaderProgram
 {
   public:
     static bool reloadFromFile;
-    static ShaderProgram fromFiles(std::string name, const std::string vertPath, const std::string fragPath);
+    static ShaderProgram fromFiles(std::string name, const std::string& vertPath, const std::string& fragPath);
 
     ShaderProgram(std::string name, const char *vertSource, const char *fragSource, std::string vertPath="", std::string fragPath="");
     ~ShaderProgram();

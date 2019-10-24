@@ -102,11 +102,11 @@ void ShaderProgram::use()
     glUseProgram(programId);
 }
 
-ShaderProgram ShaderProgram::fromFiles(std::string name, const std::string vertPath, const std::string fragPath)
+ShaderProgram ShaderProgram::fromFiles(std::string name, const std::string& vertPath, const std::string& fragPath)
 {
     std::string vertCode = File::readString(vertPath.c_str());
     std::string fragCode = File::readString(fragPath.c_str());
-    return ShaderProgram(name, vertCode.c_str(), fragCode.c_str(), vertPath, fragPath);
+    return ShaderProgram(std::move(name), vertCode.c_str(), fragCode.c_str(), vertPath, fragPath);
 }
 
 ShaderProgram::~ShaderProgram()

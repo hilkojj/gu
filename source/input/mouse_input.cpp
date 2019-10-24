@@ -30,8 +30,8 @@ double nextXScroll = 0, nextYScroll = 0, nextMouseX = 0, nextMouseY = 0;
 void glfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
     #ifdef EMSCRIPTEN
-    xoffset *= -.035;
-    yoffset *= -.035;
+    xoffset *= -.012;
+    yoffset *= -.012;
     #endif
     nextXScroll += xoffset;
     nextYScroll += yoffset;
