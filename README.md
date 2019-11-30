@@ -6,6 +6,9 @@ A *very* simple online demo using the game library can be seen [here](https://hi
 
 Controls: WASD + mouse (click on the screen to lock cursor)
 
+
+A more complex webdemo of my own game made using this library can be seen [here](https://hilkojj.github.io/).
+
 ## Usage
 
 Clone/fork [this template](https://github.com/hilkojj/cpp-game-utils-template) and follow the instructions in the readme to create a minimal project that uses this library.
