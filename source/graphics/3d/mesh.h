@@ -122,6 +122,8 @@ class Mesh : public VertData
 
     void renderInstances(GLsizei count);
 
+    void renderArrays();
+
     ~Mesh();
 
   private:

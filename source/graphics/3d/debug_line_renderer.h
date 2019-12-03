@@ -20,6 +20,9 @@ class DebugLineRenderer
     // make sure to set 'projection' before calling this.
     void line(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
 
+    // make sure to set 'projection' before calling this.
+    void axes(glm::vec3 p, float size, glm::vec3 color);
+
   private:
     ShaderProgram shaderProgram;
     GLuint u_colorId, p0Id, p1Id, MVPId;

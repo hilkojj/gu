@@ -138,6 +138,26 @@ inline bool pointInTriangle(const vec2 &point, const vec2 &p0, const vec2 &p1, c
 }
 
 /**
+ * Compute barycentric coordinates (out) for
+ * point p with respect to triangle (a, b, c)
+ *
+ * taken from: https://gamedev.stackexchange.com/a/23745
+ */
+inline void barycentricCoords(const vec2 &p, const vec2 &a, const vec2 &b, const vec2 &c, vec3 &out)
+{
+    vec2 v0 = b - a, v1 = c - a, v2 = p - a;
+    float d00 = dot(v0, v0);
+    float d01 = dot(v0, v1);
+    float d11 = dot(v1, v1);
+    float d20 = dot(v2, v0);
+    float d21 = dot(v2, v1);
+    float denom = d00 * d11 - d01 * d01;
+    out.y = (d11 * d20 - d01 * d21) / denom;
+    out.z = (d00 * d21 - d01 * d20) / denom;
+    out.x = 1.0f - out.y - out.z;
+}
+
+/**
  * Executes 'callback' size^2 times in a spiral loop.
  * 'callback' must return true to continue, or false to beak the loop.
  * 
@@ -165,6 +185,22 @@ inline void spiral(int size, const std::function<bool(ivec2 pos)> &callback)
             stepsToDo = steps;
         }
     }
+}
+
+inline void loop3d(int size, const std::function<bool(int x, int y, int z)> &callback)
+{
+    for (int z = 0; z < size; z++)
+        for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+                if (!callback(x, y, z)) break;
+}
+
+template <class vec>
+inline bool allGreaterOrEqualTo(vec v, const double &val)
+{
+    for (int i = 0; i < vec::length(); i++)
+        if (v[i] < val) return false;
+    return true;
 }
 
 } // namespace mu

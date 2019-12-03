@@ -42,7 +42,7 @@ ShaderProgram *shader = NULL;
 namespace QuadRenderer
 {
     // renders the texture to a full-screen quad.
-    void render(SharedTexture texture)
+    inline void render(SharedTexture texture)
     {
         if (!shader) shader = new ShaderProgram("QuadTextureShader", ("#version 300 es\n" + vertSource).c_str(), ("#version 300 es\n" + fragSource).c_str());
 

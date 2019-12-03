@@ -109,6 +109,17 @@ Mesh::~Mesh()
         vertBuffer->onMeshDestroyed();
 }
 
+void Mesh::renderArrays()
+{
+    if (!vertBuffer || !vertBuffer->isUploaded()) throw gu_err(name + " is not uploaded. Upload it first with a VertBuffer");
+    vertBuffer->bind();
+    glDrawArrays(
+            mode,
+            baseVertex,
+            nrOfVertices
+    );
+}
+
 float VertData::getFloat(int vertI, int attrOffset)
 {
     return vertices[vertI * attributes.getVertSize() + attrOffset];

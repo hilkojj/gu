@@ -63,3 +63,10 @@ void DebugLineRenderer::line(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
     glUniformMatrix4fv(MVPId, 1, GL_FALSE, &projection[0][0]);
     lineMesh->render();
 }
+
+void DebugLineRenderer::axes(glm::vec3 p, float size, glm::vec3 color)
+{
+    line(p - vec3(size, 0, 0), p + vec3(size, 0, 0), color);
+    line(p - vec3(0, size, 0), p + vec3(0, size, 0), color);
+    line(p - vec3(0, 0, size), p + vec3(0, 0, size), color);
+}
