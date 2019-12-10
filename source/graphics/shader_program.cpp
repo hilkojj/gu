@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <vector>
 
@@ -9,19 +8,29 @@ bool ShaderProgram::reloadFromFile = false;
 
 ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *fragSource, std::string vertPath, std::string fragPath)
 
-    : name(name), vertPath(vertPath), fragPath(fragPath)
+    : name(std::move(name)), vertPath(std::move(vertPath)), fragPath(std::move(fragPath))
 {
     compile(vertSource, fragSource);
 }
 
-void ShaderProgram::compile(const char *vertSource, const char *fragSource)
+ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *geomSource, const char *fragSource,
+                             std::string vertPath, std::string geomPath, std::string fragPath)
+    : name(std::move(name)), vertPath(std::move(vertPath)), fragPath(std::move(fragPath)), geomPath(std::move(geomPath))
+{
+    compile(vertSource, fragSource, geomSource);
+}
+
+void ShaderProgram::compile(const char *vertSource, const char *fragSource, const char *geomSource)
 {
     programId = glCreateProgram();
     GLuint vertShaderId = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+    GLuint geomShaderId = geomSource ? glCreateShader(GL_GEOMETRY_SHADER) : 0;
 
     compileAndAttach(vertSource, vertShaderId, "VERTEX");
     compileAndAttach(fragSource, fragShaderId, "FRAGMENT");
+    if (geomSource)
+        compileAndAttach(geomSource, geomShaderId, "FRAGMENT");
 
     glLinkProgram(programId);
 
@@ -40,9 +49,13 @@ void ShaderProgram::compile(const char *vertSource, const char *fragSource)
 
     glDetachShader(programId, vertShaderId);
     glDetachShader(programId, fragShaderId);
+    if (geomSource)
+        glDetachShader(programId, geomShaderId);
 
     glDeleteShader(vertShaderId);
     glDeleteShader(fragShaderId);
+    if (geomSource)
+        glDeleteShader(geomShaderId);
 
     compiled_ = success;
 }
@@ -88,12 +101,16 @@ void ShaderProgram::use()
 {
     if (reloadFromFile)
     {
-        if (!reloadedFromFile && vertPath.size())
+        if (!reloadedFromFile && !vertPath.empty())
         {
             std::string vertCode = File::readString(vertPath.c_str());
             std::string fragCode = File::readString(fragPath.c_str());
+            std::string geomCode;
+            if (!geomPath.empty())
+                geomCode = File::readString(geomPath.c_str());
+
             glDeleteProgram(programId);
-            compile(vertCode.c_str(), fragCode.c_str());
+            compile(vertCode.c_str(), fragCode.c_str(), !geomCode.empty() ? geomCode.c_str() : NULL);
         }
         reloadedFromFile = true;
     }
@@ -112,4 +129,13 @@ ShaderProgram ShaderProgram::fromFiles(std::string name, const std::string& vert
 ShaderProgram::~ShaderProgram()
 {
     glDeleteProgram(programId);
+}
+
+ShaderProgram ShaderProgram::fromFiles(std::string name, const std::string &vertPath, const std::string &geomPath,
+                                       const std::string &fragPath)
+{
+    std::string vertCode = File::readString(vertPath.c_str());
+    std::string geomCode = File::readString(geomPath.c_str());
+    std::string fragCode = File::readString(fragPath.c_str());
+    return ShaderProgram(std::move(name), vertCode.c_str(), geomCode.c_str(), fragCode.c_str(), vertPath, geomPath, fragPath);
 }
