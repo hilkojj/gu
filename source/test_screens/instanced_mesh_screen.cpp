@@ -25,7 +25,7 @@ class InstancedMeshScreen : public Screen
     DebugLineRenderer lineRenderer;
 
     InstancedMeshScreen()
-        : shaderProgram(ShaderProgram::fromFiles("NormalTestShader", "assets/shaders/test.vert", "assets/shaders/normaltest.frag")),
+        : shaderProgram(ShaderProgram::fromFiles("NormalTestShader", "gu/assets/shaders/test.vert", "gu/assets/shaders/normaltest.frag")),
           cam(PerspectiveCamera(.1, 100, 1, 1, 75)), camController(&cam)
     {
         VertAttributes attrs;
@@ -39,7 +39,7 @@ class InstancedMeshScreen : public Screen
         VertBuffer *buffer = VertBuffer::with(mesh->attributes);
         buffer->add(mesh)->upload(true);
 
-        VertData instanceOffsets(VertAttributes().add_({"OFFSET", 3}), std::vector<float>(3 * 20 * 20 * 20));
+        VertData instanceOffsets(VertAttributes().add_({"OFFSET", 3}), std::vector<u_char>(sizeof(float) * 3 * 20 * 20 * 20));
         int i = 0;
         for (int x = 0; x < 20; x++)
             for (int y = 0; y < 20; y++)

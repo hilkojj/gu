@@ -1,3 +1,5 @@
+#include <utility>
+
 
 #include <iostream>
 #include <string>
@@ -14,12 +16,12 @@ SharedMesh Mesh::getQuad()
     if (!quad)
     {
         quad = SharedMesh(new Mesh("quad", 4, 6, VertAttributes().add_(VertAttributes::POSITION)));
-        quad->vertices.insert(quad->vertices.begin(), {
-            -1, -1, 0,
-            -1, 1, 0,
-            1, 1, 0,
-            1, -1, 0,
-        });
+        quad->set<float[12]>({
+                -1, -1, 0,
+                -1, 1, 0,
+                1, 1, 0,
+                1, -1, 0,
+            }, 0, 0);
         quad->indices.insert(quad->indices.begin(), {
             2, 1, 0,
             0, 3, 2,
@@ -29,15 +31,15 @@ SharedMesh Mesh::getQuad()
     return quad;
 }
 
-VertData::VertData(VertAttributes attrs, std::vector<float> vertices)
-    : attributes(attrs), vertices(vertices)
+VertData::VertData(VertAttributes attrs, std::vector<u_char> vertices)
+    : attributes(std::move(attrs)), vertices(std::move(vertices))
 {}
 
-Mesh::Mesh(std::string name, unsigned int nrOfVertices, unsigned int nrOfIndices, VertAttributes attributes)
+Mesh::Mesh(const std::string& name, unsigned int nrOfVertices, unsigned int nrOfIndices, VertAttributes attributes)
 
     : name(name), nrOfVertices(nrOfVertices), nrOfIndices(nrOfIndices),
 
-      VertData(attributes, std::vector<float>(nrOfVertices * attributes.getVertSize())),
+      VertData(attributes, std::vector<u_char>(nrOfVertices * attributes.getVertSize())),
       indices(nrOfIndices)
 {
     std::cout << "Mesh created: " << name << std::endl;
@@ -118,16 +120,6 @@ void Mesh::renderArrays()
             baseVertex,
             nrOfVertices
     );
-}
-
-float VertData::getFloat(int vertI, int attrOffset)
-{
-    return vertices[vertI * attributes.getVertSize() + attrOffset];
-}
-
-void VertData::setFloat(float v, int vertI, int attrOffset)
-{
-    vertices[vertI * attributes.getVertSize() + attrOffset] = v;
 }
 
 void VertData::removeVertices(int count)

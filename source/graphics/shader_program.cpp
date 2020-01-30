@@ -30,7 +30,7 @@ void ShaderProgram::compile(const char *vertSource, const char *fragSource, cons
     compileAndAttach(vertSource, vertShaderId, "VERTEX");
     compileAndAttach(fragSource, fragShaderId, "FRAGMENT");
     if (geomSource)
-        compileAndAttach(geomSource, geomShaderId, "FRAGMENT");
+        compileAndAttach(geomSource, geomShaderId, "GEOMETRY");
 
     glLinkProgram(programId);
 

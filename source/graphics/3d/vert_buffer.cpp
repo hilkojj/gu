@@ -76,7 +76,7 @@ void VertBuffer::upload(bool disposeOfflineData)
 
     glGenBuffers(1, &vboId);    // create VertexBuffer
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * nrOfVerts * vertSize, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, nrOfVerts * vertSize, NULL, GL_STATIC_DRAW);
 
     glGenBuffers(1, &iboId);    // create IndexBuffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
@@ -90,7 +90,7 @@ void VertBuffer::upload(bool disposeOfflineData)
 
         SharedMesh mesh = m.lock();
         GLuint
-            vertsSize = mesh->nrOfVertices * sizeof(GLfloat) * vertSize,
+            vertsSize = mesh->nrOfVertices * vertSize,
             indicesSize = mesh->nrOfIndices * sizeof(GLushort);
 
         auto &indices = mesh->indices;
@@ -111,29 +111,6 @@ void VertBuffer::upload(bool disposeOfflineData)
     setAttrPointersAndEnable(attrs);
     uploaded = true;
     if (next) next->upload(disposeOfflineData);
-
-    /* To confirm the uploaded data is correct:
-
-    float dataV[nrOfVerts * vertSize];
-    glGetBufferSubData(GL_ARRAY_BUFFER, 0, vertsOffset, dataV);
-
-    std::cout << "Vertex data: ";
-    for (int i = 0; i < nrOfVerts * vertSize; i += vertSize)
-    {
-        for (int j = 0; j < vertSize; j++)
-            std::cout << dataV[i + j] << ", ";
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-
-    GLushort dataI[nrOfIndices];
-    glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indicesOffset, dataI);
-
-    std::cout << "Indices: ";
-    for (int i = 0; i < nrOfIndices; i++)
-        std::cout << dataI[i] << ", ";
-    std::cout << std::endl;
-    // */
 }
 
 void VertBuffer::setAttrPointersAndEnable(VertAttributes &attrs, unsigned int divisor, unsigned int locationOffset)
@@ -143,16 +120,35 @@ void VertBuffer::setAttrPointersAndEnable(VertAttributes &attrs, unsigned int di
     {
         auto &attr = attrs.get(i - locationOffset);
         glDisableVertexAttribArray(i);
-        glVertexAttribPointer(
-            i,                                    // location of attribute that can be used in vertex shaders. eg: 'layout(location = 0) in vec3 position'
-            attr.size,                            // size.
-            GL_FLOAT,                             // type
-            attr.normalized ? GL_TRUE : GL_FALSE, // normalized?
-            attrs.getVertSize() * sizeof(GLfloat),// stride
-            (void *)(uintptr_t)offset             // offset
-        );
+        switch (attr.type)
+        {
+            case GL_INT:
+            case GL_UNSIGNED_INT:
+            case GL_SHORT:
+            case GL_UNSIGNED_SHORT:
+            case GL_BYTE:
+            case GL_UNSIGNED_BYTE:
+
+                glVertexAttribIPointer(
+                        i,                                    // location of attribute that can be used in vertex shaders. eg: 'layout(location = 0) in vec3 position'
+                        attr.size,                            // size.
+                        attr.type,                             // type
+                        attrs.getVertSize(),                  // stride
+                        (void *)(uintptr_t)offset             // offset
+                );
+                break;
+            default:
+                glVertexAttribPointer(
+                        i,                                    // location of attribute that can be used in vertex shaders. eg: 'layout(location = 0) in vec3 position'
+                        attr.size,                            // size.
+                        attr.type,                             // type
+                        attr.normalized ? GL_TRUE : GL_FALSE, // normalized?
+                        attrs.getVertSize(),                  // stride
+                        (void *)(uintptr_t)offset             // offset
+                );
+        }
         glEnableVertexAttribArray(i);
-        offset += attr.size * sizeof(GLfloat);
+        offset += attr.byteSize;
 
         if (divisor)
         {
