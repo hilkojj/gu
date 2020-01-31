@@ -10,7 +10,8 @@
 struct VertAttr
 {
     std::string name;
-    GLint size;
+    GLint size, byteSize = sizeof(float) * size;
+    GLenum type = GL_FLOAT;
     GLboolean normalized = GL_FALSE;
 };
 
@@ -29,20 +30,32 @@ class VertAttributes
              */
             TRANSFORM_COL_A, TRANSFORM_COL_B, TRANSFORM_COL_C, TRANSFORM_COL_D;
 
-    // adds the attribute, and returns the offset that can be used in an interleaved vertices array (VNCVNCVNCVNC https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices#Formatting_VBO_Data)
-    unsigned int add(VertAttr attr);
+    /**
+     * adds the attribute, and returns the offset in bytes
+     *
+     * Example:
+     * // attrs = [POSITION]
+     *
+     * attrs.add(NORMAL); // returns 3 * sizeof(float)
+     *
+     * // attrs = [POSITION, NORMAL]
+     */
+    unsigned int add(const VertAttr& attr);
 
     // same as above but returns this.
-    VertAttributes &add_(VertAttr attr);
+    VertAttributes &add_(const VertAttr& attr);
 
     const VertAttr &get(unsigned int i) const;
 
     unsigned int nrOfAttributes() const;
 
-    // returns the number of floats per vertex. [POSITION, NORMAL] will return 6.
+    // returns the number of bytes per vertex. [POSITION, NORMAL] will return 6 * sizeof(float).
     unsigned int getVertSize() const;
 
-    // returns the offset that can be used in an interleaved vertices array (VNCVNCVNCVNC https://www.khronos.org/opengl/wiki/Vertex_Specification_Best_Practices#Formatting_VBO_Data)
+    // returns the number of components per vertex. [POSITION, NORMAL] will return 6.
+    unsigned int getNrOfComponents() const;
+
+    // returns the offset (in bytes)
     unsigned int getOffset(const VertAttr &attr) const;
 
     bool contains(const VertAttr &attr) const;
@@ -51,7 +64,7 @@ class VertAttributes
     friend std::ostream &operator<<(std::ostream &stream, const VertAttributes &attrs);
 
   private:
-    unsigned int vertSize = 0;
+    unsigned int vertSize = 0, nrOfComponents = 0;
     std::vector<VertAttr> attributes;
 };
 

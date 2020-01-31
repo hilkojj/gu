@@ -192,7 +192,7 @@ inline void loop3d(int size, const std::function<bool(int x, int y, int z)> &cal
     for (int z = 0; z < size; z++)
         for (int y = 0; y < size; y++)
             for (int x = 0; x < size; x++)
-                if (!callback(x, y, z)) break;
+                if (!callback(x, y, z)) return;
 }
 
 template <class vec>

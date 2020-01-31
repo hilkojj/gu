@@ -34,7 +34,7 @@ class JsonModelLoader
 
     void loadModels();
 
-    VertAttr attrFromString(std::string str);
+    VertAttr attrFromString(const std::string &str);
 
 };
 

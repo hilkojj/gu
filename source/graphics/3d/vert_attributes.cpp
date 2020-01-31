@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <ostream>
 #include <string>
@@ -7,10 +6,11 @@
 #include "../../gl_includes.h"
 #include "../../utils/gu_error.h"
 
-unsigned int VertAttributes::add(VertAttr attr)
+unsigned int VertAttributes::add(const VertAttr& attr)
 {
     unsigned int offset = vertSize;
-    vertSize += attr.size;
+    vertSize += attr.byteSize;
+    nrOfComponents += attr.size;
 
     if (attr.size > 4) throw gu_err("Tried to add a VertAttr with a size > 4");
 
@@ -19,7 +19,7 @@ unsigned int VertAttributes::add(VertAttr attr)
     return offset;
 }
 
-VertAttributes &VertAttributes::add_(VertAttr attr)
+VertAttributes &VertAttributes::add_(const VertAttr& attr)
 {
     add(attr);
     return *this;
@@ -43,19 +43,19 @@ unsigned int VertAttributes::getVertSize() const
 unsigned int VertAttributes::getOffset(const VertAttr &attr) const
 {
     unsigned int offset = 0;
-    for (VertAttr a : attributes)
+    for (const VertAttr& a : attributes)
     {
         if (a.name == attr.name)
             return offset;
-        offset += a.size;
+        offset += a.byteSize;
     }
     throw gu_err(attr.name + " is not in VertAttributes, add it first with .add(attribute)");
 }
 
 bool VertAttributes::contains(const VertAttr &attr) const
 {
-    for (VertAttr a : attributes)
-        if (a.normalized == attr.normalized && a.size == attr.size && a.name == attr.name)
+    for (const VertAttr& a : attributes)
+        if (a.normalized == attr.normalized && a.size == attr.size && a.type == attr.type && a.name == attr.name)
             return true;
     return false;
 }
@@ -63,7 +63,12 @@ bool VertAttributes::contains(const VertAttr &attr) const
 std::ostream &operator<<(std::ostream &stream, const VertAttributes &attrs)
 {
     stream << "[ ";
-    for (VertAttr a : attrs.attributes)
+    for (const VertAttr& a : attrs.attributes)
         stream << "{" << a.name << ", " << a.size << ", " << (a.normalized ? "GL_TRUE" : "GL_FALSE") << "} ";
     return stream << "]";
+}
+
+unsigned int VertAttributes::getNrOfComponents() const
+{
+    return nrOfComponents;
 }

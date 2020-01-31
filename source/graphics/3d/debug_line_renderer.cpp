@@ -7,14 +7,14 @@ namespace
 
 static std::string vertSource = MULTILINE(
 
-    layout(location = 0) in float nr;
+    layout(location = 0) in int nr;
 
     uniform mat4 MVP;
     uniform vec3 p0, p1;
 
     void main()
     {
-        gl_Position = MVP * vec4(nr == 0. ? p0 : p1, 1);
+        gl_Position = MVP * vec4(nr == 0 ? p0 : p1, 1);
     }
 
 );
@@ -39,12 +39,10 @@ DebugLineRenderer::DebugLineRenderer()
     : shaderProgram("DebugLineShader", ("#version 300 es\n" + vertSource).c_str(), ("#version 300 es\n" + fragSource).c_str())
 {
     VertAttributes attrs;
-    attrs.add({"nr", 1, GL_FALSE});
-    lineMesh = SharedMesh(new Mesh("debug_line", 2, 2, attrs));
-    lineMesh->vertices[0] = 0;
-    lineMesh->vertices[1] = 1;
-    lineMesh->indices[0] = 0;
-    lineMesh->indices[1] = 1;
+    attrs.add({"nr", 1, 1, GL_BYTE});
+    lineMesh = SharedMesh(new Mesh("debug_line", 2, 0, attrs));
+    lineMesh->set(true, 0, 0);
+    lineMesh->set(false, 1, 0);
     lineMesh->mode = GL_LINES;
     VertBuffer::uploadSingleMesh(lineMesh);
 
@@ -61,7 +59,7 @@ void DebugLineRenderer::line(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
     glUniform3f(p0Id, p0.x, p0.y, p0.z);
     glUniform3f(p1Id, p1.x, p1.y, p1.z);
     glUniformMatrix4fv(MVPId, 1, GL_FALSE, &projection[0][0]);
-    lineMesh->render();
+    lineMesh->renderArrays();
 }
 
 void DebugLineRenderer::axes(glm::vec3 p, float size, glm::vec3 color)

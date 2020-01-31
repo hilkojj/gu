@@ -42,7 +42,7 @@ void JsonModelLoader::loadMeshes()
 
         SharedMesh mesh = SharedMesh(new Mesh(
             info["id"], 
-            verticesJson.size() / originalAttrs.getVertSize(), 
+            verticesJson.size() / originalAttrs.getNrOfComponents(),
             indicesJson.size(), 
             predefinedAttrs ? *predefinedAttrs : originalAttrs
         ));
@@ -58,10 +58,7 @@ void JsonModelLoader::loadMeshes()
         {
             i = 0;
             for (float vert : verticesJson)
-            {
-                mesh->vertices[i] = vert;
-                i++;
-            }
+                mesh->set(vert, 0, i++ * sizeof(float));
         }
         else                    // load vertices as laid out in predefinedAttrs
         {
@@ -69,17 +66,17 @@ void JsonModelLoader::loadMeshes()
             {
                 auto &attr = predefinedAttrs->get(i);
                 if (!originalAttrs.contains(attr)) continue;
+                if (attr.type != GL_FLOAT) throw gu_err("Tried to load a non-float attribute from a JSON model");
 
-                int originalOffset = originalAttrs.getOffset(attr);
+                int originalOffset = originalAttrs.getOffset(attr) / sizeof(float);
                 int newOffset = predefinedAttrs->getOffset(attr);
 
                 for (int v = 0; v < mesh->nrOfVertices; v++)
                 {
                     for (int j = 0; j < attr.size; j++)
                     {
-                        int originalIndex = originalOffset + j + v * originalAttrs.getVertSize();
-                        int newIndex = newOffset + j + v * predefinedAttrs->getVertSize();
-                        mesh->vertices[newIndex] = verticesJson[originalIndex];
+                        int originalIndex = originalOffset + j + v * originalAttrs.getVertSize() / sizeof(float);
+                        mesh->set<float>(verticesJson[originalIndex], v, newOffset + j * sizeof(float));
                     }
                 }
             }
@@ -88,7 +85,7 @@ void JsonModelLoader::loadMeshes()
     }
 }
 
-VertAttr JsonModelLoader::attrFromString(std::string str)
+VertAttr JsonModelLoader::attrFromString(const std::string &str)
 {
     if (str == "POSITION")
         return VertAttributes::POSITION;

@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <cstring>
 
 #include "vert_attributes.h"
 #include "glm/glm.hpp"
@@ -13,64 +14,37 @@ using namespace glm;
 class VertData
 {
   public:
-    VertData(VertAttributes attrs, std::vector<float> vertices);
+    VertData(VertAttributes attrs, std::vector<u_char> vertices);
 
     VertAttributes attributes;
-    std::vector<float> vertices;
+    std::vector<u_char> vertices;
 
-    template <class vecType>
-    vecType get(int vertI, int attrOffset)
+    template <class type>
+    inline type get(int vertI, int attrOffset)
     {
-        vecType v;
-        for (int i = 0; i < vecType::length(); i++)
-        {
-            v[i] = vertices[vertI * attributes.getVertSize() + attrOffset + i];
-        }
+        type v;
+        memcpy(
+                &v,
+                &(vertices[vertI * attributes.getVertSize() + attrOffset]),
+                sizeof(type)
+        );
         return v;
     }
 
-    template <class matType>
-    matType getMat(int vertI, int attrOffset)
+    template <class type>
+    inline void set(const type &v, int vertI, int attrOffset)
     {
-        matType v;
-        float *vp = &(v[0][0]);
-        for (int i = 0; i < matType::length() * matType::length(); i++)
-        {
-            vp[i] = vertices[vertI * attributes.getVertSize() + attrOffset + i];
-        }
-        return v;
+        memcpy(
+                &(vertices[vertI * attributes.getVertSize() + attrOffset]),
+                &v,
+                sizeof(type)
+        );
     }
 
-    float getFloat(int vertI, int attrOffset);
-
-    template <class vecType>
-    void set(const vecType &v, int vertI, int attrOffset)
+    template <class type>
+    inline void add(const type &v, int vertI, int attrOffset)
     {
-        for (int i = 0; i < vecType::length(); i++)
-        {
-            vertices[vertI * attributes.getVertSize() + attrOffset + i] = v[i];
-        }
-    }
-
-    template <class matType>
-    void setMat(const matType &mat, int vertI, int attrOffset)
-    {
-        const float *vp = &(mat[0][0]);
-        for (int i = 0; i < matType::length() * matType::length(); i++)
-        {
-            vertices[vertI * attributes.getVertSize() + attrOffset + i] = vp[i];
-        }
-    }
-
-    void setFloat(float v, int vertI, int attrOffset);
-
-    template <class vecType>
-    void add(const vecType &v, int vertI, int attrOffset)
-    {
-        for (int i = 0; i < vecType::length(); i++)
-        {
-            vertices[vertI * attributes.getVertSize() + attrOffset + i] += v[i];
-        }
+        set(get<type>(vertI, attrOffset) + v, vertI, attrOffset);
     }
 
     template <class vecType>
@@ -108,7 +82,7 @@ class Mesh : public VertData
     int baseVertex = 0, indicesBufferOffset = 0;
 
     Mesh(
-        std::string name,
+        const std::string& name,
         unsigned int nrOfVertices,
         unsigned int nrOfIndices,
         VertAttributes attributes);
