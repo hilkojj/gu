@@ -8,8 +8,9 @@
 #include <cstring>
 
 #include "vert_attributes.h"
-#include "glm/glm.hpp"
-using namespace glm;
+#include "../../utils/math_utils.h"
+
+typedef unsigned char u_char;
 
 class VertData
 {
