@@ -11,6 +11,10 @@ class OrthographicCamera : public Camera
 
     void update() override;
 
+    vec2 cursorTo2DWorldPos(int xAxis=0, int yAxis=1);
+
+    vec2 worldPos2D(float viewportX, float viewportY, int xAxis=0, int yAxis=1);
+
 };
 
 

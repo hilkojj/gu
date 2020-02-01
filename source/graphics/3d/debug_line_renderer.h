@@ -1,7 +1,6 @@
 #ifndef DEBUG_LINE_RENDERER_H
 #define DEBUG_LINE_RENDERER_H
 
-#include "glm/glm.hpp"
 #include "../shader_program.h"
 #include "mesh.h"
 #include "vert_attributes.h"
@@ -15,13 +14,15 @@ class DebugLineRenderer
   public:
     DebugLineRenderer();
 
-    glm::mat4 projection;
+    mat4 projection;
 
     // make sure to set 'projection' before calling this.
-    void line(glm::vec3 p0, glm::vec3 p1, glm::vec3 color);
+    void line(const vec3 &p0, const vec3 &p1, const vec3 &color);
 
     // make sure to set 'projection' before calling this.
-    void axes(glm::vec3 p, float size, glm::vec3 color);
+    void axes(const vec3 &p, float size, const vec3 &color);
+
+    void square(const vec3 &p, float size, const vec3 &color, const vec3 &xAxis=mu::X, const vec3 &yAxis=mu::Y);
 
   private:
     ShaderProgram shaderProgram;

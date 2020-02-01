@@ -52,7 +52,7 @@ DebugLineRenderer::DebugLineRenderer()
     p1Id = shaderProgram.location("p1");
 }
 
-void DebugLineRenderer::line(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
+void DebugLineRenderer::line(const vec3 &p0, const vec3 &p1, const vec3 &color)
 {
     shaderProgram.use();
     glUniform3f(u_colorId, color.r, color.g, color.b);
@@ -62,9 +62,17 @@ void DebugLineRenderer::line(glm::vec3 p0, glm::vec3 p1, glm::vec3 color)
     lineMesh->renderArrays();
 }
 
-void DebugLineRenderer::axes(glm::vec3 p, float size, glm::vec3 color)
+void DebugLineRenderer::axes(const vec3 &p, float size, const vec3 &color)
 {
     line(p - vec3(size, 0, 0), p + vec3(size, 0, 0), color);
     line(p - vec3(0, size, 0), p + vec3(0, size, 0), color);
     line(p - vec3(0, 0, size), p + vec3(0, 0, size), color);
+}
+
+void DebugLineRenderer::square(const vec3 &p, float size, const vec3 &color, const vec3 &xAxis, const vec3 &yAxis)
+{
+    line(p, p + size * xAxis, color);
+    line(p + size * yAxis, p + size * yAxis + size * xAxis, color);
+    line(p, p + size * yAxis, color);
+    line(p + size * xAxis, p + size * yAxis + size * xAxis, color);
 }

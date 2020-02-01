@@ -6,6 +6,10 @@
 #include "file.h"
 #include "../utils/gu_error.h"
 
+#ifndef EMSCRIPTEN
+#include <filesystem>
+#endif
+
 std::string File::readString(const char *path)
 {
     std::ifstream stream(path, std::ios::in);
@@ -29,10 +33,22 @@ std::vector<unsigned char> File::readBinary(const char *path)
     return std::vector<unsigned char>(std::istreambuf_iterator<char>(stream), {});
 }
 
-void File::writeBinary(const char *path, std::vector<unsigned char> data)
+void File::writeBinary(const char *path, std::vector<unsigned char> &data)
 {
     std::ofstream out(path, std::ios::out | std::ios::binary);
     out.write((const char *)&data[0], data.size());
 
     out.close();
+}
+
+bool File::exists(const char *path)
+{
+    #ifdef EMSCRIPTEN
+    std::ifstream stream(path, std::ios::in);
+    bool exists = stream.is_open();
+    stream.close();
+    return exists;
+    #else
+    return std::filesystem::exists(path);
+    #endif
 }
