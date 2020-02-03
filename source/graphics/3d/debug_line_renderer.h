@@ -16,6 +16,8 @@ class DebugLineRenderer
 
     mat4 projection;
 
+    float scale = 1;
+
     // make sure to set 'projection' before calling this.
     void line(const vec3 &p0, const vec3 &p1, const vec3 &color);
 
