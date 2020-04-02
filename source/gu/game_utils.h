@@ -2,6 +2,7 @@
 #define GAME_UTILS_H
 
 #include <iostream>
+#include <functional>
 #include "../gl_includes.h"
 #include "../input/key_input.h"
 #include "../input/mouse_input.h"
@@ -26,6 +27,7 @@ struct Config
 extern Config config;
 extern GLFWwindow *window;
 extern int width, height, widthPixels, heightPixels;
+extern std::function<void(double deltaTime)> beforeRender;
 
 // initialize OpenGL, window, input and more. Returns false if initialization failed.
 bool init(Config config);

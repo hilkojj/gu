@@ -26,6 +26,8 @@ GLFWwindow *window = nullptr;
 // width & height are in screen coordinates, widthPixels & heightPixels are in pixels.
 int width = 0, height = 0, widthPixels = 0, heightPixels = 0;
 
+std::function<void(double)> beforeRender = [](auto){};
+
 namespace
 {
 Screen *screen;
@@ -163,6 +165,7 @@ void mainLoop()
         onResize();
     }
 
+    beforeRender(min(deltaTime, .1));
     render(min(deltaTime, .1));
     KeyInput::update();
     MouseInput::update();
