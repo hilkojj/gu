@@ -23,11 +23,5 @@ inline uint32 hashStringCrossPlatform(const char *str)
     return hash;
 }
 
-template <class type>
-inline uint32 typeHashCrossPlatform()
-{
-    return hashStringCrossPlatform(typeid(type).name());
-}
-
 
 #endif //GAME_HASHING_H
