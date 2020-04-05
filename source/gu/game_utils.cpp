@@ -2,6 +2,10 @@
 #include "../utils/math_utils.h"
 #include <string>
 
+#include "imgui.h"
+#include "examples/imgui_impl_glfw.h"
+#include "examples/imgui_impl_opengl3.h"
+
 #ifdef _WIN32
 // enable dedicated graphics for NVIDIA:
 extern "C"
@@ -121,6 +125,17 @@ bool init(Config config_)
     glfwGetWindowSize(window, &nextWidth, &nextHeight);
     glfwGetFramebufferSize(window, &nextWidthPixels, &nextHeightPixels);
 
+    profiler::showGUI = config.showProfiler;
+
+    // IMGUI ---------------------------------
+    ImGui::CreateContext();
+    const char* glsl_version = "#version 300 es";
+
+    // Initialize helper Platform and Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init(glsl_version);
+    // IMGUI ---------------------------------
+
     KeyInput::setInputWindow(window);
     MouseInput::setInputWindow(window);
 
@@ -141,15 +156,19 @@ double remainingSecond;
 
 void mainLoop()
 {
+    profiler::beginNewFrame();
     double currTime = glfwGetTime();
     double deltaTime = currTime - prevTime;
 
     framesInSecond++;
-
-    if (config.showFPSInTitleBar && (remainingSecond -= deltaTime) <= 0)
+    if ((remainingSecond -= deltaTime) <= 0)
     {
-        std::string fps = std::to_string(framesInSecond) + "fps";
-        glfwSetWindowTitle(window, fps.c_str());
+        if (config.showFPSInTitleBar)
+        {
+            std::string fps = std::to_string(framesInSecond) + "fps";
+            glfwSetWindowTitle(window, fps.c_str());
+        }
+        profiler::fps = framesInSecond;
         framesInSecond = 0;
         remainingSecond = 1;
     }
@@ -165,10 +184,29 @@ void mainLoop()
         onResize();
     }
 
-    beforeRender(min(deltaTime, .1));
-    render(min(deltaTime, .1));
-    KeyInput::update();
-    MouseInput::update();
+    // Feed inputs to dear imgui, start new frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    {
+        profiler::Zone z("logic");
+        beforeRender(min(deltaTime, .1));
+    } {
+        profiler::Zone z("render");
+        render(min(deltaTime, .1));
+    } {
+        profiler::Zone z("input");
+        KeyInput::update();
+        MouseInput::update();
+    }
+
+    profiler::frames.back().time = glfwGetTime() - currTime;
+    if (profiler::showGUI) profiler::drawProfilerImGUI();
+
+    // Render dear imgui into screen
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     // Swap buffers
     glfwSwapBuffers(window);
@@ -189,6 +227,8 @@ void run()
 
     do mainLoop();
     while (!glfwWindowShouldClose(window));
+
+    ImGui_ImplGlfw_Shutdown();
 
     #endif
     // glfwTerminate();

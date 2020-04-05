@@ -7,6 +7,7 @@
 #include "../input/key_input.h"
 #include "../input/mouse_input.h"
 #include "screen.h"
+#include "profiler.h"
 
 namespace gu
 {
@@ -17,7 +18,8 @@ struct Config
     int width = 1600, height = 900, samples = 4;
     bool 
         vsync = false,
-        showFPSInTitleBar = true,
+        showFPSInTitleBar = false,
+        showProfiler = true,
         printOpenGLMessages = true;
 
     // the id of the HTML <canvas> element:
