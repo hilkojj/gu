@@ -127,17 +127,17 @@ bool init(Config config_)
 
     profiler::showGUI = config.showProfiler;
 
+    KeyInput::setInputWindow(window);
+    MouseInput::setInputWindow(window);
+
     // IMGUI ---------------------------------
     ImGui::CreateContext();
     const char* glsl_version = "#version 300 es";
 
     // Initialize helper Platform and Renderer bindings
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(window, false);
     ImGui_ImplOpenGL3_Init(glsl_version);
     // IMGUI ---------------------------------
-
-    KeyInput::setInputWindow(window);
-    MouseInput::setInputWindow(window);
 
     #ifdef EMSCRIPTEN
     // make the WebGL context accessible in Javascript using 'window.gl' or 'gl'

@@ -1,4 +1,6 @@
 
+#include <imgui.h>
+#include <examples/imgui_impl_glfw.h>
 #include "mouse_input.h"
 #define NR_OF_BUTTONS 8
 
@@ -22,6 +24,9 @@ ButtonStatus buttonStatuses[NR_OF_BUTTONS];
 
 void glfwButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
+    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+    if (ImGui::GetIO().WantCaptureMouse)
+        return;
     buttonStatuses[button] = action == GLFW_PRESS ? JUST_PRESSED : JUST_RELEASED;
 }
 
@@ -33,6 +38,9 @@ void glfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
     xoffset *= -.012;
     yoffset *= -.012;
     #endif
+    ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+    if (ImGui::GetIO().WantCaptureMouse)
+        return;
     nextXScroll += xoffset;
     nextYScroll += yoffset;
 }

@@ -2,6 +2,8 @@
 #ifndef GAME_HASHING_H
 #define GAME_HASHING_H
 
+#include "math_utils.h"
+
 template<typename T>
 inline size_t hashValue(const T &v)
 {

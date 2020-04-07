@@ -1,5 +1,7 @@
 
 #include <map>
+#include <imgui.h>
+#include <examples/imgui_impl_glfw.h>
 #include "key_input.h"
 
 namespace KeyInput
@@ -20,7 +22,9 @@ std::map<int, KeyStatus> keyStatuses;
 
 void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-    if (action == GLFW_REPEAT)
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+
+    if (action == GLFW_REPEAT || ImGui::GetIO().WantCaptureKeyboard)
         return;
 
     // printf("%s was %s\n", glfwGetKeyName(key, 0), action == GLFW_PRESS ? "pressed" : "released");
@@ -33,6 +37,7 @@ void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mod
 void setInputWindow(GLFWwindow* window)
 {
     glfwSetKeyCallback(window, KeyInput::glfwCallback);
+    glfwSetCharCallback(window, ImGui_ImplGlfw_CharCallback);
 }
 
 void update()

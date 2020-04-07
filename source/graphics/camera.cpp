@@ -1,3 +1,4 @@
+#include "../gu/game_utils.h"
 #include "camera.h"
 #include "../utils/math_utils.h"
 #include "../input/mouse_input.h"
@@ -46,7 +47,8 @@ vec3 Camera::getRayDirection(float viewportX, float viewportY) const
 
 vec3 Camera::getCursorRayDirection() const
 {
-    return getRayDirection(MouseInput::mouseX, MouseInput::mouseY);
+    return getRayDirection(MouseInput::mouseX / gu::widthPixels * viewportWidth,
+            MouseInput::mouseY / gu::heightPixels * viewportHeight);
 }
 
 vec3 Camera::project(const vec3 &p, bool &inViewport) const

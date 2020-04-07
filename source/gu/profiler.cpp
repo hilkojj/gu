@@ -7,7 +7,7 @@
 namespace gu::profiler
 {
 
-std::list<ZoneTime> frames;
+std::list<ZoneTime> frames = { ZoneTime() };
 bool showGUI = false;
 int fps = 0, takeAverageOfNFrames = 20;
 
@@ -52,10 +52,7 @@ void drawProfilerImGUI()
 
                 bool node_open = !zone.subZones.empty();
                 if (!node_open)
-                {
                     ImGui::TreeNodeEx("Field", ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_None, "%s", prefix);
-                    ImGui::SetNextItemWidth(-1);
-                }
                 else
                     node_open = ImGui::TreeNode("Object", "%s", prefix);
 
