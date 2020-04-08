@@ -10,7 +10,7 @@
 struct VertAttr
 {
     std::string name;
-    GLint size, byteSize = sizeof(float) * size;
+    GLuint size, byteSize = sizeof(float) * size;
     GLenum type = GL_FLOAT;
     GLboolean normalized = GL_FALSE;
 };
@@ -18,17 +18,24 @@ struct VertAttr
 class VertAttributes
 {
 
-  public:
-    static const struct VertAttr
-            POSITION, RGB, RGBA,
-            TEX_COORDS,
-            NORMAL, TANGENT, BI_NORMAL,
+public:
+    inline const static VertAttr
+            POSITION = {"POSITION", 3},
+            RGB = {"RGB", 3},
+            RGBA = {"RGBA", 4},
+            TEX_COORDS = {"TEX_COORDS", 2},
+            NORMAL = {"NORMAL", 3},
+            TANGENT = {"TANGENT", 3},
+            BI_NORMAL = {"BI_NORMAL", 3},
 
-            /* A transform is a 4x4 matrix = 16 floats.
-             * An attribute in OpenGL cannot be bigger than 4 floats,
-             * therefore the solution is to store a transform in 4 separate columns:
-             */
-            TRANSFORM_COL_A, TRANSFORM_COL_B, TRANSFORM_COL_C, TRANSFORM_COL_D;
+    /* A transform is a 4x4 matrix = 16 floats.
+     * An attribute in OpenGL cannot be bigger than 4 floats,
+     * therefore the solution is to store a transform in 4 separate columns:
+     */
+            TRANSFORM_COL_A = {"TRANSFORM_COL_A", 4},
+            TRANSFORM_COL_B = {"TRANSFORM_COL_B", 4},
+            TRANSFORM_COL_C = {"TRANSFORM_COL_C", 4},
+            TRANSFORM_COL_D = {"TRANSFORM_COL_D", 4};
 
     /**
      * adds the attribute, and returns the offset in bytes
@@ -63,23 +70,9 @@ class VertAttributes
     // to string
     friend std::ostream &operator<<(std::ostream &stream, const VertAttributes &attrs);
 
-  private:
+private:
     unsigned int vertSize = 0, nrOfComponents = 0;
     std::vector<VertAttr> attributes;
 };
-
-
-inline const struct VertAttr
-        VertAttributes::POSITION = {"POSITION", 3},
-        VertAttributes::RGB = {"RGB", 3},
-        VertAttributes::RGBA = {"RGBA", 4},
-        VertAttributes::TEX_COORDS = {"TEX_COORDS", 2},
-        VertAttributes::NORMAL = {"NORMAL", 3},
-        VertAttributes::TANGENT = {"TANGENT", 3},
-        VertAttributes::BI_NORMAL = {"BI_NORMAL", 3},
-        VertAttributes::TRANSFORM_COL_A = {"TRANSFORM_COL_A", 4},
-        VertAttributes::TRANSFORM_COL_B = {"TRANSFORM_COL_B", 4},
-        VertAttributes::TRANSFORM_COL_C = {"TRANSFORM_COL_C", 4},
-        VertAttributes::TRANSFORM_COL_D = {"TRANSFORM_COL_D", 4};
 
 #endif
