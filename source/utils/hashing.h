@@ -10,7 +10,8 @@ inline size_t hashValue(const T &v)
     return std::hash<T>{}(v);
 }
 
-inline uint32 hashStringCrossPlatform(const char *str)
+template <typename string>
+inline uint32 hashStringCrossPlatform(const string str)
 {
     uint32 hash = 0x811c9dc5;
     uint32 prime = 0x1000193;
