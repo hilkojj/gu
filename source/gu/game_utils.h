@@ -29,6 +29,7 @@ struct Config
 extern Config config;
 extern GLFWwindow *window;
 extern int width, height, widthPixels, heightPixels;
+extern bool fullscreen;
 extern std::function<void(double deltaTime)> beforeRender;
 
 // initialize OpenGL, window, input and more. Returns false if initialization failed.

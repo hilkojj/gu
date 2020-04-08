@@ -29,6 +29,7 @@ GLFWwindow *window = nullptr;
 // size of the window:
 // width & height are in screen coordinates, widthPixels & heightPixels are in pixels.
 int width = 0, height = 0, widthPixels = 0, heightPixels = 0;
+bool fullscreen = false;
 
 std::function<void(double)> beforeRender = [](auto){};
 
@@ -71,6 +72,23 @@ void onResize()
         screen->onResize();
 }
 
+void toggleFullscreen()
+{
+    static int restoreXPos, restoreYPos, restoreWidth, restoreHeight;
+    if (fullscreen)
+    {
+        glfwGetWindowPos(window, &restoreXPos, &restoreYPos);
+        glfwGetWindowSize(window, &restoreWidth, &restoreHeight);
+        auto monitor = glfwGetPrimaryMonitor();
+        auto videoMode = glfwGetVideoMode(monitor);
+        int w = videoMode->width, h = videoMode->height;
+        glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, w, h, videoMode->refreshRate);
+    }
+    else
+    {
+        glfwSetWindowMonitor(window, NULL, restoreXPos, restoreYPos, restoreWidth, restoreHeight, GLFW_DONT_CARE);
+    }
+}
 
 } // namespace
 
@@ -193,6 +211,10 @@ void mainLoop()
         profiler::Zone z("logic");
         beforeRender(min(deltaTime, .1));
     } {
+        static bool wasFullscreen = false;
+        if (wasFullscreen != fullscreen)
+            toggleFullscreen();
+        wasFullscreen = fullscreen;
         profiler::Zone z("render");
         render(min(deltaTime, .1));
     } {
