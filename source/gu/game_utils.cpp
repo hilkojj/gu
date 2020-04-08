@@ -1,5 +1,6 @@
 #include "game_utils.h"
 #include "../utils/math_utils.h"
+#include "../utils/gu_error.h"
 #include <string>
 
 #include "imgui.h"
@@ -72,22 +73,57 @@ void onResize()
         screen->onResize();
 }
 
+GLFWmonitor *get_current_monitor(GLFWwindow *window)
+{
+    ivec2 windowPos, windowSize;
+    int nrOfMonitors;
+    GLFWmonitor **monitors = glfwGetMonitors(&nrOfMonitors);
+    GLFWmonitor *monitor = NULL;
+
+    glfwGetWindowPos(window, &windowPos.x, &windowPos.y);
+    glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
+
+    ivec2 winCenter = windowPos + windowSize / 2;
+
+    for (int i = 0; i < nrOfMonitors; i++) {
+
+        monitor = monitors[i];
+        const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+
+        ivec2 monitorSize(mode->width, mode->height);
+        ivec2 monitorPos;
+        glfwGetMonitorPos(monitor, &monitorPos.x, &monitorPos.y);
+
+        if (
+                winCenter.x >= monitorPos.x && winCenter.x <= monitorPos.x + monitorSize.x
+                &&
+                winCenter.y >= monitorPos.y && winCenter.y <= monitorPos.y + monitorSize.y
+        )
+            break;
+    }
+    if (!monitor) throw gu_err("No monitor found");
+    return monitor;
+}
+
 void toggleFullscreen()
 {
+    #ifndef EMSCRIPTEN
     static int restoreXPos, restoreYPos, restoreWidth, restoreHeight;
     if (fullscreen)
     {
         glfwGetWindowPos(window, &restoreXPos, &restoreYPos);
         glfwGetWindowSize(window, &restoreWidth, &restoreHeight);
-        auto monitor = glfwGetPrimaryMonitor();
+        auto monitor = get_current_monitor(window);
+
         auto videoMode = glfwGetVideoMode(monitor);
         int w = videoMode->width, h = videoMode->height;
-        glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, w, h, videoMode->refreshRate);
+        glfwSetWindowMonitor(window, monitor, 0, 0, w, h, videoMode->refreshRate);
     }
     else
     {
         glfwSetWindowMonitor(window, NULL, restoreXPos, restoreYPos, restoreWidth, restoreHeight, GLFW_DONT_CARE);
     }
+    #endif
 }
 
 } // namespace
