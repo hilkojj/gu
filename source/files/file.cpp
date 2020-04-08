@@ -6,9 +6,6 @@
 #include "file.h"
 #include "../utils/gu_error.h"
 
-#ifndef EMSCRIPTEN
-#include <filesystem>
-#endif
 
 std::string File::readString(const char *path)
 {
@@ -43,12 +40,8 @@ void File::writeBinary(const char *path, std::vector<unsigned char> &data)
 
 bool File::exists(const char *path)
 {
-    #ifdef EMSCRIPTEN
     std::ifstream stream(path, std::ios::in);
     bool exists = stream.is_open();
     stream.close();
     return exists;
-    #else
-    return std::filesystem::exists(path);
-    #endif
 }
