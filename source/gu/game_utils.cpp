@@ -295,6 +295,7 @@ void run()
 void setScreen(Screen *newScreen)
 {
     screen = newScreen;
+    onResize();
 }
 
 } // namespace gu
