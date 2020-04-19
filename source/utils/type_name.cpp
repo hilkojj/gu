@@ -25,11 +25,12 @@ std::string demangle(const char *name) {
 
 #endif
 
-void removeTypewords(std::string &str)
+void removeKeywords(std::string &str)
 {
     int pos = str.find(' ');
-    if (pos == std::string::npos) return;
-    str = str.substr(pos, str.size() - 1);
+    if (pos == std::string::npos)
+        return;
+    str = str.substr(pos + 1, str.size() - 1);
 }
 
 void removeTemplates(std::string &str)

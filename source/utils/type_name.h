@@ -5,7 +5,7 @@
 #include <sstream>
 
 std::string demangle(const char *name);
-void removeTypewords(std::string &str);
+void removeKeywords(std::string &str);
 void removeTemplates(std::string &str);
 void removeNamespaces(std::string &str);
 
@@ -27,7 +27,7 @@ std::string getTypeName(bool removeNamespacesAndTemplates=true)
         removeTemplates(name);
         removeNamespaces(name);
     }
-    removeTypewords(name);
+    removeKeywords(name);
     return name;
 }
 
