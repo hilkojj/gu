@@ -23,6 +23,7 @@ Clone/fork [this template](https://github.com/hilkojj/cpp-game-utils-template) a
     - Cameras
 - Mouse & key input
 - Loading models from Blender (use [this Blender addon](https://github.com/hilkojj/blender_UBJSON_exporter) and load the exported files with the JsonModelLoader)
+- Loading [Aseprite](https://www.aseprite.org/) sprites directly from [`.ase` files](https://github.com/aseprite/aseprite/blob/master/docs/ase-file-specs.md). (Only indexed sprites supported) 
 - Some utilities (Math, TangentCalculator, A* pathfinder, etc.)
 
 ## Manual installation

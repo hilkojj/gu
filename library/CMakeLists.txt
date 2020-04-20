@@ -65,4 +65,15 @@ target_link_libraries(gameutils imgui)
 
 
 
+# ---ZLIB---
+
+set(ZLIB_DIR ../external/zlib)
+file(GLOB ZLIB_SOURCES ${ZLIB_DIR}/*.c)
+file(GLOB ZLIB_HEADERS ${ZLIB_DIR}/*.h)
+
+add_library(zlib ${ZLIB_SOURCES} ${ZLIB_HEADERS})
+
+target_include_directories(zlib PUBLIC ${ZLIB_DIR})
+target_link_libraries(gameutils zlib)
+
 target_include_directories(gameutils PUBLIC ../source/)

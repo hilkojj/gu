@@ -66,6 +66,7 @@ _deps
 
 /external/*
 !/external/imgui
+!/external/zlib
 bin/
 
 
