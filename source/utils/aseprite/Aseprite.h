@@ -4,14 +4,15 @@
 
 
 #include <vector>
+#include <optional>
 #include "../math_utils.h"
 
 namespace aseprite
 {
 
 using Pixel = uint8;
-using ColorRGBA = lowp_u8vec4;
-using ColorRGB = lowp_u8vec3;
+using ColorRGBA = u8vec4;
+using ColorRGB = u8vec3;
 
 struct UserData
 {
