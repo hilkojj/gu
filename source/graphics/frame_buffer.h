@@ -31,6 +31,8 @@ class FrameBuffer
     // format can be GL_RGB or GL_RGBA. magFilter and minFilter can be GL_LINEAR for example.
     void addColorTexture(GLuint format, GLuint magFilter, GLuint minFilter);
 
+    void addColorTexture(GLuint internalFormat, GLuint format, GLuint magFilter, GLuint minFilter);
+
     void addColorBuffer(GLuint format);
 
     void addDepthTexture(GLuint magFilter, GLuint minFilter);

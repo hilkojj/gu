@@ -20,7 +20,8 @@ struct Config
         vsync = false,
         showFPSInTitleBar = false,
         showProfiler = true,
-        printOpenGLMessages = true;
+        printOpenGLMessages = false,
+        printOpenGLErrors = true;
 
     // the id of the HTML <canvas> element:
     std::string htmlCanvasId = "canvas";

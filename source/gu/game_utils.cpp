@@ -42,7 +42,13 @@ void APIENTRY glMessageCallback(GLenum source, GLenum type, GLuint id,
                             GLenum severity, GLsizei length,
                             const GLchar *msg, const void *data)
 {
-    std::cerr << "\n====== OpenGL Message. ID: " << id << " ======" << std::endl << msg << std::endl << "======================================\n\n";
+    if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+    {
+        if (config.printOpenGLMessages)
+            std::cout << "====== OpenGL Message. ID: " << id << " ======" << std::endl << msg << "\n======================================\n";
+    }
+    else if (config.printOpenGLErrors)
+        std::cerr << "====== OpenGL Error. ID: " << id << " ======" << std::endl << msg << "\n======================================\n";
 }
 
 bool resized = true;
@@ -163,7 +169,7 @@ bool init(Config config_)
         return false;
     }
 
-    if (config.printOpenGLMessages)
+    if (config.printOpenGLMessages || config.printOpenGLErrors)
     {
         #ifndef EMSCRIPTEN
         glEnable(GL_DEBUG_OUTPUT);
