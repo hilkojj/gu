@@ -13,6 +13,7 @@ class asset
 {
 
     std::shared_ptr<loaded_asset> loadedAsset;
+    double lastCheckTime = glfwGetTime();
 
   public:
 
@@ -28,6 +29,16 @@ class asset
     type* operator->()
     {
         return (type *) loadedAsset->obj;
+    }
+
+    bool hasReloaded()
+    {
+        if (loadedAsset->loadedSinceTime > lastCheckTime)
+        {
+            lastCheckTime = glfwGetTime();
+            return true;
+        }
+        return false;
     }
 
 };

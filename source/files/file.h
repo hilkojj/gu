@@ -14,7 +14,7 @@ class File
 
     static void writeBinary(const char *path, std::vector<unsigned char> &data);
 
-    static void iterateFilesRecursively(const std::string &path, std::function<void(const std::string &)> cb);
+    static void iterateDirectoryRecursively(const std::string &path, std::function<void(const std::string &, bool isDir)> cb);
 
 };
 

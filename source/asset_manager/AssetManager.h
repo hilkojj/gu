@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <list>
+#include <assert.h>
 #include "../utils/string.h"
 #include "../files/file.h"
 #include "../gu/game_utils.h"
@@ -45,7 +46,6 @@ struct loaded_asset
 
     ~loaded_asset()
     {
-        std::cout << "k byeeeeeeeeee\n";
         destructor();
     }
 };
@@ -89,35 +89,40 @@ class AssetManager
                 return new loaded_asset(function(path));
             }
         });
+        loaders.sort([] (auto l1, auto l2) {
+            return l1.fileSuffix.size() > l2.fileSuffix.size();
+        });
     }
 
     static void load(const char *directory)
     {
-        loaders.sort([] (auto l1, auto l2) {
-            return l1.fileSuffix.size() > l2.fileSuffix.size();
+        File::iterateDirectoryRecursively(directory, [&](auto path, bool isDir) {
+            if (!isDir)
+                loadFile(path, std::string(directory) + "/");
         });
+    }
 
-        File::iterateFilesRecursively(directory, [&](auto path) {
-            for (AssetLoader &loader : loaders)
-            {
-                if (!loader.match(path))
-                    continue;
+    static void loadFile(const std::string &path, const std::string &removePreFix)
+    {
+        for (AssetLoader &loader : loaders)
+        {
+            if (!loader.match(path))
+                continue;
 
-                std::cout << "Loading " << loader.typeName << "-asset '" << path << "'...\n";
+            std::cout << "Loading " << loader.typeName << "-asset '" << path << "'...\n";
 
-                loaded_asset *loaded = loader.loadFunction(path);
-                std::string key = splitString(path, std::string(directory) + "/")[0];
-                key.resize(key.size() - loader.fileSuffix.size());
+            loaded_asset *loaded = loader.loadFunction(path);
+            std::string key = splitString(path, removePreFix)[0];
+            key.resize(key.size() - loader.fileSuffix.size());
 
-                auto existing = assets[key];
+            auto existing = assets[key];
 
-                if (existing)
-                    existing->replace(loaded);
-                else
-                    assets[key] = std::shared_ptr<loaded_asset>(loaded);
-            }
-        });
-
+            if (existing)
+                existing->replace(loaded);
+            else
+                assets[key] = std::shared_ptr<loaded_asset>(loaded);
+            break;
+        }
     }
 
     static void unloadAll()

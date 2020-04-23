@@ -3,7 +3,7 @@
 #include <sstream>
 #include <vector>
 
-#ifndef EMSCRIPTEN
+#ifdef _WIN32
 #include <filesystem>
 #else
 #include <dirent.h>
@@ -53,30 +53,28 @@ bool File::exists(const char *path)
     return exists;
 }
 
-void File::iterateFilesRecursively(const std::string &path_, std::function<void(const std::string &)> cb)
+void File::iterateDirectoryRecursively(const std::string &path_, std::function<void(const std::string &, bool)> cb)
 {
     std::string path = path_;
     if (!stringEndsWith(path, "/"))
         path += "/";
 
-    #ifdef EMSCRIPTEN
+    #ifndef _WIN32
     if (auto dir = opendir(path.c_str())) {
         while (auto f = readdir(dir)) {
             if (f->d_name[0] == '.') continue;
-            if (f->d_type == DT_DIR)
-                iterateFilesRecursively(path + f->d_name, cb);
+            bool isDir = f->d_type == DT_DIR;
+            if (isDir)
+                iterateDirectoryRecursively(path + f->d_name, cb);
 
-            if (f->d_type == DT_REG)
-                cb(path + f->d_name);
+            cb(path + f->d_name, isDir);
         }
         closedir(dir);
     }
     #else
     for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(path))
     {
-        if (dirEntry.is_directory())
-            continue;
-        cb(dirEntry.path().generic_string());
+        cb(dirEntry.path().generic_string(), dirEntry.is_directory());
     }
     #endif
 }
