@@ -54,6 +54,11 @@ class asset
         if (loadedAsset->objType != typeid(type).hash_code())
             throw gu_err(loadedAsset->objTypeName + "-asset '"  +  path + "' is not a " + getTypeName<type>());
     }
+
+    const loaded_asset &getLoadedAsset() const
+    {
+        return *loadedAsset;
+    }
 };
 
 

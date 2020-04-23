@@ -16,7 +16,7 @@ struct loaded_asset
 {
     void *obj;
     std::size_t objType;
-    std::string objTypeName;
+    std::string objTypeName, fullPath, shortPath;
 
     double loadedSinceTime;
 
@@ -142,6 +142,9 @@ class AssetManager
 
                 loader.removeSuffix(key);
                 assets[loaded->objType][key] = shared;
+
+                loaded->fullPath = path;
+                loaded->shortPath = key;
             }
             catch(const std::exception& e)
             {
