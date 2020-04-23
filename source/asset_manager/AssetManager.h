@@ -55,19 +55,35 @@ class AssetManager
 
     template<typename> friend class asset;
 
-    inline static std::map<std::string, std::shared_ptr<loaded_asset>> assets;
+    inline static std::map<size_t, std::map<std::string, std::shared_ptr<loaded_asset>>> assets;
 
     struct AssetLoader
     {
         size_t type;
-        const std::string
-            typeName,
-            fileSuffix;
+        const std::string typeName;
+
+        std::vector<std::string> fileSuffixes;
+
         std::function<loaded_asset *(const std::string &path)> loadFunction;
 
-        bool match(const std::string &filePath)
+        bool match(const std::string &filePath) const
         {
-            return stringEndsWith(filePath, fileSuffix);
+            for (auto &suff : fileSuffixes)
+                if (stringEndsWith(filePath, suff))
+                    return true;
+            return false;
+        }
+
+        void removeSuffix(std::string &path) const
+        {
+            for (auto &suff : fileSuffixes)
+            {
+                if (stringEndsWith(path, suff))
+                {
+                    path.resize(path.size() - suff.size());
+                    break;
+                }
+            }
         }
     };
 
@@ -84,13 +100,13 @@ class AssetManager
         loaders.push_back({
             typeid(type).hash_code(),
             getTypeName<type>(),
-            assetFileSuffix,
+            splitString(assetFileSuffix, "|"),
             [=] (const std::string &path) {
                 return new loaded_asset(function(path));
             }
         });
         loaders.sort([] (auto l1, auto l2) {
-            return l1.fileSuffix.size() > l2.fileSuffix.size();
+            return l1.fileSuffixes[0].size() > l2.fileSuffixes[0].size();
         });
     }
 
@@ -104,23 +120,33 @@ class AssetManager
 
     static void loadFile(const std::string &path, const std::string &removePreFix)
     {
-        for (AssetLoader &loader : loaders)
+        for (const AssetLoader &loader : loaders)
         {
             if (!loader.match(path))
                 continue;
 
             std::cout << "Loading " << loader.typeName << "-asset '" << path << "'...\n";
 
-            loaded_asset *loaded = loader.loadFunction(path);
-            std::string key = splitString(path, removePreFix)[0];
-            key.resize(key.size() - loader.fileSuffix.size());
+            try
+            {
+                loaded_asset *loaded = loader.loadFunction(path);
+                std::string key = splitString(path, removePreFix)[0];
+                auto shared = std::shared_ptr<loaded_asset>(loaded);
 
-            auto existing = assets[key];
+                auto existing = assets[loaded->objType][key];
 
-            if (existing)
-                existing->replace(loaded);
-            else
-                assets[key] = std::shared_ptr<loaded_asset>(loaded);
+                if (existing)
+                    existing->replace(loaded);
+                else
+                    assets[loaded->objType][key] = shared;
+
+                loader.removeSuffix(key);
+                assets[loaded->objType][key] = shared;
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << "Error while loading asset: " << path << ":\n" << e.what() << std::endl;
+            }
             break;
         }
     }

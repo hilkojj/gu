@@ -1,0 +1,33 @@
+
+#ifndef GAME_SHADER_ASSET_H
+#define GAME_SHADER_ASSET_H
+
+#include "shader_program.h"
+#include "../asset_manager/asset.h"
+
+class ShaderAsset : public ShaderProgram
+{
+
+    asset<std::string> vertCode, fragCode;
+
+  public:
+
+    ShaderAsset(const std::string &name, const std::string& vertPath, const std::string& fragPath)
+        : ShaderProgram(name, asset<std::string>(vertPath)->c_str(), asset<std::string>(fragPath)->c_str()),
+          vertCode(vertPath), fragCode(fragPath)
+    {}
+
+    void use() override
+    {
+        if (vertCode.hasReloaded() || fragCode.hasReloaded())
+        {
+            glDeleteProgram(programId);
+            compile(vertCode->c_str(), fragCode->c_str());
+        }
+        ShaderProgram::use();
+    }
+
+};
+
+
+#endif

@@ -41,7 +41,6 @@ inline float random(float max)
     return random() * max;
 }
 
-
 inline float random(float min, float max)
 {
     return random(max - min) + min;
@@ -56,6 +55,17 @@ inline int randomInt(int max)
 inline int randomInt(int min, int max)
 {
     return randomInt(max - min) + min;
+}
+
+inline float randomFromX(float x)
+{
+    return fract(sin(x) * 100000.0);
+}
+
+inline int randomIntFromX(float x, int max)
+{
+    if (max == 0) return 0;
+    return int(randomFromX(x) * 1000) % max;
 }
 
 inline vec3 calculateNormal(const vec3 &p0, const vec3 &p1, const vec3 &p2)

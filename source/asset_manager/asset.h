@@ -17,18 +17,23 @@ class asset
 
   public:
 
+    asset() = default;
+
     asset(const std::string &path)
     {
-        loadedAsset = AssetManager::assets[path];
-        if (!loadedAsset)
-            throw gu_err(getTypeName<type>() + "-asset '"  +  path + "' is not loaded.");
-        if (loadedAsset->objType != typeid(type).hash_code())
-            throw gu_err(loadedAsset->objTypeName + "-asset '"  +  path + "' is not a " + getTypeName<type>());
+        set(path);
     }
 
     type* operator->()
     {
+        if (!loadedAsset)
+            throw gu_err("trying to use an asset that is not initialized!");
         return (type *) loadedAsset->obj;
+    }
+
+    type &get()
+    {
+        return *(this->operator->());
     }
 
     bool hasReloaded()
@@ -41,6 +46,14 @@ class asset
         return false;
     }
 
+    void set(const std::string &path)
+    {
+        loadedAsset = AssetManager::assets[typeid(type).hash_code()][path];
+        if (!loadedAsset)
+            throw gu_err(getTypeName<type>() + "-asset '"  +  path + "' is not loaded.");
+        if (loadedAsset->objType != typeid(type).hash_code())
+            throw gu_err(loadedAsset->objTypeName + "-asset '"  +  path + "' is not a " + getTypeName<type>());
+    }
 };
 
 

@@ -1,21 +1,19 @@
 #include <iostream>
+#include <utility>
 #include <vector>
 
 #include "shader_program.h"
 #include "../files/file.h"
 
-bool ShaderProgram::reloadFromFile = false;
+ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *fragSource)
 
-ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *fragSource, std::string vertPath, std::string fragPath)
-
-    : name(std::move(name)), vertPath(std::move(vertPath)), fragPath(std::move(fragPath))
+    : name(std::move(name))
 {
     compile(vertSource, fragSource);
 }
 
-ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *geomSource, const char *fragSource,
-                             std::string vertPath, std::string geomPath, std::string fragPath)
-    : name(std::move(name)), vertPath(std::move(vertPath)), fragPath(std::move(fragPath)), geomPath(std::move(geomPath))
+ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *geomSource, const char *fragSource)
+    : name(std::move(name))
 {
     compile(vertSource, fragSource, geomSource);
 }
@@ -99,23 +97,6 @@ GLuint ShaderProgram::location(const char *uniformName) const
 
 void ShaderProgram::use()
 {
-    if (reloadFromFile)
-    {
-        if (!reloadedFromFile && !vertPath.empty())
-        {
-            std::string vertCode = File::readString(vertPath.c_str());
-            std::string fragCode = File::readString(fragPath.c_str());
-            std::string geomCode;
-            if (!geomPath.empty())
-                geomCode = File::readString(geomPath.c_str());
-
-            glDeleteProgram(programId);
-            compile(vertCode.c_str(), fragCode.c_str(), !geomCode.empty() ? geomCode.c_str() : NULL);
-        }
-        reloadedFromFile = true;
-    }
-    else reloadedFromFile = false;
-    
     glUseProgram(programId);
 }
 
@@ -123,7 +104,7 @@ ShaderProgram ShaderProgram::fromFiles(std::string name, const std::string& vert
 {
     std::string vertCode = File::readString(vertPath.c_str());
     std::string fragCode = File::readString(fragPath.c_str());
-    return ShaderProgram(std::move(name), vertCode.c_str(), fragCode.c_str(), vertPath, fragPath);
+    return ShaderProgram(std::move(name), vertCode.c_str(), fragCode.c_str());
 }
 
 ShaderProgram::~ShaderProgram()
@@ -137,5 +118,5 @@ ShaderProgram ShaderProgram::fromFiles(std::string name, const std::string &vert
     std::string vertCode = File::readString(vertPath.c_str());
     std::string geomCode = File::readString(geomPath.c_str());
     std::string fragCode = File::readString(fragPath.c_str());
-    return ShaderProgram(std::move(name), vertCode.c_str(), geomCode.c_str(), fragCode.c_str(), vertPath, geomPath, fragPath);
+    return ShaderProgram(std::move(name), vertCode.c_str(), geomCode.c_str(), fragCode.c_str());
 }
