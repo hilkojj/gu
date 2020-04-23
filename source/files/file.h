@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <functional>
 
 #ifndef FILE_H
 #define FILE_H
@@ -12,6 +13,8 @@ class File
     static bool exists(const char *path);
 
     static void writeBinary(const char *path, std::vector<unsigned char> &data);
+
+    static void iterateFilesRecursively(const std::string &path, std::function<void(const std::string &)> cb);
 
 };
 

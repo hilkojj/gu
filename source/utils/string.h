@@ -8,7 +8,7 @@
 /**
  * taken from https://stackoverflow.com/a/37454181/10386780
  */
-std::vector<std::string> splitString(const std::string& str, const std::string& delim)
+inline std::vector<std::string> splitString(const std::string& str, const std::string& delim)
 {
     using namespace std;
 
@@ -24,6 +24,17 @@ std::vector<std::string> splitString(const std::string& str, const std::string& 
     }
     while (pos < str.length() && prev < str.length());
     return tokens;
+}
+
+/**
+ * taken from https://stackoverflow.com/a/874160/10386780
+ */
+inline bool stringEndsWith(std::string const &fullString, std::string const &ending)
+{
+    if (fullString.length() >= ending.length())
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    else
+        return false;
 }
 
 #endif //GAME_STRING_H
