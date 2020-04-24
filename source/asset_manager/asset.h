@@ -26,12 +26,20 @@ class asset
 
     type* operator->()
     {
-        if (!loadedAsset)
-            throw gu_err("trying to use an asset that is not initialized!");
-        return (type *) loadedAsset->obj;
+        return getPtrToObj();
+    }
+
+    const type* operator->() const
+    {
+        return getPtrToObj();
     }
 
     type &get()
+    {
+        return *(this->operator->());
+    }
+
+    const type &get() const
     {
         return *(this->operator->());
     }
@@ -59,6 +67,16 @@ class asset
     {
         return *loadedAsset;
     }
+
+  private:
+
+    type *getPtrToObj() const
+    {
+        if (!loadedAsset)
+            throw gu_err("trying to use an asset that is not initialized!");
+        return (type *) loadedAsset->obj;
+    }
+
 };
 
 

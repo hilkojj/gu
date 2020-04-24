@@ -6,7 +6,7 @@
 #include "../utils/gu_error.h"
 #include "../utils/quad_renderer.h"
 
-SharedTexArray TextureArray::fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLsizei depth)
+SharedTexArray TextureArray::fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLsizei depth, GLuint magFilter, GLuint minFilter)
 {
     GLuint id;
     glGenTextures(1, &id);
@@ -16,8 +16,8 @@ SharedTexArray TextureArray::fromByteData(const GLubyte *data, GLenum format, GL
 
     glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // don't forget to enable mipmaping
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, magFilter);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, minFilter);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -50,7 +50,7 @@ SharedTexArray TextureArray::fromDDSFiles(const std::vector<std::string> &paths)
     }
     fb->unbind();
     delete fb;
-    return TextureArray::fromByteData(&data[0], GL_RGBA, width_, height_, paths.size());
+    return TextureArray::fromByteData(&data[0], GL_RGBA, width_, height_, paths.size(), GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     #endif
 
     GLuint id;

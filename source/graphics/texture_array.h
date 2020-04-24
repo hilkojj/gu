@@ -29,7 +29,7 @@ class TextureArray
      */
     static SharedTexArray fromDDSFiles(const std::vector<std::string> &paths);
 
-    static SharedTexArray fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLsizei depth);
+    static SharedTexArray fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLsizei depth, GLuint magFilter, GLuint minFilter);
 
     const GLuint id, width, height, layers;
 
