@@ -15,6 +15,9 @@ class VertBuffer
 {
   public:
 
+    GLenum vboUsage = GL_STATIC_DRAW;
+    GLenum iboUsage = GL_STATIC_DRAW;
+
     // creates a VertBuffer for meshes with these attributes
     static VertBuffer* with(VertAttributes &attributes);
 
@@ -36,6 +39,8 @@ class VertBuffer
     void bind();
 
     void onMeshDestroyed(); // Called by ~Mesh()
+
+    void reuploadVertices(const SharedMesh &mesh);
 
     /**
      * upload vertex-attributes that do not advance per vertex, but per instance (glDrawElementsInstanced() & glVertexAttribDivisor())

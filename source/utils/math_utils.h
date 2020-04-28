@@ -206,7 +206,7 @@ inline void loop3d(int size, const std::function<bool(int x, int y, int z)> &cal
 }
 
 template <class vec>
-inline bool allGreaterOrEqualTo(vec v, const double &val)
+inline bool allGreaterOrEqualTo(const vec &v, const double &val)
 {
     for (int i = 0; i < vec::length(); i++)
         if (v[i] < val) return false;

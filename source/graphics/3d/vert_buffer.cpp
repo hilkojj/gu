@@ -71,16 +71,16 @@ void VertBuffer::upload(bool disposeOfflineData)
     if (vboId)
         throw gu_err("VertBuffer already uploaded");
 
-    // std::cout << "Uploading vbo\n";
+    std::cout << "Uploading vbo\n";
     bind();
 
     glGenBuffers(1, &vboId);    // create VertexBuffer
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
-    glBufferData(GL_ARRAY_BUFFER, nrOfVerts * vertSize, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, nrOfVerts * vertSize, NULL, vboUsage);
 
     glGenBuffers(1, &iboId);    // create IndexBuffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * nrOfIndices, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * nrOfIndices, NULL, iboUsage);
 
     GLuint vertsOffset = 0, indicesOffset = 0;
     for (std::weak_ptr<Mesh> m : meshes)
@@ -93,6 +93,8 @@ void VertBuffer::upload(bool disposeOfflineData)
             vertsSize = mesh->nrOfVertices * vertSize,
             indicesSize = mesh->nrOfIndices * sizeof(GLushort);
 
+        mesh->vertBufferOffset = vertsOffset;
+
         auto &indices = mesh->indices;
         #if EMSCRIPTEN
         if (!disposeOfflineData) indices = *&indices;
@@ -100,7 +102,7 @@ void VertBuffer::upload(bool disposeOfflineData)
         for (auto &i : indices) i += mesh->baseVertex;
         #endif
 
-        glBufferSubData(GL_ARRAY_BUFFER, vertsOffset, vertsSize, mesh->vertices.data());
+        glBufferSubData(GL_ARRAY_BUFFER, mesh->vertBufferOffset, vertsSize, mesh->vertices.data());
         glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indicesOffset, indicesSize, indices.data());
 
         if (disposeOfflineData) mesh->disposeOfflineData();
@@ -177,7 +179,7 @@ GLuint VertBuffer::uploadPerInstanceData(VertData data, GLuint advanceRate)
     instanceVboAttrs[id] = data.attributes;
 
     glBindBuffer(GL_ARRAY_BUFFER, instanceVbos[id]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.vertices.size(), &data.vertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.vertices.size(), &data.vertices[0], GL_STATIC_DRAW); // todo: sizeof(GLfloat) ???????????????
     usePerInstanceData(id, advanceRate);
     return id;
 }
@@ -202,7 +204,6 @@ bool VertBuffer::inUse() const
 
 VertBuffer::~VertBuffer()
 {
-    /*
     if (inUse())
     {
         std::cerr << "WARNING: Deleting a VertBuffer that is still in use by [";
@@ -218,7 +219,7 @@ VertBuffer::~VertBuffer()
             }
         std::cerr << "]\n";
     }
-    std::cout << "Deleting VertBuffer: vao & vbo & ibo\n";*/
+    std::cout << "Deleting VertBuffer: vao & vbo & ibo\n";
     glDeleteVertexArrays(1, &vaoId);
     glDeleteBuffers(1, &vboId);
     glDeleteBuffers(1, &iboId);
@@ -242,4 +243,13 @@ void VertBuffer::deletePerInstanceData(GLuint instanceDataId)
     bind();
     glDeleteBuffers(1, &instanceVbos[instanceDataId]);
     instanceVbos[instanceDataId] = -1;
+}
+
+void VertBuffer::reuploadVertices(const SharedMesh &mesh)
+{
+    bind();
+    glBindBuffer(GL_ARRAY_BUFFER, vboId);
+    int vertsOffset = mesh->vertBufferOffset;
+    int vertsSize = mesh->nrOfVertices * vertSize;
+    glBufferSubData(GL_ARRAY_BUFFER, vertsOffset, vertsSize, mesh->vertices.data());
 }

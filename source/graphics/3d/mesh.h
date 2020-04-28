@@ -82,6 +82,8 @@ class Mesh : public VertData
     // variables used for glDrawElementsBaseVertex: (https://www.khronos.org/opengl/wiki/GLAPI/glDrawElementsBaseVertex)
     int baseVertex = 0, indicesBufferOffset = 0;
 
+    int vertBufferOffset = 0;
+
     Mesh(
         const std::string& name,
         unsigned int nrOfVertices,
