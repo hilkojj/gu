@@ -68,8 +68,11 @@ typedef std::shared_ptr<Mesh> SharedMesh;
 class Mesh : public VertData
 {
   public:
-    // returns a shared(!) quad mesh with only the Position attribute. (position attribute can also be used for texture coordinates)
+    // returns a shared(!) uploaded quad mesh with only the Position attribute. (position attribute can also be used for texture coordinates)
     static SharedMesh getQuad();
+
+    // creates a quad mesh. Not the same as getQuad()
+    static SharedMesh createQuad();
 
     std::string name;
     std::vector<unsigned short> indices;

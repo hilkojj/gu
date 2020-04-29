@@ -15,17 +15,7 @@ SharedMesh Mesh::getQuad()
 {
     if (!quad)
     {
-        quad = SharedMesh(new Mesh("quad", 4, 6, VertAttributes().add_(VertAttributes::POSITION)));
-        quad->set<float[12]>({
-                -1, -1, 0,
-                -1, 1, 0,
-                1, 1, 0,
-                1, -1, 0,
-            }, 0, 0);
-        quad->indices.insert(quad->indices.begin(), {
-            2, 1, 0,
-            0, 3, 2,
-        });
+        quad = createQuad();
         VertBuffer::uploadSingleMesh(quad);
     }
     return quad;
@@ -120,6 +110,22 @@ void Mesh::renderArrays()
             baseVertex,
             nrOfVertices
     );
+}
+
+SharedMesh Mesh::createQuad()
+{
+    SharedMesh quad(new Mesh("quad", 4, 6, VertAttributes().add_(VertAttributes::POSITION)));
+    quad->set<float[12]>({
+        -1, -1, 0,
+        -1, 1, 0,
+        1, 1, 0,
+        1, -1, 0,
+    }, 0, 0);
+    quad->indices.insert(quad->indices.begin(), {
+        2, 1, 0,
+        0, 3, 2,
+    });
+    return quad;
 }
 
 void VertData::removeVertices(int count)

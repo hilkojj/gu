@@ -47,8 +47,10 @@ class VertBuffer
      * also known as Instanced Arrays (https://www.khronos.org/opengl/wiki/Vertex_Specification#Instanced_arrays)
      *
      * useful for when you want to render a mesh multiple times in 1 draw call, but each on a different position.
+     *
+     * returns the id of the uploaded buffer. If you want to update the same buffer at a later moment call this function again with id != -1
      **/
-    GLuint uploadPerInstanceData(VertData data, GLuint advanceRate=1);
+    GLuint uploadPerInstanceData(const VertData &data, GLuint advanceRate=1, int id=-1);
 
     void usePerInstanceData(GLuint instanceDataId, GLuint advanceRate=1);
 

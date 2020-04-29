@@ -165,21 +165,24 @@ void VertBuffer::setAttrPointersAndEnable(VertAttributes &attrs, unsigned int di
     }
 }
 
-GLuint VertBuffer::uploadPerInstanceData(VertData data, GLuint advanceRate)
+GLuint VertBuffer::uploadPerInstanceData(const VertData &data, GLuint advanceRate, int id)
 {
     bind();
-    GLuint id = instanceVbos.size();
-    for (int i = 0; i < instanceVbos.size(); i++) if (instanceVbos[i] == -1) id = i;
-    if (id == instanceVbos.size())
+    if (id == -1)
     {
-        instanceVbos.emplace_back();
-        instanceVboAttrs.emplace_back();
+        id = instanceVbos.size();
+        for (int i = 0; i < instanceVbos.size(); i++) if (instanceVbos[i] == -1) id = i;
+        if (id == instanceVbos.size())
+        {
+            instanceVbos.emplace_back();
+            instanceVboAttrs.emplace_back();
+        }
+        glGenBuffers(1, &instanceVbos[id]);
+        instanceVboAttrs[id] = data.attributes;
     }
-    glGenBuffers(1, &instanceVbos[id]);
-    instanceVboAttrs[id] = data.attributes;
 
     glBindBuffer(GL_ARRAY_BUFFER, instanceVbos[id]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data.vertices.size(), &data.vertices[0], GL_STATIC_DRAW); // todo: sizeof(GLfloat) ???????????????
+    glBufferData(GL_ARRAY_BUFFER, data.vertices.size(), &data.vertices[0], vboUsage);
     usePerInstanceData(id, advanceRate);
     return id;
 }
