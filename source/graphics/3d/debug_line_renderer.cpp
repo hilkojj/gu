@@ -76,3 +76,25 @@ void DebugLineRenderer::square(const vec3 &p, float size, const vec3 &color, con
     line(p, p + size * yAxis, color);
     line(p + size * xAxis, p + size * yAxis + size * xAxis, color);
 }
+
+void DebugLineRenderer::arrows(const vec2 &p_, float size, const vec3 &color)
+{
+    vec3 p(p_, 0);
+
+    line(p - vec3(size, 0, 0), p + vec3(size, 0, 0), color);
+    line(p - vec3(0, size, 0), p + vec3(0, size, 0), color);
+
+    float arrowSize = size * .3;
+
+    line(p - vec3(size, 0, 0), p - vec3(size - arrowSize, arrowSize, 0), color);
+    line(p - vec3(size, 0, 0), p - vec3(size - arrowSize, -arrowSize, 0), color);
+
+    line(p + vec3(size, 0, 0), p + vec3(size - arrowSize, arrowSize, 0), color);
+    line(p + vec3(size, 0, 0), p + vec3(size - arrowSize, -arrowSize, 0), color);
+
+    line(p - vec3(0, size, 0), p - vec3(arrowSize, size - arrowSize, 0), color);
+    line(p - vec3(0, size, 0), p - vec3(-arrowSize, size - arrowSize, 0), color);
+
+    line(p + vec3(0, size, 0), p + vec3(arrowSize, size - arrowSize, 0), color);
+    line(p + vec3(0, size, 0), p + vec3(-arrowSize, size - arrowSize, 0), color);
+}

@@ -253,12 +253,12 @@ void mainLoop()
         profiler::Zone z("logic");
         beforeRender(min(deltaTime, .1));
     } {
+        profiler::Zone z("render");
+        render(min(deltaTime, .1));
         static bool wasFullscreen = false;
         if (wasFullscreen != fullscreen)
             toggleFullscreen();
         wasFullscreen = fullscreen;
-        profiler::Zone z("render");
-        render(min(deltaTime, .1));
     } {
         profiler::Zone z("input");
         KeyInput::update();
