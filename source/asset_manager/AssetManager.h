@@ -141,7 +141,8 @@ class AssetManager
                     assets[loaded->objType][key] = shared;
 
                 loader.removeSuffix(key);
-                assets[loaded->objType][key] = shared;
+                if (!existing)
+                    assets[loaded->objType][key] = shared;
 
                 loaded->fullPath = path;
                 loaded->shortPath = key;
