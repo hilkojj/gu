@@ -93,7 +93,7 @@ void Loader::loadFrames()
             throw gu_err("Frame does not have magic number in header.");
 
         int chunkCount = read<WORD>();  // Number of "chunks" in this frame
-        frame.duration = read<WORD>();  // Frame duration (in milliseconds)
+        frame.duration = float(read<WORD>()) / 1000.f;  // Frame duration (in milliseconds -> seconds)
         skip(2);                        // For future (set to zero)
         int biggerChunkCount = read<DWORD>();
         if (biggerChunkCount != 0)

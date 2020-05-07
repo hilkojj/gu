@@ -63,6 +63,8 @@ class asset
             throw gu_err(loadedAsset->objTypeName + "-asset '"  +  path + "' is not a " + getTypeName<type>());
     }
 
+    bool isSet() const { return !!loadedAsset; }
+
     const loaded_asset &getLoadedAsset() const
     {
         return *loadedAsset;

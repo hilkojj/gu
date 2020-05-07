@@ -112,14 +112,14 @@ void Mesh::renderArrays()
     );
 }
 
-SharedMesh Mesh::createQuad()
+SharedMesh Mesh::createQuad(float min, float max)
 {
     SharedMesh quad(new Mesh("quad", 4, 6, VertAttributes().add_(VertAttributes::POSITION)));
     quad->set<float[12]>({
-        -1, -1, 0,
-        -1, 1, 0,
-        1, 1, 0,
-        1, -1, 0,
+        min, min, 0,
+        min, max, 0,
+        max, max, 0,
+        max, min, 0,
     }, 0, 0);
     quad->indices.insert(quad->indices.begin(), {
         2, 1, 0,

@@ -39,7 +39,7 @@ struct Cel : UserData
 
 struct Frame
 {
-    int duration;
+    float duration;
     std::vector<Cel> cels;
     std::vector<Pixel> pixels;
 };

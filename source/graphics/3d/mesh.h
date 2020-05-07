@@ -72,7 +72,7 @@ class Mesh : public VertData
     static SharedMesh getQuad();
 
     // creates a quad mesh. Not the same as getQuad()
-    static SharedMesh createQuad();
+    static SharedMesh createQuad(float min=-1, float max=1);
 
     std::string name;
     std::vector<unsigned short> indices;
