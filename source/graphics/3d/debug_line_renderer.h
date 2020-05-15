@@ -32,6 +32,8 @@ class DebugLineRenderer
 
     void square(const vec3 &p, float size, const vec3 &color, const vec3 &xAxis=mu::X, const vec3 &yAxis=mu::Y);
 
+    void circle(const vec2 &p, float radius, int resolution, const vec3 &color);
+
   private:
     ShaderProgram shaderProgram;
     GLuint u_colorId, p0Id, p1Id, MVPId;

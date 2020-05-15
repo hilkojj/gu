@@ -213,6 +213,43 @@ inline bool allGreaterOrEqualTo(const vec &v, const double &val)
     return true;
 }
 
+/**
+ * Calculates the 2 intersection points of 2 circles.
+ * d must be <= r0 + r1
+ *
+ * @param i0 Intersection point 0   (will be set)
+ * @param i1 Intersection point 1   (will be set)
+ * @param c0 Center of circle 0
+ * @param c1 Center of circle 1
+ * @param r0 Radius of circle 0
+ * @param r1 Radius of circle 1
+ * @param d  Distance between circles
+ */
+inline void circleIntersections(
+        vec2 &i0, vec2 &i1, const vec2 &c0, const vec2 &c1, float r0, float r1, float d
+) {
+
+    float
+        r0Sq = r0 * r0,
+        r1Sq = r1 * r1,
+        dSq = d * d,
+
+        a = (r0Sq - r1Sq + dSq) / (2 * d),
+        h = sqrt(r0Sq - (a * a)),
+
+        x = c0.x + a * (c1.x - c0.x) / d,
+        y = c0.y + a * (c1.y - c0.y) / d;
+
+    i0 = vec2(
+        x + h * (c1.y - c0.y) / d,
+        y - h * (c1.x - c0.x) / d
+    );
+    i1 = vec2(
+        x - h * (c1.y - c0.y) / d,
+        y + h * (c1.x - c0.x) / d
+    );
+}
+
 } // namespace mu
 
 #endif

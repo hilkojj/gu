@@ -98,3 +98,18 @@ void DebugLineRenderer::arrows(const vec2 &p_, float size, const vec3 &color)
     line(p + vec3(0, size, 0), p + vec3(arrowSize, size - arrowSize, 0), color);
     line(p + vec3(0, size, 0), p + vec3(-arrowSize, size - arrowSize, 0), color);
 }
+
+void DebugLineRenderer::circle(const vec2 &p, float radius, int resolution, const vec3 &color)
+{
+    vec2 prev;
+    for (int i = 0; i <= resolution; i++)
+    {
+        vec2 off = vec2(0, radius);
+        off = rotate(off, mu::PI * (2.f / resolution) * i);
+        vec2 curr = p + off;
+
+        if (i != 0)
+            line(prev, curr, color);
+        prev = curr;
+    }
+}

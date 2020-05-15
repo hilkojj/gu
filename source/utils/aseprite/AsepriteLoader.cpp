@@ -7,9 +7,10 @@ namespace aseprite
 
 Loader::Loader(const char *filePath, Sprite &output) : sprite(output), filePath(filePath), FileReader(filePath)
 {
+    output.name = filePath;
+
     loadHeader();
     loadFrames();
-
 }
 
 std::string Loader::loadString()

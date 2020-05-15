@@ -87,6 +87,8 @@ class Sprite
 {
   public:
 
+    std::string name;
+
     int width, height, frameCount;
     Mode mode;
 
@@ -96,6 +98,12 @@ class Sprite
     std::vector<Slice> slices;
 
     ColorRGBA palette[256] = {ColorRGBA(0)};
+
+    /**
+     * Get a slice from the 'slices' vector using name and frame.
+     * Warning: this method is not really fast.
+     */
+    Slice &getSliceByName(const char *name, int frame);
 };
 
 }
