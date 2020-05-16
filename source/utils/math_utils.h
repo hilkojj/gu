@@ -250,6 +250,24 @@ inline void circleIntersections(
     );
 }
 
+template<typename vec>
+inline void quadraticBezier(const vec &p0, const vec &p1, const vec &p2, float t, vec &out)
+{
+    // B2(t) = (1 - t) * (1 - t) * p0 + 2 * (1-t) * t * p1 + t*t*p2
+
+    float dt = 1 - t;
+    out = dt * dt * p0 + 2 * dt * t * p1 + t * t * p2;
+}
+
+template<typename vec>
+inline void cubicBezier(const vec &p0, const vec &p1, const vec &p2, const vec &p3, float t, vec &out)
+{
+    // B3(t) = (1-t) * (1-t) * (1-t) * p0 + 3 * (1-t) * (1-t) * t * p1 + 3 * (1-t) * t * t * p2 + t * t * t * p3
+
+    float dt = 1 - t;
+    out = dt * dt * dt * p0 + 3 * dt * dt * t * p1 + 3 * dt * t * t * p2 + t * t * t * p3;
+}
+
 } // namespace mu
 
 #endif
