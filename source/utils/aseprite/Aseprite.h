@@ -57,6 +57,7 @@ struct Tag
     LoopDirection loopDirection;
     int from;
     int to;
+    float duration;
     ColorRGB color;
 };
 

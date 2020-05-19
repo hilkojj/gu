@@ -11,6 +11,10 @@ Loader::Loader(const char *filePath, Sprite &output) : sprite(output), filePath(
 
     loadHeader();
     loadFrames();
+
+    for (auto &tag : output.tags)
+        for (int frameI = tag.from; frameI <= tag.to; frameI++)
+            tag.duration += output.frames[frameI].duration;
 }
 
 std::string Loader::loadString()
@@ -277,6 +281,7 @@ void Loader::loadFrameTags()
         tag.color = loadColorRGB();
         skip(1);
         tag.name = loadString();
+        tag.duration = 0;
     }
 }
 
