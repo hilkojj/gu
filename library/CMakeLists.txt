@@ -39,11 +39,11 @@ target_link_libraries(gameutils glm)
 
 
 # ---OpenAL soft---
-find_package(ALSA)
-
-add_subdirectory(../external/openal-soft ./bin/openal)
-include_directories(../external/openal-soft/include)
-target_link_libraries(gameutils OpenAL)
+if (NOT DEFINED EMSCRIPTEN)
+    add_subdirectory(../external/openal-soft ./bin/openal)
+    include_directories(../external/openal-soft/include)
+    target_link_libraries(gameutils OpenAL)
+endif ()
 
 
 # ---IMGUI---

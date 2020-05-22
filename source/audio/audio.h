@@ -2,6 +2,8 @@
 #ifndef GAME_AUDIO_H
 #define GAME_AUDIO_H
 
+#include <vector>
+#include <string>
 #include <AL/al.h>
 #include <AL/alc.h>
 #include "../utils/gu_error.h"
