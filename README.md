@@ -16,11 +16,16 @@ Clone/fork [this template](https://github.com/hilkojj/cpp-game-utils-template) a
 ## Features
 
 - Graphics:
-    - Textures (loading .DDS files, TextureArrays, CubeMap etc.)
+    - Textures (loading `.DDS` files, TextureArrays, CubeMap etc.)
     - FrameBuffers
     - ShaderPrograms
     - Meshes, Models & ModelInstances
     - Cameras
+- Audio:
+    - Loading `.wav` files
+    - Playing sounds using OpenAL
+- AssetManager
+    - Live reload of assets (linux only)
 - Mouse & key input
 - Loading models from Blender (use [this Blender addon](https://github.com/hilkojj/blender_UBJSON_exporter) and load the exported files with the JsonModelLoader)
 - Loading [Aseprite](https://www.aseprite.org/) sprites directly from [`.ase` files](https://github.com/aseprite/aseprite/blob/master/docs/ase-file-specs.md). (Only indexed sprites supported) 

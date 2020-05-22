@@ -38,6 +38,13 @@ include_directories(../external/glm-0.9.9.5/glm)
 target_link_libraries(gameutils glm)
 
 
+# ---OpenAL soft---
+find_package(ALSA)
+
+add_subdirectory(../external/openal-soft ./bin/openal)
+include_directories(../external/openal-soft/include)
+target_link_libraries(gameutils OpenAL)
+
 
 # ---IMGUI---
 

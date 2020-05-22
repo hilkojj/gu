@@ -70,7 +70,7 @@ class FileReader
 
     bool endReached()
     {
-        return hasNMoreBytes(1);
+        return !hasNMoreBytes(1);
     }
 };
 

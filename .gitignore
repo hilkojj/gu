@@ -67,6 +67,8 @@ _deps
 /external/*
 !/external/imgui
 !/external/zlib
+!/external/openal-soft
+!/external/freealut
 bin/
 
 
