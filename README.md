@@ -22,7 +22,7 @@ Clone/fork [this template](https://github.com/hilkojj/cpp-game-utils-template) a
     - Meshes, Models & ModelInstances
     - Cameras
 - Audio:
-    - Loading `.wav` files
+    - Loading `.wav` and `.ogg` files
     - Playing sounds using OpenAL
 - AssetManager
     - Live reload of assets (linux only)
