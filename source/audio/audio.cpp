@@ -9,11 +9,6 @@ au::Sound::~Sound()
 au::SoundSource::SoundSource(const au::Sound &sound)
 {
     alCall(alGenSources, 1, &source);
-    alCall(alSourcef, source, AL_PITCH, 1);
-    alCall(alSourcef, source, AL_GAIN, 1.0f);
-    alCall(alSource3f, source, AL_POSITION, 0, 0, 0);
-    alCall(alSource3f, source, AL_VELOCITY, 0, 0, 0);
-    alCall(alSourcei, source, AL_LOOPING, AL_FALSE);
     alCall(alSourcei, source, AL_BUFFER, sound.buffer);
 }
 
@@ -46,6 +41,7 @@ void au::SoundSource::setPitch(float p)
 
 void au::SoundSource::setVolume(float g)
 {
+    alCall(alSourcef, source, AL_MAX_GAIN, g);
     alCall(alSourcef, source, AL_GAIN, g);
 }
 
@@ -64,17 +60,28 @@ void au::SoundSource::setLooping(bool b)
     alCall(alSourcei, source, AL_LOOPING, b);
 }
 
+void au::SoundSource::pause()
+{
+    alCall(alSourcePause, source);
+}
+
+bool au::SoundSource::hasStopped()
+{
+    ALint state;
+    alCall(alGetSourcei, source, AL_SOURCE_STATE, &state);
+    return state == AL_STOPPED;
+}
+
+bool au::SoundSource::isPaused()
+{
+    ALint state;
+    alCall(alGetSourcei, source, AL_SOURCE_STATE, &state);
+    return state == AL_PAUSED;
+}
+
 
 void au::init()
 {
-    std::vector<std::string> audioDevices;
-    if (!au::getAvailableDevices(audioDevices, NULL))
-        throw gu_err("could not get audio devices");
-
-    for (auto &dev : audioDevices)
-        std::cout << dev << std::endl;
-
-
     ALCdevice* openALDevice = alcOpenDevice(nullptr);
     if(!openALDevice)
         throw gu_err("No OpenAL device found!");
@@ -86,8 +93,6 @@ void au::init()
     ALCboolean contextMadeCurrent = false;
     if(!alcCall(alcMakeContextCurrent, contextMadeCurrent, openALDevice, openALContext) || contextMadeCurrent != ALC_TRUE)
         throw gu_err("Could not make audio context current!");
-
-
 }
 
 bool au::getAvailableDevices(std::vector<std::string> &devicesVec, ALCdevice *device)

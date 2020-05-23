@@ -30,11 +30,22 @@ class SoundSource
   public:
     SoundSource(const Sound &sound);
 
+    /**
+     * starts playing the sound.
+     * if pause() was called before, it will continue where it paused.
+     * if stop() was called before, it will start at the beginning
+     */
     void play();
+
+    void pause();
 
     void stop();
 
     bool isPlaying();
+
+    bool isPaused();
+
+    bool hasStopped();
 
     void setPitch(float);
     void setVolume(float);
