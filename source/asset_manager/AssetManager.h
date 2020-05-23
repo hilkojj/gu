@@ -125,7 +125,7 @@ class AssetManager
             if (!loader.match(path))
                 continue;
 
-            std::cout << "Loading " << loader.typeName << "-asset '" << path << "'...\n";
+            std::cout << "Loading " << loader.typeName << "-asset '" << path << "'..." << std::endl;
 
             try
             {

@@ -18,7 +18,7 @@ int main()
     if (!gu::init(config))
         return -1;
 
-    std::cout << glGetString(GL_VERSION) << "\n";
+    std::cout << glGetString(GL_VERSION) << std::endl;
 
     MeshScreen scr;
     gu::setScreen(&scr);

@@ -307,7 +307,7 @@ void Loader::loadSlices()
         // 9 slice (todo, useful for GUIs):
         if (flags & 0x1u)
         {
-            std::cerr << "9-slice found in " << filePath << " ignored.\n";
+            std::cerr << "9-slice found in " << filePath << " ignored." << std::endl;
             skip<LONG>();
             skip<LONG>();
             skip<DWORD>();

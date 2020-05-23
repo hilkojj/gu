@@ -33,6 +33,7 @@ endif()
 
 
 # ---GLM---
+set(GLM_TEST_ENABLE OFF)
 add_subdirectory(../external/glm-0.9.9.5/glm ./bin/glm)
 include_directories(../external/glm-0.9.9.5/glm)
 target_link_libraries(gameutils glm)
@@ -40,6 +41,10 @@ target_link_libraries(gameutils glm)
 
 # ---OpenAL soft---
 if (NOT DEFINED EMSCRIPTEN)
+    set(ALSOFT_EXAMPLES OFF)
+    set(ALSOFT_TESTS OFF)
+    set(ALSOFT_UTILS OFF)
+
     add_subdirectory(../external/openal-soft ./bin/openal)
     include_directories(../external/openal-soft/include)
     target_link_libraries(gameutils OpenAL)

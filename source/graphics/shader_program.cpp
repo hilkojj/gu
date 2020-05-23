@@ -42,7 +42,7 @@ void ShaderProgram::compile(const char *vertSource, const char *fragSource, cons
         std::vector<char> log(logLength + 1);
         glGetProgramInfoLog(programId, logLength, NULL, &log[0]);
         std::cout << name << " compilation log:\n"
-                    << &log[0] << "\n";
+                    << &log[0] << std::endl;
     }
 
     glDetachShader(programId, vertShaderId);

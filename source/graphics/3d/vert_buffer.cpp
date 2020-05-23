@@ -220,7 +220,7 @@ VertBuffer::~VertBuffer()
                 std::cerr << m.lock()->name;
                 first = false;
             }
-        std::cerr << "]\n";
+        std::cerr << "]" << std::endl;
     }
     std::cout << "Deleting VertBuffer: vao & vbo & ibo\n";
     glDeleteVertexArrays(1, &vaoId);

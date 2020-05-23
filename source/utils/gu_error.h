@@ -26,7 +26,7 @@ class _gu_err : public std::runtime_error
         std::cerr << "\033[1m\033[32m";
         #endif
         
-        std::cerr << file << ":" << line << "\n\n";
+        std::cerr << file << ":" << line << "\n" << std::endl;
 
         #ifdef linux
         std::cerr << "\033[0m";

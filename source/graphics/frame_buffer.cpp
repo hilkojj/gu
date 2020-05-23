@@ -25,7 +25,7 @@ FrameBuffer::FrameBuffer(GLuint width, GLuint height, GLuint samples_)
           #endif
       )
 {
-    std::cout << "FrameBuffer " << id << " created with " << samples << " samples\n";
+    std::cout << "FrameBuffer " << id << " created with " << samples << " samples" << std::endl;
 
     if (samples) sampled = new FrameBuffer(width, height);
 }
@@ -33,7 +33,7 @@ FrameBuffer::FrameBuffer(GLuint width, GLuint height, GLuint samples_)
 FrameBuffer::~FrameBuffer()
 {
     glDeleteFramebuffers(1, &id);
-    std::cout << "FrameBuffer " << id << " destroyed\n";
+    std::cout << "FrameBuffer " << id << " destroyed" << std::endl;
     if (sampled) delete sampled;
 }
 

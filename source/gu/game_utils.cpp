@@ -45,10 +45,10 @@ void APIENTRY glMessageCallback(GLenum source, GLenum type, GLuint id,
     if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
     {
         if (config.printOpenGLMessages)
-            std::cout << "====== OpenGL Message. ID: " << id << " ======" << std::endl << msg << "\n======================================\n";
+            std::cout << "====== OpenGL Message. ID: " << id << " ======" << std::endl << msg << "\n======================================" << std::endl;
     }
     else if (config.printOpenGLErrors)
-        std::cerr << "====== OpenGL Error. ID: " << id << " ======" << std::endl << msg << "\n======================================\n";
+        std::cerr << "====== OpenGL Error. ID: " << id << " ======" << std::endl << msg << "\n======================================" << std::endl;
 }
 
 bool resized = true;
@@ -140,7 +140,7 @@ bool init(Config config_)
     // Initialise GLFW
     if (!glfwInit())
     {
-        std::cerr << "Failed to initialize GLFW\n";
+        std::cerr << "Failed to initialize GLFW" << std::endl;
         return false;
     }
 
@@ -157,7 +157,7 @@ bool init(Config config_)
 
     if (!window)
     {
-        std::cerr << "Failed to open GLFW window.\n";
+        std::cerr << "Failed to open GLFW window." << std::endl;
         glfwTerminate();
         return false;
     }
@@ -165,7 +165,7 @@ bool init(Config config_)
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cerr << "Failed to initialize OpenGL context\n";
+        std::cerr << "Failed to initialize OpenGL context" << std::endl;
         return false;
     }
 
