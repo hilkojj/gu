@@ -13,6 +13,9 @@
 namespace au
 {
 
+extern ALCdevice* openALDevice;
+extern ALCcontext* openALContext;
+
 struct Sound
 {
     uint8 channels;
@@ -61,8 +64,7 @@ bool getAvailableDevices(std::vector<std::string>& devicesVec, ALCdevice* device
 
 void init();
 
-// todo: shutdown OpenAL device, but tbh I dont give a fuck
-
+void terminate();
 
 
 #define alCall(function, ...) alCallImpl(__FILE__, __LINE__, function, __VA_ARGS__)

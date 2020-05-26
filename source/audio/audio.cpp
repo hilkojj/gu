@@ -79,20 +79,31 @@ bool au::SoundSource::isPaused()
     return state == AL_PAUSED;
 }
 
+ALCdevice* au::openALDevice = NULL;
+ALCcontext* au::openALContext = NULL;
 
 void au::init()
 {
-    ALCdevice* openALDevice = alcOpenDevice(nullptr);
+    openALDevice = alcOpenDevice(nullptr);
     if(!openALDevice)
         throw gu_err("No OpenAL device found!");
 
-    ALCcontext* openALContext;
     if(!alcCall(alcCreateContext, openALContext, openALDevice, openALDevice, nullptr) || !openALContext)
         throw gu_err("Could not create audio context!");
 
     ALCboolean contextMadeCurrent = false;
     if(!alcCall(alcMakeContextCurrent, contextMadeCurrent, openALDevice, openALContext) || contextMadeCurrent != ALC_TRUE)
         throw gu_err("Could not make audio context current!");
+}
+
+void au::terminate()
+{
+    if(!alcCall(alcDestroyContext, openALDevice, openALContext))
+        std::cerr << "Couldn't destroy OpenAL context\n";
+
+    ALCboolean closed;
+    if(!alcCall(alcCloseDevice, closed, openALDevice, openALDevice))
+        std::cerr << "Couldn't close OpenAL device\n";
 }
 
 bool au::getAvailableDevices(std::vector<std::string> &devicesVec, ALCdevice *device)
