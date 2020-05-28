@@ -176,8 +176,7 @@ bool init(Config config_)
         glDebugMessageCallback(glMessageCallback, NULL);
         #endif
     }
-    if (!config.vsync)
-        glfwSwapInterval(0); // a way to disable vsync.
+    setVSync(config.vsync);
 
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -302,6 +301,15 @@ void setScreen(Screen *newScreen)
 {
     screen = newScreen;
     onResize();
+}
+
+void setVSync(bool enabled)
+{
+    if (enabled == config.vsync)
+        return;
+
+    config.vsync = enabled;
+    glfwSwapInterval(enabled);
 }
 
 } // namespace gu

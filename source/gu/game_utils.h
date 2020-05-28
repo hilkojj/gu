@@ -37,6 +37,7 @@ extern std::function<void(double deltaTime)> beforeRender;
 bool init(Config config);
 void run();
 void setScreen(Screen *screen);
+void setVSync(bool enabled);
 
 }; // namespace gu
 
