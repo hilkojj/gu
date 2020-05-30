@@ -176,7 +176,7 @@ bool init(Config config_)
         glDebugMessageCallback(glMessageCallback, NULL);
         #endif
     }
-    setVSync(config.vsync);
+    glfwSwapInterval(config.vsync);
 
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
