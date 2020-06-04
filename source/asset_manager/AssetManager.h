@@ -160,6 +160,12 @@ class AssetManager
         assets.clear();
     }
 
+    template <typename type>
+    static const std::map<std::string, std::shared_ptr<loaded_asset>> &getLoadedAssetsForType()
+    {
+        return assets[typeid(type).hash_code()];
+    }
+
 };
 
 
