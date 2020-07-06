@@ -69,6 +69,7 @@ _deps
 !/external/zlib
 !/external/openal-soft
 !/external/stb
+!/external/ImGuiColorTextEdit
 bin/
 
 
