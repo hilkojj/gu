@@ -132,6 +132,38 @@ void toggleFullscreen()
     #endif
 }
 
+#ifdef EMSCRIPTEN
+
+EM_JS(const char *, js_getClipboardText, (), {
+
+    var input = window.pastedText || "";
+    var lengthBytes = lengthBytesUTF8(input) + 1;
+    var stringOnWasmHeap = _malloc(lengthBytes);
+    stringToUTF8(input, stringOnWasmHeap, lengthBytes);
+    return stringOnWasmHeap;
+});
+EM_JS(void, js_setClipboardText, (const char *text), {
+
+    window.pastedText = UTF8ToString(text);
+    navigator.clipboard.writeText(window.pastedText);
+});
+
+const char* EMSCRIPTENGetClipboardText(void* user_data)
+{
+    static std::string c;
+    auto textFromJS = js_getClipboardText();
+    c = textFromJS;
+    free((char *)textFromJS);
+    return c.c_str();
+}
+
+void EMSCRIPTENSetClipboardText(void* user_data, const char* text)
+{
+    js_setClipboardText(text);
+}
+
+#endif
+
 } // namespace
 
 bool init(Config config_)
@@ -196,6 +228,17 @@ bool init(Config config_)
     // Initialize helper Platform and Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, false);
     ImGui_ImplOpenGL3_Init(glsl_version);
+    #ifdef EMSCRIPTEN
+
+    EM_ASM(
+        document.addEventListener("paste", e => {
+            window.pastedText = e.clipboardData.getData("text");
+        });
+    );
+
+    ImGui::GetIO().GetClipboardTextFn = EMSCRIPTENGetClipboardText;
+    ImGui::GetIO().SetClipboardTextFn = EMSCRIPTENSetClipboardText;
+    #endif
     // IMGUI ---------------------------------
 
     #ifdef EMSCRIPTEN
