@@ -145,7 +145,33 @@ EM_JS(const char *, js_getClipboardText, (), {
 EM_JS(void, js_setClipboardText, (const char *text), {
 
     window.pastedText = UTF8ToString(text);
-    navigator.clipboard.writeText(window.pastedText);
+
+    // ONLY works in HTTPS mode:
+    if (navigator.clipboard != undefined)
+        navigator.clipboard.writeText(window.pastedText);
+
+    // hacky fallback for HTTP:
+    else setTimeout(() => {
+        var textArea = document.createElement("textarea");
+        textArea.value = window.pastedText;
+
+        // Avoid scrolling to bottom
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            if (!document.execCommand('copy'))
+                console.warn('Could not copy text');
+        } catch (err) {
+            console.error('Unable to copy:', err);
+        }
+        document.body.removeChild(textArea);
+    })
 });
 
 const char* EMSCRIPTENGetClipboardText(void* user_data)
