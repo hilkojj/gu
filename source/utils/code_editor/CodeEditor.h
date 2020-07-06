@@ -3,6 +3,7 @@
 #define GAME_CODEEDITOR_H
 
 #include "../../../external/ImGuiColorTextEdit/TextEditor.h"
+#include <functional>
 
 namespace CodeEditor
 {

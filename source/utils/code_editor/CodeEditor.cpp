@@ -1,19 +1,49 @@
 
 #include "CodeEditor.h"
 #include <imgui.h>
-#include <iostream>
-#include <include/GLFW/glfw3.h>
+#include "../../input/key_input.h"
 
 #include "../../../external/ImGuiColorTextEdit/TextEditor.cpp"
 
 std::vector<CodeEditor::Tab> CodeEditor::tabs;
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
+/**
+ * By default, when pressing CTRL+S to save the code, the browser will also show a save dialog for saving the webpage
+ */
+void preventSavingWebpage()
+{
+#ifdef EMSCRIPTEN
+
+    static bool eventListenerAdded = false;
+    if (eventListenerAdded)
+        return;
+
+    EM_ASM(
+        document.addEventListener('keydown', function(e) {
+           if (e.keyCode == 83 && e.ctrlKey)
+                e.preventDefault();
+        }, false);
+        console.debug("default CTRL+S behavior disabled");
+    );
+    eventListenerAdded = true;
+#endif
+}
+
 void CodeEditor::drawGUI(ImFont *codeFont)
 {
     static Tab *tabToClose = NULL;
 
+    preventSavingWebpage();
+
     if (tabs.empty())
         return;
+
+    ImGui::SetNextWindowPos(ImVec2(600, 300), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(300, 400), ImGuiCond_FirstUseEver);
 
     if (!ImGui::Begin("Code Editor"))
     {
