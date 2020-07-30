@@ -129,6 +129,7 @@ void toggleFullscreen()
     {
         glfwSetWindowMonitor(window, NULL, restoreXPos, restoreYPos, restoreWidth, restoreHeight, GLFW_DONT_CARE);
     }
+    glfwSwapInterval(config.vsync);
     #endif
 }
 
