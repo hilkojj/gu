@@ -17,7 +17,9 @@ class Texture
     /**
      * Load a DXT1/3/5 texture directly to OpenGL
      */
-    static SharedTexture fromDDSFile(const char *path);
+    static SharedTexture fromDDSFile(const char *path); // todo: should return Texture instead of SharedTexture. But changing that will break old projects.
+
+    static Texture fromImageFile(const char *path);
 
     const GLuint id, width, height;
 

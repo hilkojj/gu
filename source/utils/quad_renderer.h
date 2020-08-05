@@ -41,16 +41,23 @@ ShaderProgram *shader = NULL;
 
 } // namespace
 
-// renders the texture to a full-screen quad.
-inline void render(SharedTexture texture)
+
+inline void render(Texture *tex)
 {
     if (!shader) shader = new ShaderProgram("QuadTextureShader", ("#version 300 es\n" + vertSource).c_str(), ("#version 300 es\n" + fragSource).c_str());
 
-    texture->bind(0);
+    tex->bind(0);
     shader->use();
     glUniform1i(shader->location("tex"), 0);
     Mesh::getQuad()->render();
 }
+
+// renders the texture to a full-screen quad.
+inline void render(SharedTexture texture)
+{
+    render(texture.get());
+}
+
 }
 
 #endif
