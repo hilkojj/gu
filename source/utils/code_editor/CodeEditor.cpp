@@ -90,6 +90,7 @@ void CodeEditor::drawGUI(ImFont *codeFont)
                 if (doSave)
                 {
                     tab.code = tab.textEditor.GetText();
+                    tab.code.pop_back();
                     tab.save(tab);
                     tab.dirty = false;
                 }
