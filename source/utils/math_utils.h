@@ -84,6 +84,28 @@ inline bool onSegment(const vec2 &p, const vec2 &q, const vec2 &r)
 
 }
 
+inline float distance(vec2 v, vec2 w)
+{
+    return length(v - w);
+}
+
+/**
+ * calculates distance between a line segment (v, w) and p
+ * https://stackoverflow.com/a/1501725/10386780
+ */
+inline float minimumDistance(vec2 v, vec2 w, vec2 p) {
+    // Return minimum distance between line segment vw and point p
+    const float l2 = length2(w - v);  // i.e. |w-v|^2 -  avoid a sqrt
+    if (l2 == 0.0) return distance(p, v);   // v == w case
+    // Consider the line extending the segment, parameterized as v + t (w - v).
+    // We find projection of point p onto the line.
+    // It falls where t = [(p-v) . (w-v)] / |w-v|^2
+    // We clamp t from [0,1] to handle points outside the segment vw.
+    const float t = max<float>(0, min<float>(1, dot(p - v, w - v) / l2));
+    const vec2 projection = v + t * (w - v);  // Projection falls on the segment
+    return distance(p, projection);
+}
+
 // To find orientation of ordered triplet (p, q, r).
 // The function returns following values
 // 0 --> p, q and r are collinear
