@@ -2,6 +2,8 @@
 #include <imgui.h>
 #include <examples/imgui_impl_glfw.h>
 #include "mouse_input.h"
+#include "../../external/openal-soft/common/vector.h"
+
 #define NR_OF_BUTTONS 8
 
 namespace MouseInput
@@ -21,6 +23,14 @@ enum ButtonStatus
 };
 
 ButtonStatus buttonStatuses[NR_OF_BUTTONS];
+
+struct Capture
+{
+    int priority, framesRemaining;
+};
+
+std::vector<Capture> captures[NR_OF_BUTTONS];
+int highestCapturePriority[NR_OF_BUTTONS];
 
 void glfwButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
@@ -72,6 +82,23 @@ void update()
 {
     for (int i = 0; i < NR_OF_BUTTONS; i++)
     {
+        highestCapturePriority[i] = 0;
+        for (int ci = captures[i].size() - 1; ci >= 0; ci--)
+        {
+            auto &c = captures[i][ci];
+            if (c.framesRemaining-- <= 0)
+            {
+                captures[i][ci] = captures[i].back();
+                captures[i].pop_back();
+                continue;
+            }
+            if (c.priority > highestCapturePriority[i])
+                highestCapturePriority[i] = c.priority;
+        }
+    }
+
+    for (int i = 0; i < NR_OF_BUTTONS; i++)
+    {
         ButtonStatus& s = buttonStatuses[i];
         if (s == JUST_PRESSED)
             s = PRESSED;
@@ -99,19 +126,32 @@ void setMousePos(double x, double y)
     glfwSetCursorPos(window, x, y);
 }
 
-bool justPressed(int button)
+bool justPressed(int button, int priority)
 {
-    return buttonStatuses[button] == JUST_PRESSED;
+    if (buttonStatuses[button] == JUST_PRESSED && highestCapturePriority[button] <= priority)
+        return true;
+    return false;
 }
 
-bool pressed(int button)
+bool pressed(int button, int priority)
 {
-    return buttonStatuses[button] == PRESSED || buttonStatuses[button] == PRESSED;
+    auto &s = buttonStatuses[button];
+    if ((s == PRESSED || s == JUST_PRESSED) && highestCapturePriority[button] <= priority)
+        return true;
+    return false;
 }
 
-bool justReleased(int button)
+bool justReleased(int button, int priority)
 {
-    return buttonStatuses[button] == JUST_RELEASED;
+    if (buttonStatuses[button] == JUST_RELEASED && highestCapturePriority[button] <= priority)
+        return true;
+    return false;
+}
+
+void capture(int button, int priority, int frames)
+{
+    Capture c {priority, frames};
+    captures[button].push_back(c);
 }
 
 } // namespace MouseInput

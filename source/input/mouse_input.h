@@ -21,11 +21,13 @@ void setLockedMode(bool lockedMode);
 
 // 'button' must be 0-7. See https://www.glfw.org/docs/latest/group__buttons.html
 // you can also use GLFW_MOUSE_BUTTON_LEFT for example.
-bool justPressed(int button);
+bool justPressed(int button, int priority=0);
 
-bool pressed(int button);
+bool pressed(int button, int priority=0);
 
-bool justReleased(int button);
+bool justReleased(int button, int priority=0);
+
+void capture(int button, int priority, int frames=1);
 
 void setMousePos(double x, double y);
 
