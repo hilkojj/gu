@@ -77,6 +77,17 @@ void DebugLineRenderer::square(const vec3 &p, float size, const vec3 &color, con
     line(p + size * xAxis, p + size * yAxis + size * xAxis, color);
 }
 
+void DebugLineRenderer::arrow(const vec2 &p0, const vec2 &p1, float size, const vec3 &color)
+{
+    line(p0, p1, color);
+    vec2 dir = p1 - p0;
+    auto line0 = normalize(rotate(dir, -135 * mu::DEGREES_TO_RAD)) * size;
+    line(p1, p1 + line0, color);
+
+    auto line1 = normalize(rotate(dir, 135 * mu::DEGREES_TO_RAD)) * size;
+    line(p1, p1 + line1, color);
+}
+
 void DebugLineRenderer::arrows(const vec2 &p_, float size, const vec3 &color)
 {
     vec3 p(p_, 0);
