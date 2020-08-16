@@ -14,6 +14,7 @@ class FrameBuffer
     const GLuint id, width, height, samples;
 
     SharedTexture colorTexture;
+    std::vector<SharedTexture> colorTextures;
     SharedTexture depthTexture;
 
     /**

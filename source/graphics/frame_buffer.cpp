@@ -1,5 +1,7 @@
 
 #include "frame_buffer.h"
+
+#include <memory>
 #include "../gu/game_utils.h"
 
 void FrameBuffer::unbindCurrent()
@@ -48,6 +50,7 @@ void FrameBuffer::unbind()
 {
     unbindCurrent();
     if (!sampled) return;
+    // todo: multiple colorTextures...
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, sampled->id);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
@@ -68,25 +71,40 @@ void FrameBuffer::addColorTexture(GLuint format, GLuint magFilter, GLuint minFil
 
 void FrameBuffer::addColorTexture(GLuint internalFormat, GLuint format, GLuint magFilter, GLuint minFilter)
 {
+    SharedTexture newTexture;
     if (sampled)
     {
         addColorBuffer(format);
-        sampled->addColorTexture(format, magFilter, minFilter);
-        colorTexture = sampled->colorTexture;
-        return;
+        sampled->addColorTexture(internalFormat, format, magFilter, minFilter);
+        newTexture = sampled->colorTexture;
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, id);
-    // glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    else
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, id);
 
-    GLuint texId;
-    glGenTextures(1, &texId);
-    glBindTexture(GL_TEXTURE_2D, texId);
-    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, NULL);
+        GLuint texId;
+        glGenTextures(1, &texId);
+        glBindTexture(GL_TEXTURE_2D, texId);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, NULL);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId, 0);
-    colorTexture = SharedTexture(new Texture(texId, width, height));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+
+        auto attachment = GL_COLOR_ATTACHMENT0 + colorTextures.size();
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texId, 0);
+
+        newTexture = std::make_shared<Texture>(texId, width, height);
+    }
+    if (colorTextures.empty())
+        colorTexture = newTexture;
+    colorTextures.push_back(newTexture);
+
+    auto *attachments = new GLenum[colorTextures.size()];
+    for (int i = 0; i < colorTextures.size(); i++)
+        attachments[i] = GL_COLOR_ATTACHMENT0 + i;
+    glDrawBuffers(2, attachments);
+    delete[] attachments;
 
     unbindCurrent();
 }
