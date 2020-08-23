@@ -37,4 +37,13 @@ inline bool stringEndsWith(std::string const &fullString, std::string const &end
         return false;
 }
 
+inline int nrOfNewlines(const std::string &str)
+{
+    int count = 0;
+    for (auto &c : str)
+        if (c == '\n')
+            count++;
+    return count;
+}
+
 #endif //GAME_STRING_H

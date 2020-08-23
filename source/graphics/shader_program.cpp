@@ -4,6 +4,7 @@
 
 #include "shader_program.h"
 #include "../files/file.h"
+#include "../utils/string.h"
 
 ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *fragSource)
 
@@ -17,6 +18,8 @@ ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const cha
 {
     compile(vertSource, fragSource, geomSource);
 }
+
+int realSourceCodeStartsAt = 0;
 
 void ShaderProgram::compile(const char *vertSource, const char *fragSource, const char *geomSource)
 {
@@ -41,7 +44,7 @@ void ShaderProgram::compile(const char *vertSource, const char *fragSource, cons
     {
         std::vector<char> log(logLength + 1);
         glGetProgramInfoLog(programId, logLength, NULL, &log[0]);
-        std::cout << name << " compilation log:\n"
+        std::cout << name << " compilation log:\n" << "(note: line count starts at " << realSourceCodeStartsAt << ")\n"
                     << &log[0] << std::endl;
     }
 
@@ -56,11 +59,18 @@ void ShaderProgram::compile(const char *vertSource, const char *fragSource, cons
         glDeleteShader(geomShaderId);
 
     compiled_ = success;
+    compileFinishTime = glfwGetTime();
 }
 
 void ShaderProgram::compileAndAttach(const char *source, GLuint shaderId, const char *shaderType)
 {
-    glShaderSource(shaderId, 1, &source, NULL);
+    auto versionStr = ShaderDefinitions::getVersionLine();
+    auto definitions = ShaderDefinitions::getGLSLString();
+    realSourceCodeStartsAt = nrOfNewlines(versionStr) + nrOfNewlines(definitions) + 2;
+
+    const GLchar *sources[] = {versionStr.c_str(), definitions.c_str(), source};
+
+    glShaderSource(shaderId, 3, sources, NULL);
     glCompileShader(shaderId);
     glAttachShader(programId, shaderId);
 
@@ -75,6 +85,7 @@ void ShaderProgram::compileAndAttach(const char *source, GLuint shaderId, const 
         std::vector<char> log(logLength + 1);
         glGetShaderInfoLog(shaderId, logLength, NULL, &log[0]);
         std::cout << name << " " << shaderType <<  " SHADER compilation log:\n"
+                    << "(note: line count starts at " << realSourceCodeStartsAt << ")\n"
                     << &log[0] << "\n";
     }
     #endif
@@ -119,4 +130,58 @@ ShaderProgram ShaderProgram::fromFiles(std::string name, const std::string &vert
     std::string geomCode = File::readString(geomPath.c_str());
     std::string fragCode = File::readString(fragPath.c_str());
     return ShaderProgram(std::move(name), vertCode.c_str(), geomCode.c_str(), fragCode.c_str());
+}
+
+std::map<std::string, std::string> &ShaderDefinitions::getDefinitionsMap()
+{
+    static std::map<std::string, std::string> map;
+    return map;
+}
+
+std::string ShaderDefinitions::getGLSLString()
+{
+    std::string str;
+
+    for (auto &[key, val] : getDefinitionsMap())
+        str += "#define " + key + " " + val + "\n";
+
+    return str;
+}
+
+void ShaderDefinitions::define(const char *name, std::string val)
+{
+    getDefinitionsMap()[name] = std::move(val);
+    getLastEditTime() = glfwGetTime();
+}
+
+void ShaderDefinitions::undef(const char *name)
+{
+    getDefinitionsMap().erase(name);
+}
+
+void ShaderDefinitions::defineInt(const char *name, int val)
+{
+    define(name, std::to_string(val));
+}
+
+void ShaderDefinitions::defineFloat(const char *name, float val)
+{
+    define(name, std::to_string(val) + "f");
+}
+
+void ShaderDefinitions::defineDouble(const char *name, double val)
+{
+    define(name, std::to_string(val));
+}
+
+double &ShaderDefinitions::getLastEditTime()
+{
+    static double lastEditTime = glfwGetTime();
+    return lastEditTime;
+}
+
+std::string &ShaderDefinitions::getVersionLine()
+{
+    static std::string str = "#version 300 es\n";
+    return str;
 }

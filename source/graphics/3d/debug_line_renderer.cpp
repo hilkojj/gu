@@ -5,7 +5,7 @@ namespace
 {
 #define MULTILINE(...) #__VA_ARGS__
 
-static std::string vertSource = MULTILINE(
+static const char *vertSource = MULTILINE(
 
     layout(location = 0) in int nr;
 
@@ -19,7 +19,7 @@ static std::string vertSource = MULTILINE(
 
 );
 
-static std::string fragSource = MULTILINE(
+static const char *fragSource = MULTILINE(
 
     precision mediump float;
 
@@ -36,7 +36,7 @@ static std::string fragSource = MULTILINE(
 } // namespace
 
 DebugLineRenderer::DebugLineRenderer()
-    : shaderProgram("DebugLineShader", ("#version 300 es\n" + vertSource).c_str(), ("#version 300 es\n" + fragSource).c_str())
+    : shaderProgram("DebugLineShader", vertSource, fragSource)
 {
     VertAttributes attrs;
     attrs.add({"nr", 1, 1, GL_BYTE});

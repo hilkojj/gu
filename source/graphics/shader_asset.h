@@ -19,7 +19,7 @@ class ShaderAsset : public ShaderProgram
 
     void use() override
     {
-        if (vertCode.hasReloaded() || fragCode.hasReloaded())
+        if (vertCode.hasReloaded() || fragCode.hasReloaded() || compileFinishTime < ShaderDefinitions::getLastEditTime())
         {
             glDeleteProgram(programId);
             compile(vertCode->c_str(), fragCode->c_str());

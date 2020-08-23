@@ -11,7 +11,7 @@ namespace
 {
 #define MULTILINE(...) #__VA_ARGS__
 
-static std::string vertSource = MULTILINE(
+static const char *vertSource = MULTILINE(
 
         layout(location = 0) in vec3 a_pos;
 
@@ -24,7 +24,7 @@ static std::string vertSource = MULTILINE(
         }
 );
 
-static std::string fragSource = MULTILINE(
+static const char *fragSource = MULTILINE(
 
         precision mediump float;
         out vec4 color;
@@ -44,7 +44,7 @@ ShaderProgram *shader = NULL;
 
 inline void render(Texture *tex)
 {
-    if (!shader) shader = new ShaderProgram("QuadTextureShader", ("#version 300 es\n" + vertSource).c_str(), ("#version 300 es\n" + fragSource).c_str());
+    if (!shader) shader = new ShaderProgram("QuadTextureShader", vertSource, fragSource);
 
     tex->bind(0);
     shader->use();
