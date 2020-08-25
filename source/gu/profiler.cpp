@@ -20,8 +20,8 @@ void beginNewFrame()
 
 void drawProfilerImGUI()
 {
-    const float DISTANCE = 10.0f;
-    static int corner = 0;
+    const float DISTANCE = 32.0f;
+    static int corner = 1;
 
     ImGuiIO& io = ImGui::GetIO();
     if (corner != -1)
