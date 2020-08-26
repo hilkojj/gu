@@ -290,6 +290,13 @@ inline void cubicBezier(const vec &p0, const vec &p1, const vec &p2, const vec &
     out = dt * dt * dt * p0 + 3 * dt * dt * t * p1 + 3 * dt * t * t * p2 + t * t * t * p3;
 }
 
+
+
+inline void floatColorToByteVec(const vec4 &rgba, u8vec4 &rgbaOut)
+{
+    rgbaOut = u8vec4(rgba * 255.f);
+}
+
 } // namespace mu
 
 #endif
