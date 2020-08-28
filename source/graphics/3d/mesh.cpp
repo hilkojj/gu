@@ -32,7 +32,9 @@ Mesh::Mesh(const std::string& name, unsigned int nrOfVertices, unsigned int nrOf
       VertData(attributes, std::vector<u_char>(nrOfVertices * attributes.getVertSize())),
       indices(nrOfIndices)
 {
+    #ifndef PUT_A_SOCK_IN_IT
     std::cout << "Mesh created: " << name << std::endl;
+    #endif
 }
 
 void Mesh::disposeOfflineData()
@@ -95,7 +97,9 @@ void Mesh::renderInstances(GLsizei count)
 
 Mesh::~Mesh()
 {
+    #ifndef PUT_A_SOCK_IN_IT
     std::cout << "Mesh destroyed: " << name << std::endl;
+    #endif
 
     if (vertBuffer)
         vertBuffer->onMeshDestroyed();

@@ -101,7 +101,9 @@ SharedTexArray TextureArray::fromDDSFiles(const std::vector<std::string> &paths)
 TextureArray::TextureArray(GLuint id, GLuint width, GLuint height, GLuint layers)
     : id(id), width(width), height(height), layers(layers)
 {
+    #ifndef PUT_A_SOCK_IN_IT
     std::cout << "TextureArray (" << width << "x" << height << " x " << layers << ") id: " << id << " created\n";
+    #endif
 }
 
 void TextureArray::bind(GLuint unit)
@@ -113,5 +115,7 @@ void TextureArray::bind(GLuint unit)
 TextureArray::~TextureArray()
 {
     glDeleteTextures(1, &id);
+    #ifndef PUT_A_SOCK_IN_IT
     std::cout << "TextureArray " << id << " destroyed\n";
+    #endif
 }

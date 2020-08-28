@@ -47,7 +47,9 @@ SharedCubeMap CubeMap::fromDDSFiles(const std::vector<std::string> &paths)
 CubeMap::CubeMap(GLuint id, GLuint width, GLuint height)
     : id(id), width(width), height(height)
 {
+    #ifndef PUT_A_SOCK_IN_IT
     std::cout << "CubeMap (" << width << "x" << height << ") id: " << id << " created\n";
+    #endif
 }
 
 void CubeMap::bind(GLuint unit)
@@ -59,5 +61,7 @@ void CubeMap::bind(GLuint unit)
 CubeMap::~CubeMap()
 {
     glDeleteTextures(1, &id);
+    #ifndef PUT_A_SOCK_IN_IT
     std::cout << "CubeMap " << id << " destroyed\n";
+    #endif
 }

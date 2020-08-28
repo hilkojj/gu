@@ -10,12 +10,16 @@
 ModelInstance::ModelInstance(SharedModel model)
     : model(model)
 {
+    #ifndef PUT_A_SOCK_IN_IT
     std::cout << "Creating ModelInstance of " << model->name << std::endl;
+    #endif
 }
 
 ModelInstance::~ModelInstance()
 {
+    #ifndef PUT_A_SOCK_IN_IT
     std::cout << "Ending ModelInstance of " << model->name << std::endl;
+    #endif
 }
 
 void ModelInstance::translate(float x, float y, float z)
