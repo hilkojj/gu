@@ -110,22 +110,23 @@ class AssetManager
         });
     }
 
-    static void load(const char *directory)
+    static void load(const char *directory, bool verbose=false)
     {
         File::iterateDirectoryRecursively(directory, [&](auto path, bool isDir) {
             if (!isDir)
-                loadFile(path, std::string(directory) + "/");
+                loadFile(path, std::string(directory) + "/", verbose);
         });
     }
 
-    static void loadFile(const std::string &path, const std::string &removePreFix)
+    static void loadFile(const std::string &path, const std::string &removePreFix, bool verbose=false)
     {
         for (const AssetLoader &loader : loaders)
         {
             if (!loader.match(path))
                 continue;
 
-            std::cout << "Loading " << loader.typeName << "-asset '" << path << "'..." << std::endl;
+            if (verbose)
+                std::cout << "Loading " << loader.typeName << "-asset '" << path << "'..." << std::endl;
 
             try
             {
