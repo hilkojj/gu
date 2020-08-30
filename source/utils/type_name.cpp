@@ -1,4 +1,5 @@
 #include "type_name.h"
+#include "string.h"
 
 #ifdef __GNUG__
 #include <cstdlib>
@@ -27,10 +28,10 @@ std::string demangle(const char *name) {
 
 void removeKeywords(std::string &str)
 {
-    int pos = str.find(' ');
-    if (pos == std::string::npos)
-        return;
-    str = str.substr(pos + 1, str.size() - 1);
+    auto splitted = splitString(str, " ");
+    str = splitted.back();
+    if (splitted.size() >= 2 && splitted[splitted.size() - 2] == "unsigned") // lol
+        str = "unsigned " + str;
 }
 
 void removeTemplates(std::string &str)
