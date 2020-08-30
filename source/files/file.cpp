@@ -1,10 +1,4 @@
 
-#ifdef _WIN32
-#include <filesystem>
-#else
-#include <dirent.h>
-#endif
-
 #include "file.h"
 #include "../utils/gu_error.h"
 #include "../utils/string.h"
@@ -64,5 +58,14 @@ void File::iterateDirectoryRecursively(const std::string &path_, std::function<v
     {
         cb(dirEntry.path().generic_string(), dirEntry.is_directory());
     }
+    #endif
+}
+
+void File::createDir(const char *path)
+{
+    #ifdef _WIN32
+    std::filesystem::create_directory(path);
+    #else
+    mkdir(path, 0777);
     #endif
 }

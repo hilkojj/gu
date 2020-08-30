@@ -4,6 +4,15 @@
 #include <fstream>
 #include <sstream>
 
+
+#ifdef _WIN32
+#include <filesystem>
+#else
+#include <dirent.h>
+#include <sys/stat.h>
+#endif
+
+
 #ifndef FILE_H
 #define FILE_H
 
@@ -13,6 +22,8 @@ class File
     static std::string readString(const char *path);
     static std::vector<unsigned char> readBinary(const char *path);
     static bool exists(const char *path);
+
+    static void createDir(const char *path);
 
     template<typename data_vec>
     static void writeBinary(const char *path, const data_vec &data)
