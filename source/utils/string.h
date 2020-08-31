@@ -32,7 +32,14 @@ inline std::vector<std::string> splitString(const std::string& str, const std::s
 inline bool stringEndsWith(std::string const &fullString, std::string const &ending)
 {
     if (fullString.length() >= ending.length())
-        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+        return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
+    else
+        return false;
+}
+inline bool stringStartsWith(std::string const &fullString, std::string const &start)
+{
+    if (fullString.length() >= start.length())
+        return (0 == fullString.compare(0, start.length(), start));
     else
         return false;
 }
