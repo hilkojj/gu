@@ -34,6 +34,8 @@ bool fullscreen = false;
 
 std::function<void(double)> beforeRender = [](auto){};
 
+delegate<bool()> canClose;
+
 namespace
 {
 Screen *screen;
@@ -359,12 +361,22 @@ void run()
     #else
 
     do mainLoop();
-    while (!glfwWindowShouldClose(window));
+    while (!shouldClose() || canClose().anyEquals(false));
 
     ImGui_ImplGlfw_Shutdown();
 
     #endif
     // glfwTerminate();
+}
+
+bool shouldClose()
+{
+    return glfwWindowShouldClose(window);
+}
+
+void setShouldClose(bool val)
+{
+    glfwSetWindowShouldClose(window, val);
 }
 
 void setScreen(Screen *newScreen)

@@ -1,6 +1,7 @@
 
 #include "CodeEditor.h"
 #include <imgui.h>
+#include <gu/game_utils.h>
 #include "../../input/key_input.h"
 
 #include "../../../external/ImGuiColorTextEdit/TextEditor.cpp"
@@ -35,12 +36,40 @@ void preventSavingWebpage()
 
 void CodeEditor::drawGUI(ImFont *codeFont)
 {
+    static auto allowClose = gu::canClose += [] {
+        return tabs.empty();
+    };
     static Tab *tabToClose = NULL;
 
     preventSavingWebpage();
 
     if (tabs.empty())
         return;
+
+    const char *unsavedModalTitle = "Code Editor: closing unsaved";
+
+    if (tabToClose && ImGui::BeginPopupModal(unsavedModalTitle, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("Some changes might not have been saved!");
+        ImGui::Separator();
+
+        if (ImGui::Button("OK", ImVec2(120, 0)))
+        {
+            tabToClose->close = true;
+            ImGui::CloseCurrentPopup();
+            tabToClose = NULL;
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(120, 0)))
+        {
+            gu::setShouldClose(false);
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SetItemDefaultFocus();
+        ImGui::EndPopup();
+    }
 
     ImGui::SetNextWindowPos(ImVec2(600, 300), ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowSize(ImVec2(300, 400), ImGuiCond_FirstUseEver);
@@ -102,9 +131,9 @@ void CodeEditor::drawGUI(ImFont *codeFont)
                 }
             }
 
-            if (!open && tab.dirty)
+            if ((!open || gu::shouldClose()) && tab.dirty)
             {
-                ImGui::OpenPopup("Closing unsaved");
+                ImGui::OpenPopup(unsavedModalTitle);
                 tabToClose = &tab; // todo, I think this is pretty unsafe because tab is stored inside a vector
             }
             else if (!open)
@@ -117,27 +146,6 @@ void CodeEditor::drawGUI(ImFont *codeFont)
                 tabs.pop_back();
             }
         }
-
-        if (tabToClose && ImGui::BeginPopupModal("Closing unsaved", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-        {
-            ImGui::Text("Some changes might not have been saved!");
-            ImGui::Separator();
-
-            if (ImGui::Button("OK", ImVec2(120, 0)))
-            {
-                tabToClose->close = true;
-                ImGui::CloseCurrentPopup();
-                tabToClose = NULL;
-            }
-
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0)))
-                ImGui::CloseCurrentPopup();
-
-            ImGui::SetItemDefaultFocus();
-            ImGui::EndPopup();
-        }
-
         ImGui::EndTabBar();
     }
 

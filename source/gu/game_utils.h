@@ -8,6 +8,7 @@
 #include "../input/mouse_input.h"
 #include "screen.h"
 #include "profiler.h"
+#include "../utils/delegate.h"
 
 namespace gu
 {
@@ -32,10 +33,13 @@ extern GLFWwindow *window;
 extern int width, height, widthPixels, heightPixels;
 extern bool fullscreen;
 extern std::function<void(double deltaTime)> beforeRender;
+extern delegate<bool()> canClose;
 
 // initialize OpenGL, window, input and more. Returns false if initialization failed.
 bool init(Config config);
 void run();
+bool shouldClose();
+void setShouldClose(bool);
 void setScreen(Screen *screen);
 void setVSync(bool enabled);
 
