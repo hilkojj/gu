@@ -2,6 +2,8 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include <utils/delegate.h>
+
 class Screen
 {
   public:

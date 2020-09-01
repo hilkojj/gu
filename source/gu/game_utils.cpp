@@ -35,6 +35,7 @@ bool fullscreen = false;
 std::function<void(double)> beforeRender = [](auto){};
 
 delegate<bool()> canClose;
+delegate<void()> onResize;
 
 namespace
 {
@@ -73,12 +74,6 @@ void render(double deltaTime)
 {
     if (screen)
         screen->render(deltaTime);
-}
-
-void onResize()
-{
-    if (screen)
-        screen->onResize();
 }
 
 GLFWmonitor *get_current_monitor(GLFWwindow *window)
@@ -312,6 +307,8 @@ void mainLoop()
         heightPixels = nextHeightPixels;
         resized = false;
         glViewport(0, 0, nextWidthPixels, nextHeightPixels);
+        if (screen)
+            screen->onResize();
         onResize();
     }
 

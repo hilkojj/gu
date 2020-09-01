@@ -71,7 +71,7 @@ struct delegate<ReturnType(Args...)> : public delegate_base<ReturnType(Args...)>
 
     typedef std::function<void(ReturnType)> ReturnTypeHandler;
 
-    void operator ()(Args&&... args, const ReturnTypeHandler &returnHandler)
+    void operator ()(Args... args, const ReturnTypeHandler &returnHandler)
     {
         this->callAll([&](const auto &func) {
 
@@ -102,7 +102,7 @@ struct delegate<ReturnType(Args...)> : public delegate_base<ReturnType(Args...)>
         }
     };
 
-    return_values operator ()(Args&&... args)
+    return_values operator ()(Args... args)
     {
         return_values vals;
 
@@ -116,9 +116,9 @@ struct delegate<ReturnType(Args...)> : public delegate_base<ReturnType(Args...)>
 
 
 template<typename ...Args>
-struct delegate<void(Args...)>
+struct delegate<void(Args...)> : public delegate_base<void(Args...)>
 {
-    void operator ()(Args&&... args)
+    void operator ()(Args... args)
     {
         this->callAll([&](const auto &func) {
             func(std::forward<Args>(args)...);

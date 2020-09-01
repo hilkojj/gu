@@ -34,6 +34,7 @@ extern int width, height, widthPixels, heightPixels;
 extern bool fullscreen;
 extern std::function<void(double deltaTime)> beforeRender;
 extern delegate<bool()> canClose;
+extern delegate<void()> onResize;
 
 // initialize OpenGL, window, input and more. Returns false if initialization failed.
 bool init(Config config);
