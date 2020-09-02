@@ -48,16 +48,23 @@ void CodeEditor::drawGUI(ImFont *codeFont)
 
     const char *unsavedModalTitle = "Code Editor: closing unsaved";
 
-    if (tabToClose && ImGui::BeginPopupModal(unsavedModalTitle, NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    if (tabToClose || gu::shouldClose())
     {
+        ImGui::Begin(unsavedModalTitle, NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings);
+
         ImGui::Text("Some changes might not have been saved!");
         ImGui::Separator();
 
         if (ImGui::Button("OK", ImVec2(120, 0)))
         {
-            tabToClose->close = true;
             ImGui::CloseCurrentPopup();
-            tabToClose = NULL;
+            if (tabToClose)
+            {
+                tabToClose->close = true;
+                tabToClose = NULL;
+            }
+            else if (gu::shouldClose())
+                tabs.clear();
         }
 
         ImGui::SameLine();
@@ -68,7 +75,7 @@ void CodeEditor::drawGUI(ImFont *codeFont)
         }
 
         ImGui::SetItemDefaultFocus();
-        ImGui::EndPopup();
+        ImGui::End();
     }
 
     ImGui::SetNextWindowPos(ImVec2(600, 300), ImGuiCond_FirstUseEver);
@@ -131,11 +138,8 @@ void CodeEditor::drawGUI(ImFont *codeFont)
                 }
             }
 
-            if ((!open || gu::shouldClose()) && tab.dirty)
-            {
-                ImGui::OpenPopup(unsavedModalTitle);
+            if (!open && tab.dirty)
                 tabToClose = &tab; // todo, I think this is pretty unsafe because tab is stored inside a vector
-            }
             else if (!open)
                 tab.close = true;
 
