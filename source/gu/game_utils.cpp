@@ -190,10 +190,18 @@ void EMSCRIPTENSetClipboardText(void* user_data, const char* text)
 
 } // namespace
 
+void glfwErrorCB(int error, const char *description)
+{
+    throw gu_err(
+        "GLFW ERROR: " + std::string(description)
+    );
+}
+
 bool init(Config config_)
 {
     config = config_;
     // Initialise GLFW
+    glfwSetErrorCallback(glfwErrorCB);
     if (!glfwInit())
     {
         std::cerr << "Failed to initialize GLFW" << std::endl;
@@ -203,9 +211,9 @@ bool init(Config config_)
     glfwWindowHint(GLFW_SAMPLES, config.samples);
 
     #ifndef EMSCRIPTEN
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // To make MacOS happy; should not be needed
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, config.openGLMajorVersion);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, config.openGLMinorVersion);
+//    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // To make MacOS happy; should not be needed. Dont use this, because: it broke the game on niek's laptop where the compat version is 3.0
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
     #endif
 

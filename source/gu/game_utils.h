@@ -26,6 +26,8 @@ struct Config
 
     // the id of the HTML <canvas> element:
     std::string htmlCanvasId = "canvas";
+
+    int openGLMajorVersion = 4, openGLMinorVersion = 2;
 };
 
 extern Config config;
