@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 
 /**
  * taken from https://stackoverflow.com/a/37454181/10386780
@@ -51,6 +52,22 @@ inline int nrOfNewlines(const std::string &str)
         if (c == '\n')
             count++;
     return count;
+}
+
+inline std::string randomString(int length)
+{
+    auto getRandomChar = [] () -> char
+    {
+        constexpr char chars[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+        constexpr int maxIndex = sizeof(chars) - 1;
+        return chars[rand() % maxIndex];
+    };
+    std::string str(length,0);
+    std::generate_n(str.begin(), length, getRandomChar);
+    return str;
 }
 
 #endif //GAME_STRING_H
