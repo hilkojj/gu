@@ -141,3 +141,8 @@ void VertData::addVertices(int count)
 {
     vertices.resize(vertices.size() + count * attributes.getVertSize(), 0);
 }
+
+int VertData::nrOfVertices() const
+{
+    return vertices.size() / attributes.getVertSize();
+}

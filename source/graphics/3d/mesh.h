@@ -58,6 +58,8 @@ class VertData
     void removeVertices(int count);
 
     void addVertices(int count);
+
+    int nrOfVertices() const;
 };
 
 class VertBuffer;

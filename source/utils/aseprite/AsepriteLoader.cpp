@@ -315,7 +315,10 @@ void Loader::loadSlices()
         }
         // pivot point
         if (flags & (0x1u << 1u))
-            slice.pivot.emplace(read<DWORD>(), read<DWORD>());
+        {
+            int x = read<DWORD>(), y = read<DWORD>();
+            slice.pivot.emplace(x, y);
+        }
         lastUserData = &slice;
     }
 }

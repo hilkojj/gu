@@ -2,7 +2,7 @@
 #include "../gu_error.h"
 #include "Aseprite.h"
 
-aseprite::Slice &aseprite::Sprite::getSliceByName(const char *name, int frame)
+const aseprite::Slice &aseprite::Sprite::getSliceByName(const char *name, int frame) const
 {
     for (auto &slice : slices)
     {
