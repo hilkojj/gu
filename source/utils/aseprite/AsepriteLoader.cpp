@@ -304,14 +304,14 @@ void Loader::loadSlices()
         slice.width = read<DWORD>();
         slice.height = read<DWORD>();
 
-        // 9 slice (todo, useful for GUIs):
+        // 9 slice
         if (flags & 0x1u)
         {
-            std::cerr << "9-slice found in " << filePath << " ignored." << std::endl;
-            skip<LONG>();
-            skip<LONG>();
-            skip<DWORD>();
-            skip<DWORD>();
+            slice.nineSlice.emplace();
+            slice.nineSlice->topLeftOffset.x = read<LONG>();
+            slice.nineSlice->topLeftOffset.y = read<LONG>();
+            slice.nineSlice->innerSize.x = read<DWORD>();
+            slice.nineSlice->innerSize.y = read<DWORD>();
         }
         // pivot point
         if (flags & (0x1u << 1u))

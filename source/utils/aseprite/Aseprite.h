@@ -26,6 +26,13 @@ struct Slice : UserData
     std::string name;
     int originX, originY, width, height;
     std::optional<ivec2> pivot;
+
+    struct NineSlice
+    {
+        ivec2 topLeftOffset, innerSize;
+    };
+
+    std::optional<NineSlice> nineSlice;
 };
 
 struct Cel : UserData
