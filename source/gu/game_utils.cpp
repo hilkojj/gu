@@ -192,9 +192,13 @@ void EMSCRIPTENSetClipboardText(void* user_data, const char* text)
 
 void glfwErrorCB(int error, const char *description)
 {
-    throw gu_err(
-        "GLFW ERROR: " + std::string(description)
-    );
+    std::cerr << "GLFW ERROR: " << description << std::endl;
+
+    // not all glfw errors should crash the game.
+
+//    throw gu_err(
+//        "GLFW ERROR: " + std::string(description)
+//    );
 }
 
 bool init(Config config_)
