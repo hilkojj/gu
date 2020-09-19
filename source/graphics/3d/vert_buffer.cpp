@@ -184,7 +184,8 @@ GLuint VertBuffer::uploadPerInstanceData(const VertData &data, GLuint advanceRat
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, instanceVbos[id]);
-    glBufferData(GL_ARRAY_BUFFER, data.vertices.size(), &data.vertices[0], vboUsage);
+    if (data.vertices.size() > 0)
+        glBufferData(GL_ARRAY_BUFFER, data.vertices.size(), &data.vertices[0], vboUsage);
     usePerInstanceData(id, advanceRate);
     return id;
 }
