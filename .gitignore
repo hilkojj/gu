@@ -64,12 +64,7 @@ _deps
 
 # End of https://www.gitignore.io/api/c++,cmake,visualstudiocode
 
-/external/*
-!/external/imgui
-!/external/zlib
-!/external/openal-soft
-!/external/stb
-!/external/ImGuiColorTextEdit
+external/glad/
 bin/
 
 

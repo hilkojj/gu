@@ -13,6 +13,13 @@ set_property(TARGET gameutils PROPERTY CXX_STANDARD_REQUIRED ON)
 find_package(OpenGL REQUIRED)
 
 # ---GLAD---
+
+if (NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/../external/glad)
+    # generate glad-opengl-loader-stuff
+    execute_process(COMMAND python -m pip install --user glad)
+    execute_process(COMMAND python -m glad --generator=c --extensions=GL_EXT_texture_compression_s3tc --out-path=../external/glad WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+endif()
+
 add_library(glad ../external/glad/include/glad/glad.h ../external/glad/src/glad.c)
 target_include_directories(glad PUBLIC ../external/glad/include/)
 target_link_libraries(gameutils glad)
@@ -25,8 +32,8 @@ if(NOT DEFINED EMSCRIPTEN)
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-    add_subdirectory(../external/glfw-3.2.1 ./bin/glfw)
-    include_directories(../external/glfw-3.2.1)
+    add_subdirectory(../external/glfw ./bin/glfw)
+    include_directories(../external/glfw/include)
 
     target_link_libraries(gameutils glfw)
 endif()
@@ -34,8 +41,8 @@ endif()
 
 # ---GLM---
 set(GLM_TEST_ENABLE OFF)
-add_subdirectory(../external/glm-0.9.9.5/glm ./bin/glm)
-include_directories(../external/glm-0.9.9.5/glm)
+add_subdirectory(../external/glm/glm ./bin/glm)
+include_directories(../external/glm/glm)
 target_link_libraries(gameutils glm)
 
 
