@@ -112,6 +112,8 @@ class Sprite
      * Warning: this method is not really fast.
      */
     const Slice &getSliceByName(const char *name, int frame) const;
+
+    const Tag &getTagByName(const char *name) const;
 };
 
 }

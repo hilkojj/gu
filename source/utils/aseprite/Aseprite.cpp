@@ -11,3 +11,11 @@ const aseprite::Slice &aseprite::Sprite::getSliceByName(const char *name, int fr
     }
     throw gu_err("Sprite '" + this->name + "' does not have a slice at frame " + std::to_string(frame) + " named " + std::string(name));
 }
+
+const aseprite::Tag &aseprite::Sprite::getTagByName(const char *name) const
+{
+    for (auto &tag : tags)
+        if (tag.name == name)
+            return tag;
+    throw gu_err("Sprite '" + this->name + "' does not have a tag named " + std::string(name));
+}
