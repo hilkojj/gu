@@ -57,10 +57,15 @@ VertBuffer *VertBuffer::add(SharedMesh mesh)
     meshes.push_back(mesh);
 
     mesh->baseVertex = nrOfVerts;
-    nrOfVerts += mesh->nrOfVertices;
+    mesh->_nrOfVertices = mesh->nrOfVertices();
+    nrOfVerts += mesh->_nrOfVertices;
 
-    mesh->indicesBufferOffset = nrOfIndices * sizeof(GLushort);
-    nrOfIndices += mesh->nrOfIndices;
+    for (auto &part : mesh->parts)
+    {
+        part.indicesBufferOffset = nrOfIndices * sizeof(GLushort);
+        part.nrOfIndices = part.indices.size();
+        nrOfIndices += part.nrOfIndices;
+    }
 
     mesh->vertBuffer = this;
     return this;
@@ -91,26 +96,32 @@ void VertBuffer::upload(bool disposeOfflineData)
             throw gu_err("Trying to upload a VertBuffer whose Meshes are already destroyed");
 
         SharedMesh mesh = m.lock();
-        GLuint
-            vertsSize = mesh->nrOfVertices * vertSize,
-            indicesSize = mesh->nrOfIndices * sizeof(GLushort);
 
+        if (mesh->nrOfVertices() != mesh->_nrOfVertices)
+            throw gu_err("Mesh vertices have resized between .add() and .upload() for " + mesh->name);
+
+        GLuint vertsSize = mesh->_nrOfVertices * vertSize;
         mesh->vertBufferOffset = vertsOffset;
-
-        auto &indices = mesh->indices;
-        #if EMSCRIPTEN
-        if (!disposeOfflineData) indices = *&indices;
-
-        for (auto &i : indices) i += mesh->baseVertex;
-        #endif
-
         glBufferSubData(GL_ARRAY_BUFFER, mesh->vertBufferOffset, vertsSize, mesh->vertices.data());
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indicesOffset, indicesSize, indices.data());
+        vertsOffset += vertsSize;
+
+        for (auto &part : mesh->parts)
+        {
+            if (part.indices.size() != part.nrOfIndices)
+                throw gu_err("Mesh part indices have resized between .add() and .upload() for mesh: " + mesh->name + " part: " + part.name);
+
+            #if EMSCRIPTEN
+            for (auto &i : part.indices) i += mesh->baseVertex;
+            if (!disposeOfflineData) for (auto &i : part.indices) i -= mesh->baseVertex;
+            #endif
+
+            GLuint indicesSize = part.nrOfIndices * sizeof(GLushort);
+
+            glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indicesOffset, indicesSize, part.indices.data());
+            indicesOffset += indicesSize;
+        }
 
         if (disposeOfflineData) mesh->disposeOfflineData();
-
-        vertsOffset += vertsSize;
-        indicesOffset += indicesSize;
     }
     setAttrPointersAndEnable(attrs);
     uploaded = true;
@@ -255,11 +266,13 @@ void VertBuffer::deletePerInstanceData(GLuint instanceDataId)
     instanceVbos[instanceDataId] = -1;
 }
 
-void VertBuffer::reuploadVertices(const SharedMesh &mesh)
+void VertBuffer::reuploadVertices(const SharedMesh &mesh, int nrOfVerticesToReupload)
 {
     bind();
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
     int vertsOffset = mesh->vertBufferOffset;
-    int vertsSize = mesh->nrOfVertices * vertSize;
+    if (nrOfVerticesToReupload > mesh->_nrOfVertices)
+        throw gu_err("Cannot reupload more verts than before. Mesh: " + mesh->name);
+    uint vertsSize = (nrOfVerticesToReupload == -1 ? mesh->_nrOfVertices : uint(nrOfVerticesToReupload)) * vertSize;
     glBufferSubData(GL_ARRAY_BUFFER, vertsOffset, vertsSize, mesh->vertices.data());
 }

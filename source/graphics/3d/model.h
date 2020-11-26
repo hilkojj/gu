@@ -7,10 +7,21 @@
 
 #include "mesh.h"
 
+struct Material
+{
+    std::string name;
+    vec3 diffuse, ambient, emissive, reflection;
+    vec4 specular;
+    float shininess;
+};
+
+typedef std::shared_ptr<Material> SharedMaterial;
+
 struct ModelPart
 {
     SharedMesh mesh;
-    // todo: SharedMaterial material;
+    int meshPartIndex = 0;
+    SharedMaterial material;
     // todo: SharedArmature armature = nullptr;
 };
 

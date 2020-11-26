@@ -107,7 +107,7 @@ void FrameBuffer::addColorTexture(GLuint internalFormat, GLuint format, GLuint m
     auto *attachments = new GLenum[colorTextures.size()];
     for (int i = 0; i < colorTextures.size(); i++)
         attachments[i] = GL_COLOR_ATTACHMENT0 + i;
-    glDrawBuffers(2, attachments);
+    glDrawBuffers(colorTextures.size(), attachments);
     delete[] attachments;
 
     unbindCurrent();

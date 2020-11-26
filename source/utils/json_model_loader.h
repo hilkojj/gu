@@ -21,6 +21,7 @@ class JsonModelLoader
     // note: 'id' is only used for error messages, predefinedAttrs should be NULL unless you want to define the vertex layout yourself.
     JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs);
 
+    std::vector<SharedMaterial> materials;
     std::vector<SharedModel> models;
     std::vector<SharedMesh> meshes;
 
@@ -29,6 +30,8 @@ class JsonModelLoader
     const VertAttributes *predefinedAttrs;
     const json &obj;
     std::string id;
+
+    void loadMaterials();
 
     void loadMeshes();
 

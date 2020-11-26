@@ -40,10 +40,9 @@ DebugLineRenderer::DebugLineRenderer()
 {
     VertAttributes attrs;
     attrs.add({"nr", 1, 1, GL_BYTE});
-    lineMesh = SharedMesh(new Mesh("debug_line", 2, 0, attrs));
+    lineMesh = SharedMesh(new Mesh("debug_line", 2, attrs));
     lineMesh->set(true, 0, 0);
     lineMesh->set(false, 1, 0);
-    lineMesh->mode = GL_LINES;
     VertBuffer::uploadSingleMesh(lineMesh);
 
     u_colorId = shaderProgram.location("u_color");
@@ -59,7 +58,7 @@ void DebugLineRenderer::line(const vec3 &p0, const vec3 &p1, const vec3 &color)
     glUniform3f(p0Id, p0.x * scale, p0.y * scale, p0.z * scale);
     glUniform3f(p1Id, p1.x * scale, p1.y * scale, p1.z * scale);
     glUniformMatrix4fv(MVPId, 1, GL_FALSE, &projection[0][0]);
-    lineMesh->renderArrays();
+    lineMesh->renderArrays(GL_LINES);
 }
 
 void DebugLineRenderer::axes(const vec3 &p, float size, const vec3 &color)

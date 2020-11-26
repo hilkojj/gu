@@ -21,8 +21,8 @@ vec3 calculateTangent(
  * Adds Tangents to mesh.
  * Mesh must have attributes including: VertAttributes::POSITION, VertAttributes::TEX_COORDS, VertAttributes::TANGENT.
  */
-void addTangentsToMesh(SharedMesh mesh);
-void addTangentsToMesh(Mesh *mesh);
+void addTangentsToMesh(SharedMesh mesh, int meshPart);
+void addTangentsToMesh(Mesh *mesh, int meshPart=0);
 
 } // namespace TangentCalculator
 

@@ -25,12 +25,11 @@ VertData::VertData(VertAttributes attrs, std::vector<u_char> vertices)
     : attributes(std::move(attrs)), vertices(std::move(vertices))
 {}
 
-Mesh::Mesh(const std::string& name, unsigned int nrOfVertices, unsigned int nrOfIndices, VertAttributes attributes)
+Mesh::Mesh(const std::string& name, unsigned int nrOfVertices, VertAttributes attributes)
 
-    : name(name), nrOfVertices(nrOfVertices), nrOfIndices(nrOfIndices),
+    : name(name),
 
-      VertData(attributes, std::vector<u_char>(nrOfVertices * attributes.getVertSize())),
-      indices(nrOfIndices)
+      VertData(attributes, std::vector<u_char>(nrOfVertices * attributes.getVertSize()))
 {
     #ifndef PUT_A_SOCK_IN_IT
     std::cout << "Mesh created: " << name << std::endl;
@@ -41,54 +40,64 @@ void Mesh::disposeOfflineData()
 {
     vertices.resize(0);
     vertices.shrink_to_fit();
-    indices.resize(0);
-    indices.shrink_to_fit();
+
+    for (auto &part : parts)
+    {
+        part.indices.resize(0);
+        part.indices.shrink_to_fit();
+    }
 }
 
-void Mesh::render()
+void Mesh::render(int partI)
 {
     if (!vertBuffer || !vertBuffer->isUploaded()) throw gu_err(name + " is not uploaded. Upload it first with a VertBuffer");
     vertBuffer->bind();
+    if (parts.size() <= partI) throw gu_err(name + " only has " + std::to_string(parts.size()) + " part(s). Requested: " + std::to_string(partI));
+    auto &part = parts.at(partI);
+
     #ifdef EMSCRIPTEN
     glDrawElements(
-        mode,
-        nrOfIndices,
+        part.mode,
+        part.nrOfIndices,
         GL_UNSIGNED_SHORT,
-        (void *)(uintptr_t)indicesBufferOffset
+        (void *)(uintptr_t) part.indicesBufferOffset
     );
     #else
     glDrawElementsBaseVertex(
-        mode,
-        nrOfIndices,
+        part.mode,
+        part.nrOfIndices,
         GL_UNSIGNED_SHORT,
-        (void *)(uintptr_t)indicesBufferOffset,
+        (void *)(uintptr_t) part.indicesBufferOffset,
         baseVertex
     );
     #endif
 }
 
-void Mesh::renderInstances(GLsizei count)
+void Mesh::renderInstances(GLsizei count, int partI)
 {
     if (!vertBuffer || !vertBuffer->isUploaded()) throw gu_err(name + " is not uploaded. Upload it first with a VertBuffer");
     vertBuffer->bind();
+    if (parts.size() <= partI) throw gu_err(name + " only has " + std::to_string(parts.size()) + " part(s). Requested: " + std::to_string(partI));
+    auto &part = parts.at(partI);
+
     #ifdef EMSCRIPTEN
     EM_ASM({
         gl.drawElementsInstanced($0, $1, $2, $3, $4);
     },
     // glDrawElementsInstanced(
-        mode,
-        nrOfIndices,
+        part.mode,
+        part.nrOfIndices,
         GL_UNSIGNED_SHORT,
-        (void *)(uintptr_t)indicesBufferOffset,
+        (void *)(uintptr_t) part.indicesBufferOffset,
         count
     // );
     );
     #else
     glDrawElementsInstancedBaseVertex(
-        mode,
-        nrOfIndices,
+        part.mode,
+        part.nrOfIndices,
         GL_UNSIGNED_SHORT,
-        (void *)(uintptr_t)indicesBufferOffset,
+        (void *)(uintptr_t) part.indicesBufferOffset,
         count,
         baseVertex
     );
@@ -105,27 +114,28 @@ Mesh::~Mesh()
         vertBuffer->onMeshDestroyed();
 }
 
-void Mesh::renderArrays()
+void Mesh::renderArrays(GLenum mode) const
 {
     if (!vertBuffer || !vertBuffer->isUploaded()) throw gu_err(name + " is not uploaded. Upload it first with a VertBuffer");
     vertBuffer->bind();
     glDrawArrays(
             mode,
             baseVertex,
-            nrOfVertices
+            _nrOfVertices
     );
 }
 
 SharedMesh Mesh::createQuad(float min, float max)
 {
-    SharedMesh quad(new Mesh("quad", 4, 6, VertAttributes().add_(VertAttributes::POSITION)));
+    SharedMesh quad(new Mesh("quad", 4, VertAttributes().add_(VertAttributes::POSITION)));
     quad->set<float[12]>({
         min, min, 0,
         min, max, 0,
         max, max, 0,
         max, min, 0,
     }, 0, 0);
-    quad->indices.insert(quad->indices.begin(), {
+    auto &part = quad->parts.emplace_back();
+    part.indices.insert(part.indices.begin(), {
         2, 1, 0,
         0, 3, 2,
     });

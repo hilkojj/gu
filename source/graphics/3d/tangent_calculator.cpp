@@ -25,21 +25,23 @@ vec3 calculateTangent(
     return normalize(tangent);
 }
 
-void addTangentsToMesh(SharedMesh mesh)
+void addTangentsToMesh(SharedMesh mesh, int meshPart)
 {
-    addTangentsToMesh(mesh.get());
+    addTangentsToMesh(mesh.get(), meshPart);
 }
 
-void addTangentsToMesh(Mesh *mesh)
+void addTangentsToMesh(Mesh *mesh, int meshPart)
 {
     VertAttributes &attrs = mesh->attributes;
     int posOffset = attrs.getOffset(VertAttributes::POSITION);
     int texOffset = attrs.getOffset(VertAttributes::TEX_COORDS);
     int tanOffset = attrs.getOffset(VertAttributes::TANGENT);
 
-    for (int i = 0; i < mesh->nrOfIndices; i += 3)
+    auto &part = mesh->parts.at(meshPart);
+
+    for (int i = 0; i < part.indices.size(); i += 3)
     {
-        int vertI0 = mesh->indices[i], vertI1 = mesh->indices[i + 1], vertI2 = mesh->indices[i + 2];
+        int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
         auto p0 = mesh->get<vec3>(vertI0, posOffset),
              p1 = mesh->get<vec3>(vertI1, posOffset),
              p2 = mesh->get<vec3>(vertI2, posOffset);

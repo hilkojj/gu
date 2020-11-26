@@ -1,10 +1,9 @@
 
 #include "json_model_loader.h"
-#include "../graphics/3d/mesh.h"
-#include "../graphics/3d/model.h"
-#include "../graphics/3d/vert_attributes.h"
 #include "../files/file.h"
 #include "gu_error.h"
+#include "./string.h"
+
 using json = nlohmann::json;
 
 std::vector<SharedModel> JsonModelLoader::fromJsonFile(const char *path, const VertAttributes *predefinedAttrs)
@@ -21,7 +20,8 @@ std::vector<SharedModel> JsonModelLoader::fromUbjsonFile(const char *path, const
 
 JsonModelLoader::JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs)
 : obj(obj), id(id), predefinedAttrs(predefinedAttrs)
-{   
+{
+    loadMaterials();
     loadMeshes();
     loadModels();
 }
@@ -36,27 +36,29 @@ void JsonModelLoader::loadMeshes()
         for (std::string attrStr : meshJson["attributes"])
             originalAttrs.add(attrFromString(attrStr));
 
-        json info = meshJson["parts"][0];
-        json indicesJson = info["indices"];
+        json info = meshJson["parts"].at(0);
         json verticesJson = meshJson["vertices"];
 
+
         SharedMesh mesh = SharedMesh(new Mesh(
-            info["id"], 
+            splitString(info["id"], "_part").at(0),
             verticesJson.size() / originalAttrs.getNrOfComponents(),
-            indicesJson.size(), 
             predefinedAttrs ? *predefinedAttrs : originalAttrs
         ));
 
-        unsigned int i = 0;
-        for (unsigned short index : indicesJson)
+        for (json partJson : meshJson["parts"])
         {
-            mesh->indices[i] = index;
-            i++;
+            auto &part = mesh->parts.emplace_back();
+            part.name = partJson["id"];
+
+            for (unsigned short index : partJson["indices"])
+                part.indices.push_back(index);
         }
+
 
         if (!predefinedAttrs)  // load vertices as laid out in JSON
         {
-            i = 0;
+            unsigned int i = 0;
             for (float vert : verticesJson)
                 mesh->set(vert, 0, i++ * sizeof(float));
         }
@@ -71,7 +73,7 @@ void JsonModelLoader::loadMeshes()
                 int originalOffset = originalAttrs.getOffset(attr) / sizeof(float);
                 int newOffset = predefinedAttrs->getOffset(attr);
 
-                for (int v = 0; v < mesh->nrOfVertices; v++)
+                for (int v = 0; v < mesh->nrOfVertices(); v++)
                 {
                     for (int j = 0; j < attr.size; j++)
                     {
@@ -108,15 +110,46 @@ void JsonModelLoader::loadModels()
 
         for (json partJson : modelJson["parts"])
         {
-            if (!partJson.contains("meshpartid")) continue;
+            auto &modelPart = model->parts.emplace_back();
 
-            SharedMesh mesh;
+            if (partJson.contains("meshpartid"))
+            {
+                std::string meshpartid = partJson["meshpartid"];
+                for (SharedMesh &m : meshes)
+                    for (int i = 0; i < m->parts.size(); i++)
+                        if (m->parts[i].name == meshpartid)
+                        {
+                            modelPart.mesh = m;
+                            modelPart.meshPartIndex = i;
+                        }
+                if (modelPart.mesh == NULL)
+                    throw gu_err("Model (" + model->name + ") wants a mesh part named " + meshpartid + " but that part could not be found");
+            }
 
-            for (SharedMesh m : meshes) if (m->name == partJson["meshpartid"]) mesh = m;
-
-            model->parts.push_back({mesh});
+            for (SharedMaterial &m : materials)
+                if (m->name == partJson["materialid"]) modelPart.material = m;  // todo, also give error when material was not found.
         }
 
         models.push_back(model);
+    }
+}
+
+void JsonModelLoader::loadMaterials()
+{
+    if (!obj.contains("materials")) return;
+
+    for (json matJson : obj["materials"])
+    {
+        SharedMaterial mat = std::make_shared<Material>();
+        mat->name = matJson.contains("id") ? matJson["id"] : "untitled";
+
+        mat->ambient = matJson.contains("ambient") ? vec3(matJson["ambient"][0], matJson["ambient"][1], matJson["ambient"][2]) : vec3(0);
+        mat->diffuse = matJson.contains("diffuse") ? vec3(matJson["diffuse"][0], matJson["diffuse"][1], matJson["diffuse"][2]) : vec3(0);
+        mat->emissive = matJson.contains("emissive") ? vec3(matJson["emissive"][0], matJson["emissive"][1], matJson["emissive"][2]) : vec3(0);
+        mat->reflection = matJson.contains("reflection") ? vec3(matJson["reflection"][0], matJson["reflection"][1], matJson["reflection"][2]) : vec3(0);
+        mat->specular = matJson.contains("specular") ? vec4(matJson["specular"][0], matJson["specular"][1], matJson["specular"][2], matJson["specular"][3]) : vec4(0);
+        mat->shininess = matJson.contains("shininess") ? float(matJson["shininess"]) : 0.f;
+
+        materials.push_back(mat);
     }
 }

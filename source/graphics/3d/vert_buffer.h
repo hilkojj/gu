@@ -40,7 +40,7 @@ class VertBuffer
 
     void onMeshDestroyed(); // Called by ~Mesh()
 
-    void reuploadVertices(const SharedMesh &mesh);
+    void reuploadVertices(const SharedMesh &mesh, int nrOfVerticesToReupload=-1); // -1 -> all
 
     /**
      * upload vertex-attributes that do not advance per vertex, but per instance (glDrawElementsInstanced() & glVertexAttribDivisor())
