@@ -40,6 +40,8 @@ class FrameBuffer
 
     void addDepthBuffer();
 
+    void setDrawBuffers();
+
     // function to get the color pixels. Note: it binds the FrameBuffer
     void bindAndGetPixels(GLenum format, std::vector<GLubyte> &out, unsigned int outOffset);
 

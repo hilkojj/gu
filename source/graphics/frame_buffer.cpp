@@ -104,11 +104,7 @@ void FrameBuffer::addColorTexture(GLuint internalFormat, GLuint format, GLuint m
         colorTexture = newTexture;
     colorTextures.push_back(newTexture);
 
-    auto *attachments = new GLenum[colorTextures.size()];
-    for (int i = 0; i < colorTextures.size(); i++)
-        attachments[i] = GL_COLOR_ATTACHMENT0 + i;
-    glDrawBuffers(colorTextures.size(), attachments);
-    delete[] attachments;
+    setDrawBuffers();
 
     unbindCurrent();
 }
@@ -195,4 +191,13 @@ void FrameBuffer::bindAndGetPixels(GLenum format, std::vector<GLubyte> &out, uns
     out.resize(components * width * height + outOffset);
     bind();
     glReadPixels(0, 0, width, height, format, GL_UNSIGNED_BYTE, &out[outOffset]);
+}
+
+void FrameBuffer::setDrawBuffers()
+{
+    auto *attachments = new GLenum[colorTextures.size()];
+    for (int i = 0; i < colorTextures.size(); i++)
+        attachments[i] = GL_COLOR_ATTACHMENT0 + i;
+    glDrawBuffers(colorTextures.size(), attachments);
+    delete[] attachments;
 }

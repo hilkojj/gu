@@ -45,7 +45,7 @@ VertBuffer *VertBuffer::add(SharedMesh mesh)
         throw gu_err(mesh->name + " was already added to a VertBuffer");
 
     #ifdef EMSCRIPTEN
-    if (next || nrOfVerts + mesh->nrOfVertices > std::numeric_limits<GLushort>::max())
+    if (next || nrOfVerts + mesh->nrOfVertices() > std::numeric_limits<GLushort>::max())
     {
         if (!next) next = VertBuffer::with(attrs);
         next->add(mesh);
