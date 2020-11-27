@@ -45,6 +45,8 @@ class FrameBuffer
     // function to get the color pixels. Note: it binds the FrameBuffer
     void bindAndGetPixels(GLenum format, std::vector<GLubyte> &out, unsigned int outOffset);
 
+    float getPixelDepth(int x, int y);
+
   private:
     FrameBuffer *sampled = NULL;
 

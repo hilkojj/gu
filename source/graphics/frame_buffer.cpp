@@ -201,3 +201,16 @@ void FrameBuffer::setDrawBuffers()
     glDrawBuffers(colorTextures.size(), attachments);
     delete[] attachments;
 }
+
+float FrameBuffer::getPixelDepth(int x, int y)
+{
+    bind();
+
+    float depth;
+
+    glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &depth);
+
+    unbindCurrent();
+
+    return depth;
+}
