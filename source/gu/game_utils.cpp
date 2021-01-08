@@ -237,13 +237,6 @@ bool init(Config config_)
         return false;
     }
 
-    if (config.printOpenGLMessages || config.printOpenGLErrors)
-    {
-        #ifndef EMSCRIPTEN
-        glEnable(GL_DEBUG_OUTPUT);
-        glDebugMessageCallback(glMessageCallback, NULL);
-        #endif
-    }
     glfwSwapInterval(config.vsync);
 
     glfwSetWindowSizeCallback(window, window_size_callback);
@@ -256,6 +249,18 @@ bool init(Config config_)
 
     KeyInput::setInputWindow(window);
     MouseInput::setInputWindow(window);
+
+
+    if (config.printOpenGLMessages || config.printOpenGLErrors)
+    {
+        #ifndef EMSCRIPTEN
+        glEnable(GL_DEBUG_OUTPUT);
+        if (glDebugMessageCallback)
+            glDebugMessageCallback(glMessageCallback, NULL);
+        else
+            std::cerr << "CANNOT ENABLE OPENGL MESSAGE CALLBACKS. Disable printOpenGLErrors/printOpenGLMessages or use OpenGL >= 4.3" << std::endl;
+        #endif
+    }
 
     // IMGUI ---------------------------------
     ImGui::CreateContext();

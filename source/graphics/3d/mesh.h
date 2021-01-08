@@ -85,6 +85,7 @@ class Mesh : public VertData
         std::string name;
         std::vector<unsigned short> indices;
         GLenum mode = GL_TRIANGLES;
+        int nrOfIndicesToRender = -1; // -1 => all
 
       private:
         // also used for glDrawElementsBaseVertex

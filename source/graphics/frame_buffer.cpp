@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "../gu/game_utils.h"
+#include "../utils/math_utils.h"
 
 void FrameBuffer::unbindCurrent()
 {
