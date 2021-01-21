@@ -46,6 +46,8 @@ class asset
 
     bool hasReloaded()
     {
+        if (!loadedAsset)
+            throw gu_err("trying to use an asset that is not initialized!");
         if (loadedAsset->loadedSinceTime > lastCheckTime)
         {
             lastCheckTime = glfwGetTime();
@@ -63,10 +65,17 @@ class asset
             throw gu_err(loadedAsset->objTypeName + "-asset '"  +  path + "' is not a " + getTypeName<type>());
     }
 
+    void unset()
+    {
+        loadedAsset = NULL;
+    }
+
     bool isSet() const { return !!loadedAsset; }
 
     const loaded_asset &getLoadedAsset() const
     {
+        if (!loadedAsset)
+            throw gu_err("trying to use an asset that is not initialized!");
         return *loadedAsset;
     }
 
