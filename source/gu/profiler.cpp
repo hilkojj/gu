@@ -2,7 +2,10 @@
 #include <imgui.h>
 #include <cmath>
 #include <functional>
+#include <json.hpp>
 #include "profiler.h"
+#include "../utils/code_editor/CodeEditor.h"
+#include "../files/file.h"
 
 namespace gu::profiler
 {
@@ -16,6 +19,34 @@ void beginNewFrame()
     assert(frames.back().activeSubZone.empty());
     frames.emplace_back();
     while (frames.size() > takeAverageOfNFrames) frames.pop_front();
+}
+
+void dumpToJson()
+{
+    json j = json::object();
+
+    struct funcs
+    {
+        static void dumpZone(json &j, const char *prefix, ZoneTime &zone)
+        {
+            j[prefix] = json::object();
+            j[prefix]["milliseconds"] = zone.time * 1000;
+
+            if (!zone.subZones.empty())
+                j[prefix]["sub"] = json::object();
+
+            for (auto &sub : zone.subZones)
+                funcs::dumpZone(j[prefix]["sub"], sub.first.c_str(), sub.second);
+        }
+    };
+    for (auto &sub : getAverageFrame().subZones)
+        funcs::dumpZone(j, sub.first.c_str(), sub.second);
+
+    CodeEditor::tabs.emplace_back().title = "profiler_dump_" + std::to_string(glfwGetTime()) + ".json";
+    CodeEditor::tabs.back().code = j.dump(2);
+    CodeEditor::tabs.back().save = [] (CodeEditor::Tab &t) {
+        File::writeBinary(("./" + t.title).c_str(), t.code);
+    };
 }
 
 void drawProfilerImGUI()
@@ -37,6 +68,10 @@ void drawProfilerImGUI()
         ZoneTime avg = getAverageFrame();
 
         ImGui::Text("%dFPS (%.1fms)", fps, avg.time * 1000);
+
+        ImGui::SameLine(0, 30);
+        if (ImGui::Button("DUMP"))
+            dumpToJson();
 
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2,2));
         ImGui::Columns(2, NULL, false);
