@@ -4,11 +4,18 @@
 
 const aseprite::Slice &aseprite::Sprite::getSliceByName(const char *name, int frame) const
 {
+    const Slice *best = NULL;
     for (auto &slice : slices)
     {
-        if (slice.frame == frame && slice.name == name)
-            return slice;
+        if (slice.name == name)
+        {
+            if (slice.frame == frame)
+                return slice;
+            best = &slice;
+        }
     }
+    if (best)
+        return *best;
     throw gu_err("Sprite '" + this->name + "' does not have a slice at frame " + std::to_string(frame) + " named " + std::string(name));
 }
 

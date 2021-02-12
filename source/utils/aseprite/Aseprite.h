@@ -110,6 +110,7 @@ class Sprite
     /**
      * Get a slice from the 'slices' vector using name and frame.
      * Warning: this method is not really fast.
+     * Note: returns slice from other frame, when no slice for specified frame was found.
      */
     const Slice &getSliceByName(const char *name, int frame) const;
 
