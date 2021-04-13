@@ -50,6 +50,8 @@ class Camera
     vec3 projectPixels(const vec3 &p, bool &inViewport) const;
     vec3 projectPixels(const vec3 &p) const;
 
+    virtual ~Camera() = default;
+
 };
 
 #endif

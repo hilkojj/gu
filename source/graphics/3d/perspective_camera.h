@@ -13,6 +13,7 @@ class PerspectiveCamera : public Camera {
 
     void update() override;
 
+    ~PerspectiveCamera() override = default;
 };
 
 #endif

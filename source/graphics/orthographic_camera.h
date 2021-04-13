@@ -15,6 +15,7 @@ class OrthographicCamera : public Camera
 
     vec2 worldPos2D(float viewportX, float viewportY, int xAxis=0, int yAxis=1);
 
+    ~OrthographicCamera() override = default;
 };
 
 

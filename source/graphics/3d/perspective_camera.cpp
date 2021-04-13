@@ -18,3 +18,4 @@ void PerspectiveCamera::update()
     );
     combined = projection * view;
 }
+

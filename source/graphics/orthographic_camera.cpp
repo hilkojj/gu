@@ -33,3 +33,4 @@ vec2 OrthographicCamera::worldPos2D(float viewportX, float viewportY, int xAxis,
 
     return p;
 }
+
