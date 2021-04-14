@@ -2,24 +2,31 @@
 #include "json_model_loader.h"
 #include "../files/file.h"
 #include "gu_error.h"
-#include "./string.h"
 
 using json = nlohmann::json;
 
+std::string basePath(const std::string &filePath)
+{
+    for (int i = filePath.size() - 1; i >= 0; i--)
+        if (filePath[i] == '/' || filePath[i] == '\\')
+            return filePath.substr(0, i + 1);
+    return "";
+}
+
 std::vector<SharedModel> JsonModelLoader::fromJsonFile(const char *path, const VertAttributes *predefinedAttrs)
 {
-    JsonModelLoader loader(json::parse(File::readString(path)), path, predefinedAttrs);
+    JsonModelLoader loader(json::parse(File::readString(path)), path, predefinedAttrs, basePath(path));
     return loader.models;
 }
 
 std::vector<SharedModel> JsonModelLoader::fromUbjsonFile(const char *path, const VertAttributes *predefinedAttrs)
 {
-    JsonModelLoader loader(json::from_ubjson(File::readBinary(path)), path, predefinedAttrs);
+    JsonModelLoader loader(json::from_ubjson(File::readBinary(path)), path, predefinedAttrs, basePath(path));
     return loader.models;
 }
 
-JsonModelLoader::JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs)
-: obj(obj), id(id), predefinedAttrs(predefinedAttrs)
+JsonModelLoader::JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs, std::string textureBasePath)
+: obj(obj), id(id), predefinedAttrs(predefinedAttrs), textureBasePath(textureBasePath)
 {
     loadMaterials();
     loadMeshes();
@@ -30,7 +37,7 @@ void JsonModelLoader::loadMeshes()
 {
     if (!obj.contains("meshes")) return;
 
-    for (json meshJson : obj["meshes"])
+    for (const json &meshJson : obj["meshes"])
     {
         VertAttributes originalAttrs;
         for (std::string attrStr : meshJson["attributes"])
@@ -46,7 +53,7 @@ void JsonModelLoader::loadMeshes()
             predefinedAttrs ? *predefinedAttrs : originalAttrs
         ));
 
-        for (json partJson : meshJson["parts"])
+        for (const json &partJson : meshJson["parts"])
         {
             auto &part = mesh->parts.emplace_back();
             part.name = partJson["id"];
@@ -102,13 +109,13 @@ void JsonModelLoader::loadModels()
 {
     if (!obj.contains("nodes")) return;
 
-    for (json modelJson : obj["nodes"])
+    for (const json &modelJson : obj["nodes"])
     {
         if (!modelJson.contains("parts")) continue;
 
         SharedModel model = SharedModel(new Model(modelJson["id"]));
 
-        for (json partJson : modelJson["parts"])
+        for (const json &partJson : modelJson["parts"])
         {
             auto &modelPart = model->parts.emplace_back();
 
@@ -138,7 +145,7 @@ void JsonModelLoader::loadMaterials()
 {
     if (!obj.contains("materials")) return;
 
-    for (json matJson : obj["materials"])
+    for (const json &matJson : obj["materials"])
     {
         SharedMaterial mat = std::make_shared<Material>();
         mat->name = matJson.contains("id") ? matJson["id"] : "untitled";
@@ -149,6 +156,21 @@ void JsonModelLoader::loadMaterials()
         mat->reflection = matJson.contains("reflection") ? vec3(matJson["reflection"][0], matJson["reflection"][1], matJson["reflection"][2]) : vec3(0);
         mat->specular = matJson.contains("specular") ? vec4(matJson["specular"][0], matJson["specular"][1], matJson["specular"][2], matJson["specular"][3]) : vec4(0);
         mat->shininess = matJson.contains("shininess") ? float(matJson["shininess"]) : 0.f;
+
+        if (matJson.contains("textures"))
+        {
+            for (const json &texJson : matJson["textures"])
+            {
+                asset<Texture> tex((textureBasePath + std::string(texJson.at("filename"))));
+
+                if (texJson.at("type") == "DIFFUSE")
+                    mat->diffuseTexture = tex;
+                else if (texJson.at("type") == "SPECULAR")
+                    mat->specularMap = tex;
+                else if (texJson.at("type") == "NORMAL")
+                    mat->normalMap = tex;
+            }
+        }
 
         materials.push_back(mat);
     }

@@ -19,7 +19,7 @@ class JsonModelLoader
     static std::vector<SharedModel> fromUbjsonFile(const char *path, const VertAttributes *predefinedAttrs=NULL);
 
     // note: 'id' is only used for error messages, predefinedAttrs should be NULL unless you want to define the vertex layout yourself.
-    JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs);
+    JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs, std::string textureBasePath);
 
     std::vector<SharedMaterial> materials;
     std::vector<SharedModel> models;
@@ -29,7 +29,7 @@ class JsonModelLoader
     
     const VertAttributes *predefinedAttrs;
     const json &obj;
-    std::string id;
+    std::string id, textureBasePath;
 
     void loadMaterials();
 

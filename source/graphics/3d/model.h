@@ -5,6 +5,8 @@
 #include <memory>
 #include <vector>
 
+#include "../texture.h"
+#include "../../asset_manager/asset.h"
 #include "mesh.h"
 
 struct Material
@@ -13,6 +15,8 @@ struct Material
     vec3 diffuse, ambient, emissive, reflection;
     vec4 specular;
     float shininess;
+
+    asset<Texture> diffuseTexture, specularMap, normalMap;
 };
 
 typedef std::shared_ptr<Material> SharedMaterial;
