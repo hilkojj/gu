@@ -167,7 +167,7 @@ void JsonModelLoader::loadMaterials()
                     mat->diffuseTexture = tex;
                 else if (texJson.at("type") == "SPECULAR")
                     mat->specularMap = tex;
-                else if (texJson.at("type") == "NORMAL")
+                else if (texJson.at("type") == "BUMP")
                     mat->normalMap = tex;
             }
         }
