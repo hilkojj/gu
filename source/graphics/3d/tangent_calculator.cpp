@@ -39,6 +39,16 @@ void addTangentsToMesh(Mesh *mesh, int meshPart)
 
     auto &part = mesh->parts.at(meshPart);
 
+    // set tangents to vec3(0) first, to prevent NaN floats when adding in the next loop.
+    for (int i = 0; i < part.indices.size(); i += 3)
+    {
+        int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
+
+        mesh->set<vec3>(vec3(0), vertI0, tanOffset);
+        mesh->set<vec3>(vec3(0), vertI1, tanOffset);
+        mesh->set<vec3>(vec3(0), vertI2, tanOffset);
+    }
+
     for (int i = 0; i < part.indices.size(); i += 3)
     {
         int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
