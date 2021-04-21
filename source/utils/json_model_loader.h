@@ -9,6 +9,9 @@
 
 /**
  * loads Models that are exported from Blender with https://github.com/hilkojj/blender_UBJSON_exporter
+ *
+ * Format Specification:
+ * https://github.com/libgdx/fbx-conv/wiki/Version-0.1-%28libgdx-0.9.9%29
  **/
 class JsonModelLoader
 {
@@ -21,6 +24,7 @@ class JsonModelLoader
     // note: 'id' is only used for error messages, predefinedAttrs should be NULL unless you want to define the vertex layout yourself.
     JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs, std::string textureBasePath);
 
+    std::vector<SharedArmature> armatures;
     std::vector<SharedMaterial> materials;
     std::vector<SharedModel> models;
     std::vector<SharedMesh> meshes;
@@ -36,6 +40,8 @@ class JsonModelLoader
     void loadMeshes();
 
     void loadModels();
+
+    void loadArmatures();
 
     VertAttr attrFromString(const std::string &str);
 

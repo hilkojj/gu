@@ -27,6 +27,10 @@ public:
             NORMAL = {"NORMAL", 3},
             TANGENT = {"TANGENT", 3},
             BI_NORMAL = {"BI_NORMAL", 3},
+            BONE_WEIGHT_0 = {"BONE_WEIGHT_0", 2},
+            BONE_WEIGHT_1 = {"BONE_WEIGHT_1", 2},
+            BONE_WEIGHT_2 = {"BONE_WEIGHT_2", 2},
+            BONE_WEIGHT_3 = {"BONE_WEIGHT_3", 2},
 
     /* A transform is a 4x4 matrix = 16 floats.
      * An attribute in OpenGL cannot be bigger than 4 floats,

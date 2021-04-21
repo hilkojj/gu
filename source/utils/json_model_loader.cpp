@@ -28,6 +28,7 @@ std::vector<SharedModel> JsonModelLoader::fromUbjsonFile(const char *path, const
 JsonModelLoader::JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs, std::string textureBasePath)
 : obj(obj), id(id), predefinedAttrs(predefinedAttrs), textureBasePath(textureBasePath)
 {
+    loadArmatures();
     loadMaterials();
     loadMeshes();
     loadModels();
@@ -98,10 +99,18 @@ VertAttr JsonModelLoader::attrFromString(const std::string &str)
 {
     if (str == "POSITION")
         return VertAttributes::POSITION;
-    if (str == "NORMAL")
+    else if (str == "NORMAL")
         return VertAttributes::NORMAL;
-    if (str == "TEXCOORD0")
+    else if (str == "TEXCOORD0")
         return VertAttributes::TEX_COORDS;
+    else if (str == "BLENDWEIGHT0")
+        return VertAttributes::BONE_WEIGHT_0;
+    else if (str == "BLENDWEIGHT1")
+        return VertAttributes::BONE_WEIGHT_1;
+    else if (str == "BLENDWEIGHT2")
+        return VertAttributes::BONE_WEIGHT_2;
+    else if (str == "BLENDWEIGHT3")
+        return VertAttributes::BONE_WEIGHT_3;
     else throw gu_err("Vertex Attribute " + str + " not recognized. (" + id + ")");
 }
 
@@ -135,6 +144,20 @@ void JsonModelLoader::loadModels()
 
             for (SharedMaterial &m : materials)
                 if (m->name == partJson["materialid"]) modelPart.material = m;  // todo, also give error when material was not found.
+
+            if (partJson.contains("bones"))
+            {
+                for (const json &boneJson : partJson["bones"])
+                {
+                    for (auto &arm : armatures)
+                    {
+                        auto &bone = arm->bonesByName[boneJson["node"]];
+                        if (bone == NULL) continue;
+                        modelPart.bones.push_back(bone);
+                        modelPart.armature = arm;
+                    }
+                }
+            }
         }
 
         models.push_back(model);
@@ -173,5 +196,50 @@ void JsonModelLoader::loadMaterials()
         }
 
         materials.push_back(mat);
+    }
+}
+
+void loadChildBones(const json &boneJson, std::vector<SharedBone> &out, SharedArmature &arm)
+{
+    if (!boneJson.contains("children")) return;
+
+    for (const json &childJson : boneJson["children"])
+    {
+        auto &child = out.emplace_back(new Bone);
+        child->name = childJson.at("id");
+        arm->bonesByName[child->name] = child;
+
+        if (childJson.contains("translation"))
+            child->translation = vec3(childJson["translation"][0], childJson["translation"][1], childJson["translation"][2]);
+        if (childJson.contains("scale"))
+            child->scale = vec3(childJson["scale"][0], childJson["scale"][1], childJson["scale"][2]);
+        if (childJson.contains("rotation"))
+            child->rotation = quat(childJson["rotation"][3], childJson["rotation"][0], childJson["rotation"][1], childJson["rotation"][2]);
+
+        loadChildBones(childJson, child->children, arm);
+    }
+}
+
+void JsonModelLoader::loadArmatures()
+{
+    if (!obj.contains("nodes")) return;
+
+    for (const json &armJson : obj["nodes"])
+    {
+        if (armJson.contains("parts")) continue;  // assume this is a model.
+
+        SharedArmature arm(new Armature { armJson["id"] });
+
+        std::vector<SharedBone> rootBones;
+        loadChildBones(armJson, rootBones, arm);
+
+        if (rootBones.size() > 1) throw gu_err(arm->name + " has more than 1 root bones!");
+        else if (rootBones.empty()) continue;
+
+        arm->root = rootBones[0];
+        if (armJson.contains("translation"))
+            arm->root->translation += vec3(armJson["translation"][0], armJson["translation"][1], armJson["translation"][2]);
+
+        armatures.push_back(arm);
     }
 }

@@ -8,6 +8,7 @@
 #include "../texture.h"
 #include "../../asset_manager/asset.h"
 #include "mesh.h"
+#include "armature.h"
 
 struct Material
 {
@@ -26,7 +27,9 @@ struct ModelPart
     SharedMesh mesh;
     int meshPartIndex = 0;
     SharedMaterial material;
-    // todo: SharedArmature armature = nullptr;
+
+    SharedArmature armature;
+    std::vector<SharedBone> bones;
 };
 
 class Model
