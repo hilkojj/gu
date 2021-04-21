@@ -199,6 +199,16 @@ void JsonModelLoader::loadMaterials()
     }
 }
 
+void readTransScaleAndRot(const json &j, vec3 &trans, vec3 &scale, quat &rot)
+{
+    if (j.contains("translation"))
+        trans = vec3(j["translation"][0], j["translation"][1], j["translation"][2]);
+    if (j.contains("scale"))
+        scale = vec3(j["scale"][0], j["scale"][1], j["scale"][2]);
+    if (j.contains("rotation"))
+        rot = quat(j["rotation"][3], j["rotation"][0], j["rotation"][1], j["rotation"][2]);
+}
+
 void loadChildBones(const json &boneJson, std::vector<SharedBone> &out, SharedArmature &arm)
 {
     if (!boneJson.contains("children")) return;
@@ -209,12 +219,7 @@ void loadChildBones(const json &boneJson, std::vector<SharedBone> &out, SharedAr
         child->name = childJson.at("id");
         arm->bonesByName[child->name] = child;
 
-        if (childJson.contains("translation"))
-            child->translation = vec3(childJson["translation"][0], childJson["translation"][1], childJson["translation"][2]);
-        if (childJson.contains("scale"))
-            child->scale = vec3(childJson["scale"][0], childJson["scale"][1], childJson["scale"][2]);
-        if (childJson.contains("rotation"))
-            child->rotation = quat(childJson["rotation"][3], childJson["rotation"][0], childJson["rotation"][1], childJson["rotation"][2]);
+        readTransScaleAndRot(childJson, child->translation, child->scale, child->rotation);
 
         loadChildBones(childJson, child->children, arm);
     }
@@ -241,5 +246,31 @@ void JsonModelLoader::loadArmatures()
             arm->root->translation += vec3(armJson["translation"][0], armJson["translation"][1], armJson["translation"][2]);
 
         armatures.push_back(arm);
+    }
+
+    if (!obj.contains("animations")) return;
+
+    for (const json &animJson : obj["animations"])
+    {
+        if (!animJson.contains("bones")) continue;  // this is not an armature animation.
+
+        for (const json &boneJson : animJson["bones"])
+        {
+            if (!boneJson.contains("keyframes")) continue;
+
+            for (auto &arm : armatures)
+            {
+                auto &bone = arm->bonesByName[boneJson["boneId"]];
+                if (bone == NULL) continue;
+
+                for (const json &keyJson : boneJson["keyframes"])
+                {
+                    auto &keyFrame = arm->animations[animJson.at("id")].keyFramesPerBone[bone].emplace_back();
+                    keyFrame.keyTime = keyJson.at("keytime");
+                    keyFrame.keyTime /= 1000.f;
+                    readTransScaleAndRot(keyJson, keyFrame.translation, keyFrame.scale, keyFrame.rotation);
+                }
+            }
+        }
     }
 }

@@ -65,9 +65,7 @@ inline void interpolate(const vec<len, type, something> &a, const vec<len, type,
 template <>
 inline void interpolate(const quat &a, const quat &b, float x, quat &out)
 {
-    // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/#how-do-i-interpolate-between-2-quaternions-
-
-    out = glm::mix(a, b, x);
+    out = glm::slerp(a, b, x);
 }
 
 }

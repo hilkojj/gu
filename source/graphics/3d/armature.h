@@ -22,9 +22,25 @@ struct Bone
 
 struct Armature
 {
+    struct Animation
+    {
+
+        struct KeyFrame
+        {
+            float keyTime;
+
+            vec3 translation = vec3(0);
+            quat rotation = quat();
+            vec3 scale = vec3(1);
+        };
+
+        std::unordered_map<SharedBone, std::vector<KeyFrame>> keyFramesPerBone;
+    };
+
     std::string name;
     SharedBone root;
     std::unordered_map<std::string, SharedBone> bonesByName;
+    std::unordered_map<std::string, Animation> animations;
 };
 
 typedef std::shared_ptr<Armature> SharedArmature;
