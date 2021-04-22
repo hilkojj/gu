@@ -12,7 +12,7 @@
 
 GLuint VertBuffer::currentlyBoundVao = 0;
 
-VertBuffer *VertBuffer::with(VertAttributes &attributes)
+VertBuffer *VertBuffer::with(const VertAttributes &attributes)
 {
     return new VertBuffer(attributes);
 }
@@ -22,7 +22,7 @@ void VertBuffer::uploadSingleMesh(SharedMesh mesh)
     with(mesh->attributes)->add(mesh)->upload(false);
 }
 
-VertBuffer::VertBuffer(VertAttributes &attributes)
+VertBuffer::VertBuffer(const VertAttributes &attributes)
 
     : vertSize(attributes.getVertSize()), attrs(attributes)
 {

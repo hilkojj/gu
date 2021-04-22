@@ -217,6 +217,7 @@ void loadChildBones(const json &boneJson, std::vector<SharedBone> &out, SharedAr
     {
         auto &child = out.emplace_back(new Bone);
         child->name = childJson.at("id");
+        arm->bones.push_back(child);
         arm->bonesByName[child->name] = child;
 
         readTransScaleAndRot(childJson, child->translation, child->scale, child->rotation);

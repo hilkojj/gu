@@ -19,13 +19,13 @@ class VertBuffer
     GLenum iboUsage = GL_STATIC_DRAW;
 
     // creates a VertBuffer for meshes with these attributes
-    static VertBuffer* with(VertAttributes &attributes);
+    static VertBuffer* with(const VertAttributes &);
 
     // try not to use this. It is more efficient to put more meshes (with the same VertAttributes) in 1 VertBuffer
-    static void uploadSingleMesh(SharedMesh mesh);
+    static void uploadSingleMesh(SharedMesh);
 
     // adds mesh to Meshes that are going to be uploaded when upload() is called.
-    VertBuffer* add(SharedMesh mesh);
+    VertBuffer* add(SharedMesh);
 
     /**
      * upload all added Meshes to OpenGL, after uploading the Meshes can be drawn.
@@ -40,7 +40,7 @@ class VertBuffer
 
     void onMeshDestroyed(); // Called by ~Mesh()
 
-    void reuploadVertices(const SharedMesh &mesh, int nrOfVerticesToReupload=-1); // -1 -> all
+    void reuploadVertices(const SharedMesh &, int nrOfVerticesToReupload=-1); // -1 -> all
 
     /**
      * upload vertex-attributes that do not advance per vertex, but per instance (glDrawElementsInstanced() & glVertexAttribDivisor())
@@ -50,7 +50,7 @@ class VertBuffer
      *
      * returns the id of the uploaded buffer. If you want to update the same buffer at a later moment call this function again with id != -1
      **/
-    GLuint uploadPerInstanceData(const VertData &data, GLuint advanceRate=1, int id=-1);
+    GLuint uploadPerInstanceData(const VertData &, GLuint advanceRate=1, int id=-1);
 
     void usePerInstanceData(GLuint instanceDataId, GLuint advanceRate=1);
 
@@ -63,12 +63,12 @@ class VertBuffer
     // in WebGL there's a limit for the amount of vertices in a VertBuffer, when exceeding this amount the remaining meshes will be uploaded to 'next'
     VertBuffer *next = NULL;
 
-    VertBuffer(VertAttributes &attributes);
+    VertBuffer(const VertAttributes &);
 
     // returns wether the stored vertex data is actually used by Meshes
     bool inUse() const;
 
-    void setAttrPointersAndEnable(VertAttributes &attributes, unsigned int divisor=0, unsigned int locationOffset=0);
+    void setAttrPointersAndEnable(VertAttributes &, unsigned int divisor=0, unsigned int locationOffset=0);
 
     // ids of the VertexArrayObject, VertexBufferObject and IndexBufferObject
     GLuint vaoId = 0, vboId = 0, iboId;

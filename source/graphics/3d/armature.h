@@ -41,6 +41,7 @@ struct Armature
 
     std::string name;
     SharedBone root;
+    std::vector<SharedBone> bones;
     std::unordered_map<std::string, SharedBone> bonesByName;
     std::unordered_map<std::string, Animation> animations;
 };
