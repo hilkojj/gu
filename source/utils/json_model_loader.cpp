@@ -269,6 +269,19 @@ void JsonModelLoader::loadArmatures()
                     keyFrame.keyTime = keyJson.at("keytime");
                     keyFrame.keyTime /= 1000.f;
                     readTransScaleAndRot(keyJson, keyFrame.translation, keyFrame.scale, keyFrame.rotation);
+
+                    if (keyJson.contains("translation"))
+                        keyFrame.translation = vec3(keyJson["translation"][0], keyJson["translation"][1], keyJson["translation"][2]);
+                    else
+                        keyFrame.translation = bone->translation;
+                    if (keyJson.contains("scale"))
+                        keyFrame.scale = vec3(keyJson["scale"][0], keyJson["scale"][1], keyJson["scale"][2]);
+                    else
+                        keyFrame.scale = bone->scale;
+                    if (keyJson.contains("rotation"))
+                        keyFrame.rotation = quat(keyJson["rotation"][3], keyJson["rotation"][0], keyJson["rotation"][1], keyJson["rotation"][2]);
+                    else
+                        keyFrame.rotation = bone->rotation;
                 }
             }
         }

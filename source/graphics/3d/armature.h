@@ -18,6 +18,8 @@ struct Bone
     vec3 translation = vec3(0);
     quat rotation = quat();
     vec3 scale = vec3(1);
+
+    mat4 getBoneSpaceTransform() const;
 };
 
 struct Armature
