@@ -213,6 +213,7 @@ bool init(Config config_)
     }
 
     glfwWindowHint(GLFW_SAMPLES, config.samples);
+    glfwWindowHint(GLFW_DEPTH_BITS, config.depthBits);
 
     #ifndef EMSCRIPTEN
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, config.openGLMajorVersion);

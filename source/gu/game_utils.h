@@ -16,7 +16,7 @@ namespace gu
 struct Config
 {
     std::string title = "Game";
-    int width = 1600, height = 900, samples = 4;
+    int width = 1600, height = 900, samples = 4, depthBits = 24;
     bool 
         vsync = false,
         showFPSInTitleBar = false,
