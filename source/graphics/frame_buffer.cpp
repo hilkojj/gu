@@ -165,9 +165,9 @@ void FrameBuffer::addDepthBuffer()
     glBindRenderbuffer(GL_RENDERBUFFER, id);
 
     if (!sampled)
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, width, height);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
     else
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT32F, width, height);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, width, height);
 
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id);
 
@@ -214,4 +214,12 @@ float FrameBuffer::getPixelDepth(int x, int y)
     unbindCurrent();
 
     return depth;
+}
+
+void FrameBuffer::blitTo(GLbitfield mask, FrameBuffer *other, GLenum filter)
+{
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, other ? other->id : 0);
+
+    glBlitFramebuffer(0, 0, width, height, 0, 0, other ? other->width : gu::widthPixels, other ? other->height : gu::height, mask, filter);
 }

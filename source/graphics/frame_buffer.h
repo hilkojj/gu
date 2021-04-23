@@ -29,6 +29,8 @@ class FrameBuffer
 
     void unbind();
 
+    void blitTo(GLbitfield mask=GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, FrameBuffer *other=NULL, GLenum filter=GL_NEAREST);
+
     // format can be GL_RGB or GL_RGBA. magFilter and minFilter can be GL_LINEAR for example.
     void addColorTexture(GLuint format, GLuint magFilter, GLuint minFilter);
 
