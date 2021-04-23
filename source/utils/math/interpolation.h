@@ -68,6 +68,18 @@ inline void interpolate(const quat &a, const quat &b, float x, quat &out)
     out = glm::slerp(a, b, x);
 }
 
+template <>
+inline void interpolate(const mat4& a, const mat4& b, float x, mat4& out)
+{
+    quat rot0 = quat_cast(a);
+    quat rot1 = quat_cast(b);
+
+    quat finalRot = slerp(rot0, rot1, x);
+
+    out = mat4_cast(finalRot);
+    out[3] = a[3] * (1 - x) + b[3] * x;
+}
+
 }
 
 #endif
