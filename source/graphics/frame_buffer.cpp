@@ -55,17 +55,25 @@ void FrameBuffer::unbind()
 {
     unbindCurrent();
     if (!sampled) return;
-    // todo: multiple colorTextures...
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, sampled->id);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
 
-    GLbitfield mask = 0;
-    if (colorTexture) mask |= GL_COLOR_BUFFER_BIT;
-    if (depthTexture) mask |= GL_DEPTH_BUFFER_BIT;
+    for (int i = 0; i < colorTextures.size(); i++)
+    {
+        GLenum at = GL_COLOR_ATTACHMENT0 + i;
+        glDrawBuffer(at);
+        glReadBuffer(at);
 
-    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, mask, GL_NEAREST);
+        GLbitfield mask = GL_COLOR_BUFFER_BIT;
+        if (i == 0 && depthTexture) mask |= GL_DEPTH_BUFFER_BIT;
 
+        glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, mask, GL_NEAREST);
+    }
+    if (colorTextures.empty() && depthTexture)
+        glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+    sampled->setDrawBuffers();
     unbindCurrent();
 }
 
@@ -81,7 +89,7 @@ void FrameBuffer::addColorTexture(GLuint internalFormat, GLuint format, GLuint m
     {
         addColorBuffer(internalFormat); // INTERNAL FORMAT, because addColorBuffer() should provide internalFormat to OpenGL even though argument is named format.
         sampled->addColorTexture(internalFormat, format, magFilter, minFilter, type);
-        newTexture = sampled->colorTexture;
+        newTexture = sampled->colorTextures.back();
     }
     else
     {
@@ -123,7 +131,9 @@ void FrameBuffer::addColorBuffer(GLuint format)
     else
         glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, format, width, height);
 
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, id);
+    auto attachment = GL_COLOR_ATTACHMENT0 + colorTextures.size();
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, id);
 
     unbindCurrent();
 }
@@ -196,6 +206,7 @@ void FrameBuffer::bindAndGetPixels(GLenum format, std::vector<GLubyte> &out, uns
 
 void FrameBuffer::setDrawBuffers()
 {
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
     auto *attachments = new GLenum[colorTextures.size()];
     for (int i = 0; i < colorTextures.size(); i++)
         attachments[i] = GL_COLOR_ATTACHMENT0 + i;
