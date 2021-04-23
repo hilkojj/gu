@@ -69,18 +69,18 @@ void FrameBuffer::unbind()
     unbindCurrent();
 }
 
-void FrameBuffer::addColorTexture(GLuint format, GLuint magFilter, GLuint minFilter)
+void FrameBuffer::addColorTexture(GLuint format, GLuint magFilter, GLuint minFilter, GLenum type)
 {
-    addColorTexture(format, format, magFilter, minFilter);
+    addColorTexture(format, format, magFilter, minFilter, type);
 }
 
-void FrameBuffer::addColorTexture(GLuint internalFormat, GLuint format, GLuint magFilter, GLuint minFilter)
+void FrameBuffer::addColorTexture(GLuint internalFormat, GLuint format, GLuint magFilter, GLuint minFilter, GLenum type)
 {
     SharedTexture newTexture;
     if (sampled)
     {
-        addColorBuffer(format);
-        sampled->addColorTexture(internalFormat, format, magFilter, minFilter);
+        addColorBuffer(internalFormat); // INTERNAL FORMAT, because addColorBuffer() should provide internalFormat to OpenGL even though argument is named format.
+        sampled->addColorTexture(internalFormat, format, magFilter, minFilter, type);
         newTexture = sampled->colorTexture;
     }
     else
@@ -90,7 +90,7 @@ void FrameBuffer::addColorTexture(GLuint internalFormat, GLuint format, GLuint m
         GLuint texId;
         glGenTextures(1, &texId);
         glBindTexture(GL_TEXTURE_2D, texId);
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, NULL);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
@@ -128,7 +128,7 @@ void FrameBuffer::addColorBuffer(GLuint format)
     unbindCurrent();
 }
 
-void FrameBuffer::addDepthTexture(GLuint magFilter, GLuint minFilter)
+void FrameBuffer::addDepthTexture(GLuint magFilter, GLuint minFilter, GLenum format)
 {
     if (sampled)
     {
@@ -146,7 +146,7 @@ void FrameBuffer::addDepthTexture(GLuint magFilter, GLuint minFilter)
     GLuint texId;
     glGenTextures(1, &texId);
     glBindTexture(GL_TEXTURE_2D, texId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
@@ -156,7 +156,7 @@ void FrameBuffer::addDepthTexture(GLuint magFilter, GLuint minFilter)
     unbindCurrent();
 }
 
-void FrameBuffer::addDepthBuffer()
+void FrameBuffer::addDepthBuffer(GLenum format)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, id);
 
@@ -165,9 +165,9 @@ void FrameBuffer::addDepthBuffer()
     glBindRenderbuffer(GL_RENDERBUFFER, id);
 
     if (!sampled)
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+        glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
     else
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT24, width, height);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, format, width, height);
 
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id);
 

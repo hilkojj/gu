@@ -32,15 +32,15 @@ class FrameBuffer
     void blitTo(GLbitfield mask=GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, FrameBuffer *other=NULL, GLenum filter=GL_NEAREST);
 
     // format can be GL_RGB or GL_RGBA. magFilter and minFilter can be GL_LINEAR for example.
-    void addColorTexture(GLuint format, GLuint magFilter, GLuint minFilter);
+    void addColorTexture(GLuint format, GLuint magFilter, GLuint minFilter, GLenum type=GL_UNSIGNED_BYTE);
 
-    void addColorTexture(GLuint internalFormat, GLuint format, GLuint magFilter, GLuint minFilter);
+    void addColorTexture(GLuint internalFormat, GLuint format, GLuint magFilter, GLuint minFilter, GLenum type=GL_UNSIGNED_BYTE);
 
     void addColorBuffer(GLuint format);
 
-    void addDepthTexture(GLuint magFilter, GLuint minFilter);
+    void addDepthTexture(GLuint magFilter, GLuint minFilter, GLenum format=GL_DEPTH_COMPONENT32F);  // 32bit floats can be used for shadow mapping
 
-    void addDepthBuffer();
+    void addDepthBuffer(GLenum format=GL_DEPTH_COMPONENT24);    // 24bits is (the most) common depth in applications
 
     void setDrawBuffers();
 
