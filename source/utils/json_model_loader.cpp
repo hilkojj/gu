@@ -266,9 +266,11 @@ void JsonModelLoader::loadArmatures()
 
                 for (const json &keyJson : boneJson["keyframes"])
                 {
-                    auto &keyFrame = arm->animations[animJson.at("id")].keyFramesPerBone[bone].emplace_back();
+                    auto &anim = arm->animations[animJson.at("id")];
+                    auto &keyFrame = anim.keyFramesPerBone[bone].emplace_back();
                     keyFrame.keyTime = keyJson.at("keytime");
                     keyFrame.keyTime /= 1000.f;
+                    anim.duration = max(keyFrame.keyTime, anim.duration);
                     readTransScaleAndRot(keyJson, keyFrame.translation, keyFrame.scale, keyFrame.rotation);
 
                     if (keyJson.contains("translation"))

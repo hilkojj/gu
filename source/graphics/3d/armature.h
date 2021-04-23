@@ -37,6 +37,7 @@ struct Armature
         };
 
         std::unordered_map<SharedBone, std::vector<KeyFrame>> keyFramesPerBone;
+        float duration = 0.;
     };
 
     std::string name;
