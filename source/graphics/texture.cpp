@@ -98,6 +98,24 @@ Texture::~Texture()
     #endif
 }
 
+Texture Texture::fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLuint magFilter,
+                              GLuint minFilter)
+{
+    GLuint id;
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    return Texture(id, width, height);
+}
+
 DDSData::DDSData(const char *path)
 {
     FILE *fp;
