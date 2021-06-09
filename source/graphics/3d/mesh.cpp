@@ -10,6 +10,7 @@
 #include "../../utils/gu_error.h"
 
 SharedMesh Mesh::quad;
+SharedMesh Mesh::cube;
 
 SharedMesh Mesh::getQuad()
 {
@@ -140,6 +141,41 @@ SharedMesh Mesh::createQuad(float min, float max)
         0, 3, 2,
     });
     return quad;
+}
+
+SharedMesh Mesh::createCube(float min, float max)
+{
+    SharedMesh cube(new Mesh("cube", 8, VertAttributes().add_(VertAttributes::POSITION)));
+    cube->set<float[24]>({
+                                 min, min, min,
+                                 max, min, min,
+                                 max, max, min,
+                                 min, max, min,
+                                 min, min, max,
+                                 max, min, max,
+                                 max, max, max,
+                                 min, max, max
+                         }, 0, 0);
+    auto &part = cube->parts.emplace_back();
+    part.indices.insert(part.indices.begin(), {
+            0, 1, 3, 3, 1, 2,
+            1, 5, 2, 2, 5, 6,
+            5, 4, 6, 6, 4, 7,
+            4, 0, 7, 7, 0, 3,
+            3, 2, 7, 7, 2, 6,
+            4, 5, 0, 0, 5, 1
+    });
+    return cube;
+}
+
+SharedMesh Mesh::getCube()
+{
+    if (!cube)
+    {
+        cube = createCube();
+        VertBuffer::uploadSingleMesh(cube);
+    }
+    return cube;
 }
 
 void VertData::removeVertices(int count)

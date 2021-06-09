@@ -76,6 +76,10 @@ class Mesh : public VertData
     // creates a quad mesh. Not the same as getQuad()
     static SharedMesh createQuad(float min=-1, float max=1);
 
+    static SharedMesh getCube();
+
+    static SharedMesh createCube(float min=-.5, float max=.5);
+
     std::string name;
 
     VertBuffer *vertBuffer = nullptr;
@@ -116,7 +120,7 @@ class Mesh : public VertData
     ~Mesh();
 
   private:
-    static SharedMesh quad;
+    static SharedMesh quad, cube;
 
 
     // variables used for glDrawElementsBaseVertex: (https://www.khronos.org/opengl/wiki/GLAPI/glDrawElementsBaseVertex)
