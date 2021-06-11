@@ -15,7 +15,7 @@ class CubeMap
     // note: mipmaps not supported
     static CubeMap fromDDSFiles(const std::vector<std::string> &paths);
 
-    static CubeMap fromHDRFile(const char *path, uint resolution=512);
+    static CubeMap fromHDRFile(const char *path, unsigned int resolution=512);
 
     /**
      * An equirectangular environment map is like a cubemap but with all 6 faces stored in 1 rectangular texture.

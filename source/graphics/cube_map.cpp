@@ -122,7 +122,7 @@ static const char *fragSource = MULTILINE(
 
 }
 
-CubeMap CubeMap::fromHDRFile(const char *path, uint resolution)
+CubeMap CubeMap::fromHDRFile(const char *path, unsigned int resolution)
 {
     Texture eqr = equirectangularFromHDRFile(path);
 
@@ -145,8 +145,13 @@ CubeMap CubeMap::fromHDRFile(const char *path, uint resolution)
     for (unsigned int i = 0; i < 6; ++i)
     {
         // note that we store each face with 16 bit floating point values
+        #ifdef EMSCRIPTEN   // using rgbA instead of rgb fixes WebGL error: "Framebuffer not complete. (status: 0x8cd6) COLOR_ATTACHMENT0: Attachment has an effective format of RGB16F, which is not renderable."
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA16F,
+                     resolution, resolution, 0, GL_RGBA, GL_FLOAT, NULL);
+        #else
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
                      resolution, resolution, 0, GL_RGB, GL_FLOAT, NULL);
+        #endif
     }
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
