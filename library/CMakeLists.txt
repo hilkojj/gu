@@ -95,4 +95,23 @@ add_library(zlib ${ZLIB_SOURCES} ${ZLIB_HEADERS})
 target_include_directories(zlib PUBLIC ${ZLIB_DIR})
 target_link_libraries(gameutils zlib)
 
+
+
+# ---TinyGLTF---
+file(DOWNLOAD https://raw.githubusercontent.com/syoyo/tinygltf/7e83ef9fb44d8150d69e3d70067146f3746db917/tiny_gltf.h ${CMAKE_CURRENT_LIST_DIR}/../external/tiny_gltf.h
+        STATUS DOWNLOAD_STATUS)
+
+# Separate the returned status code, and error message.
+list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
+list(GET DOWNLOAD_STATUS 1 ERROR_MESSAGE)
+# Check if download was successful.
+if(${STATUS_CODE} EQUAL 0)
+    message(STATUS "tiny_gltf.h download completed successfully!")
+else()
+    # Exit CMake if the download failed, printing the error message.
+    message(FATAL_ERROR "Error occurred during tiny_gltf.h download: ${ERROR_MESSAGE}")
+endif()
+
+
+
 target_include_directories(gameutils PUBLIC ../source/)

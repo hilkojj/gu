@@ -55,7 +55,7 @@ unsigned int VertAttributes::getOffset(const VertAttr &attr) const
 bool VertAttributes::contains(const VertAttr &attr) const
 {
     for (const VertAttr& a : attributes)
-        if (a.normalized == attr.normalized && a.size == attr.size && a.type == attr.type && a.name == attr.name)
+        if (a.normalized == attr.normalized && a.size == attr.size && a.byteSize == attr.byteSize && a.type == attr.type && a.name == attr.name)
             return true;
     return false;
 }
