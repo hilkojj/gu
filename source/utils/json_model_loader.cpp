@@ -187,11 +187,11 @@ void JsonModelLoader::loadMaterials()
                 asset<Texture> tex((textureBasePath + std::string(texJson.at("filename"))));
 
                 if (texJson.at("type") == "DIFFUSE")
-                    mat->diffuseTexture = tex;
+                    mat->diffuseTexture.assetTex = tex;
                 else if (texJson.at("type") == "SPECULAR")
-                    mat->specularMap = tex;
+                    mat->specularMap.assetTex = tex;
                 else if (texJson.at("type") == "BUMP")
-                    mat->normalMap = tex;
+                    mat->normalMap.assetTex = tex;
             }
         }
 

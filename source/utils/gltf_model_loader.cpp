@@ -3,7 +3,8 @@
 #include "gltf_model_loader.h"
 
 #define TINYGLTF_IMPLEMENTATION
-#define TINYGLTF_NO_STB_IMAGE
+#define TINYGLTF_NO_INCLUDE_STB_IMAGE
+#include "../../external/stb/stb_image.h"
 #define TINYGLTF_NO_STB_IMAGE_WRITE
 #include "../../external/tiny_gltf.h"
 
@@ -31,7 +32,7 @@ int componentTypeSize(int componentType)
     throw gu_err("Error while loading glTF: " + std::to_string(componentType) + " not recognized as a component type (GL_FLOAT, GL_BYTE, etc..)");
 }
 
-int nrOfVertices(tinygltf::Model &tiny, const tinygltf::Mesh &tinyMesh)
+int nrOfVertices(const tinygltf::Model &tiny, const tinygltf::Mesh &tinyMesh)
 {
     int nrOfVerts = 0;
     for (auto &primitive : tinyMesh.primitives)
@@ -45,7 +46,7 @@ int nrOfVertices(tinygltf::Model &tiny, const tinygltf::Mesh &tinyMesh)
     return nrOfVerts;
 }
 
-void load(GltfModelLoader &loader, tinygltf::Model &tiny)
+void loadMeshes(GltfModelLoader &loader, const tinygltf::Model &tiny)
 {
     for (auto &tinyMesh : tiny.meshes)
     {
@@ -60,7 +61,6 @@ void load(GltfModelLoader &loader, tinygltf::Model &tiny)
             if (primitive.indices < 0)
                 continue;
 
-//            primitive.material
             auto &part = mesh->parts.emplace_back();
             part.mode = primitive.mode;
 
@@ -162,6 +162,95 @@ void load(GltfModelLoader &loader, tinygltf::Model &tiny)
             for (int i = 0; i < mesh->parts.size(); i++)
                 TangentCalculator::addTangentsToMesh(mesh, i);
     }
+}
+
+void loadModels(GltfModelLoader &loader, const tinygltf::Model &tiny)
+{
+    for (auto &node : tiny.nodes)
+    {
+        if (node.mesh < 0)
+            continue;
+
+        loader.models.push_back(std::make_shared<Model>(node.name));
+        auto &model = loader.models.back();
+        auto &mesh = loader.meshes.at(node.mesh);
+        auto &tinyMesh = tiny.meshes.at(node.mesh);
+        int partI = 0;
+        for (auto &meshPart : mesh->parts)
+        {
+            auto &modelPart = model->parts.emplace_back();
+            modelPart.mesh = mesh;
+            modelPart.material = loader.materials.at(tinyMesh.primitives.at(partI).material);
+
+            modelPart.meshPartIndex = partI++;
+        }
+    }
+}
+
+template<int length=3>
+void stdVectorToGlmVec(const std::vector<double> &stdVector, vec<length, float, defaultp> &glmVec)
+{
+    for (int i = 0; i < length; i++)
+        glmVec[i] = stdVector.at(i);
+}
+
+template<class TinyTextureInfo>
+void loadImageData(const tinygltf::Model &tiny, const TinyTextureInfo &info, TextureAssetOrPtr &out)
+{
+    if (info.index < 0)
+        return;
+
+    auto &tinyTexture = tiny.textures.at(info.index);
+    if (tinyTexture.source >= 0)
+    {
+        auto &tinyImage = tiny.images.at(tinyTexture.source);
+
+        if (tinyImage.component <= 0 || tinyImage.component > 4)
+            throw gu_err(tinyImage.name + " has " + std::to_string(tinyImage.component) + " channels!");
+
+        if (tinyImage.pixel_type != GL_UNSIGNED_BYTE)
+            throw gu_err("pixel data of " + tinyImage.name + " is not GL_UNSIGNED_BYTE!");
+
+        GLenum format = std::vector<GLenum>{GL_R, GL_RG, GL_RGB, GL_RGBA}[tinyImage.component - 1];
+
+        out.sharedTex = SharedTexture(new Texture(Texture::fromByteData(tinyImage.image.data(), format, tinyImage.width, tinyImage.height, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR)));
+    }
+}
+
+void loadMaterials(GltfModelLoader &loader, const tinygltf::Model &tiny)
+{
+    for (auto &tinyMaterial : tiny.materials)
+    {
+        loader.materials.push_back(std::make_shared<Material>());
+        auto &material = loader.materials.back();
+        material->name = tinyMaterial.name;
+        material->doubleSided = tinyMaterial.doubleSided;
+        material->roughness = tinyMaterial.pbrMetallicRoughness.roughnessFactor;
+        material->metallic = tinyMaterial.pbrMetallicRoughness.metallicFactor;
+
+        stdVectorToGlmVec(tinyMaterial.pbrMetallicRoughness.baseColorFactor, material->diffuse);
+        stdVectorToGlmVec(tinyMaterial.emissiveFactor, material->emissive);
+
+        if (loader.loadDiffuseTextures)
+            loadImageData(tiny, tinyMaterial.pbrMetallicRoughness.baseColorTexture, material->diffuseTexture);
+        if (loader.loadNormalMaps)
+            loadImageData(tiny, tinyMaterial.normalTexture, material->normalMap);
+        material->normalMapScale = tinyMaterial.normalTexture.scale;
+        if (loader.loadMetallicRoughnessTextures)
+            loadImageData(tiny, tinyMaterial.pbrMetallicRoughness.metallicRoughnessTexture, material->metallicRoughnessTexture);
+        if (loader.loadEmissiveTextures)
+            loadImageData(tiny, tinyMaterial.emissiveTexture, material->emissiveTexture);
+        if (loader.loadAOTextures)
+            loadImageData(tiny, tinyMaterial.occlusionTexture, material->aoTexture);
+        material->aoTextureStrength = tinyMaterial.occlusionTexture.strength;
+    }
+}
+
+void load(GltfModelLoader &loader, tinygltf::Model &tiny)
+{
+    loadMaterials(loader, tiny);
+    loadMeshes(loader, tiny);
+    loadModels(loader, tiny);
 }
 
 void GltfModelLoader::fromASCIIFile(const char *path)

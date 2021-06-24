@@ -10,6 +10,12 @@ class GltfModelLoader
 
     VertAttributes vertAttributes;
     bool calculateTangents = true;
+    bool
+        loadDiffuseTextures = true,
+        loadNormalMaps = true,
+        loadAOTextures = true,
+        loadEmissiveTextures = true,
+        loadMetallicRoughnessTextures = true;
 
     GltfModelLoader(const VertAttributes &);
 
