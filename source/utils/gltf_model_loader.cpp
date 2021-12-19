@@ -181,6 +181,7 @@ void loadModels(GltfModelLoader &loader, const tinygltf::Model &tiny)
             auto &modelPart = model->parts.emplace_back();
             modelPart.mesh = mesh;
             modelPart.material = loader.materials.at(tinyMesh.primitives.at(partI).material);
+            modelPart.armature = loader.armatures.at(node.skin);
 
             modelPart.meshPartIndex = partI++;
         }
@@ -190,31 +191,18 @@ void loadModels(GltfModelLoader &loader, const tinygltf::Model &tiny)
 template<int length=3>
 void stdVectorToGlmVec(const std::vector<double> &stdVector, vec<length, float, defaultp> &glmVec)
 {
+    if (stdVector.size() < length)
+        throw gu_err("stdVector.size() < length");
     for (int i = 0; i < length; i++)
         glmVec[i] = stdVector.at(i);
 }
 
 template<class TinyTextureInfo>
-void loadImageData(const tinygltf::Model &tiny, const TinyTextureInfo &info, TextureAssetOrPtr &out)
+void loadImageData(const GltfModelLoader &loader, const TinyTextureInfo &info, TextureAssetOrPtr &out)
 {
     if (info.index < 0)
         return;
-
-    auto &tinyTexture = tiny.textures.at(info.index);
-    if (tinyTexture.source >= 0)
-    {
-        auto &tinyImage = tiny.images.at(tinyTexture.source);
-
-        if (tinyImage.component <= 0 || tinyImage.component > 4)
-            throw gu_err(tinyImage.name + " has " + std::to_string(tinyImage.component) + " channels!");
-
-        if (tinyImage.pixel_type != GL_UNSIGNED_BYTE)
-            throw gu_err("pixel data of " + tinyImage.name + " is not GL_UNSIGNED_BYTE!");
-
-        GLenum format = std::vector<GLenum>{GL_R, GL_RG, GL_RGB, GL_RGBA}[tinyImage.component - 1];
-
-        out.sharedTex = SharedTexture(new Texture(Texture::fromByteData(tinyImage.image.data(), format, tinyImage.width, tinyImage.height, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR)));
-    }
+    out.sharedTex = loader.textures.at(info.index);
 }
 
 void loadMaterials(GltfModelLoader &loader, const tinygltf::Model &tiny)
@@ -232,24 +220,215 @@ void loadMaterials(GltfModelLoader &loader, const tinygltf::Model &tiny)
         stdVectorToGlmVec(tinyMaterial.emissiveFactor, material->emissive);
 
         if (loader.loadDiffuseTextures)
-            loadImageData(tiny, tinyMaterial.pbrMetallicRoughness.baseColorTexture, material->diffuseTexture);
+            loadImageData(loader, tinyMaterial.pbrMetallicRoughness.baseColorTexture, material->diffuseTexture);
         if (loader.loadNormalMaps)
-            loadImageData(tiny, tinyMaterial.normalTexture, material->normalMap);
+            loadImageData(loader, tinyMaterial.normalTexture, material->normalMap);
         material->normalMapScale = tinyMaterial.normalTexture.scale;
         if (loader.loadMetallicRoughnessTextures)
-            loadImageData(tiny, tinyMaterial.pbrMetallicRoughness.metallicRoughnessTexture, material->metallicRoughnessTexture);
+            loadImageData(loader, tinyMaterial.pbrMetallicRoughness.metallicRoughnessTexture, material->metallicRoughnessTexture);
         if (loader.loadEmissiveTextures)
-            loadImageData(tiny, tinyMaterial.emissiveTexture, material->emissiveTexture);
+            loadImageData(loader, tinyMaterial.emissiveTexture, material->emissiveTexture);
         if (loader.loadAOTextures)
-            loadImageData(tiny, tinyMaterial.occlusionTexture, material->aoTexture);
+            loadImageData(loader, tinyMaterial.occlusionTexture, material->aoTexture);
         material->aoTextureStrength = tinyMaterial.occlusionTexture.strength;
+    }
+}
+
+void loadTextures(GltfModelLoader &loader, const tinygltf::Model &tiny)
+{
+    for (auto &tinyTexture : tiny.textures)
+    {
+        if (tinyTexture.source >= 0)
+        {
+            auto &tinyImage = tiny.images.at(tinyTexture.source);
+
+            if (tinyImage.component <= 0 || tinyImage.component > 4)
+                throw gu_err(tinyImage.name + " has " + std::to_string(tinyImage.component) + " channels!");
+
+            if (tinyImage.pixel_type != GL_UNSIGNED_BYTE)
+                throw gu_err("pixel data of " + tinyImage.name + " is not GL_UNSIGNED_BYTE!");
+
+            GLenum format = std::vector<GLenum>{GL_R, GL_RG, GL_RGB, GL_RGBA}[tinyImage.component - 1];
+
+            loader.textures.push_back(SharedTexture(new Texture(Texture::fromByteData(tinyImage.image.data(), format, tinyImage.width, tinyImage.height, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR))));
+        }
+        else loader.textures.push_back(SharedTexture());
+    }
+}
+
+void loadArmatures(GltfModelLoader &loader, const tinygltf::Model &tiny)
+{
+    std::unordered_map<int, SharedBone> bones;
+    std::unordered_map<int, SharedArmature> boneToArmature;
+    std::unordered_map<int, Armature::Animation> animations;
+    std::unordered_map<int, Armature::Animation::SharedTimeline> timelines;
+    std::unordered_map<int, Armature::Animation::SharedPropertyValues> propertyValues;
+
+    for (auto &tinySkin : tiny.skins)
+    {
+        auto armature = std::make_shared<Armature>();
+        armature->name = tinySkin.name;
+
+        for (auto &jointNodeIndex : tinySkin.joints)
+        {
+            auto jointNode = tiny.nodes[jointNodeIndex];
+            auto bone = std::make_shared<Bone>();
+            bone->name = jointNode.name;
+            if (!jointNode.rotation.empty())
+                bone->rotation = quat(jointNode.rotation[3], jointNode.rotation[0], jointNode.rotation[1], jointNode.rotation[2]);
+            if (!jointNode.translation.empty())
+                stdVectorToGlmVec(jointNode.translation, bone->translation);
+            if (!jointNode.scale.empty())
+                stdVectorToGlmVec(jointNode.scale, bone->scale);
+
+            bones[jointNodeIndex] = bone;
+            boneToArmature[jointNodeIndex] = armature;
+            armature->bones.push_back(bone);
+        }
+
+        for (auto &jointNodeIndex : tinySkin.joints)
+        {
+            auto jointNode = tiny.nodes[jointNodeIndex];
+            auto bone = bones[jointNodeIndex];
+            for (auto &childI : jointNode.children)
+            {
+                if (bones.find(childI) == bones.end())
+                {
+                    throw gu_err("Bone not loaded.");
+                }
+                bone->children.push_back(bones[childI]);
+                bones[childI]->parent = bone;
+            }
+        }
+
+        if (bones.find(tinySkin.skeleton) != bones.end())
+        {
+            armature->root = bones[tinySkin.skeleton];
+        }
+
+        loader.armatures.push_back(armature);
+    }
+
+    int animI = 0;
+    for (auto &tinyAnim : tiny.animations)
+    {
+        auto &anim = animations[animI++];
+        anim.name = tinyAnim.name;
+
+        for (auto &tinySampler : tinyAnim.samplers)
+        {
+            if (timelines.find(tinySampler.input) == timelines.end())
+            {
+                // load timeline.
+                auto &timeline = timelines[tinySampler.input] = std::make_shared<Armature::Animation::Timeline>();
+
+                auto &accessor = tiny.accessors.at(tinySampler.input);
+                timeline->times.resize(accessor.count, 0);
+                if (accessor.componentType != GL_FLOAT)
+                {
+                    throw gu_err("Timeline does not contain floats.");
+                }
+                auto &bufferView = tiny.bufferViews.at(accessor.bufferView);
+                auto &buffer = tiny.buffers.at(bufferView.buffer);
+                assert(bufferView.byteLength == accessor.count * sizeof(float));
+                assert(buffer.data.size() >= (bufferView.byteOffset + bufferView.byteLength));
+                for (int i = 0; i < accessor.count; i++)
+                {
+                    timeline->times[i] = *((float *) &buffer.data[bufferView.byteOffset + i * sizeof(float)]);
+                }
+            }
+
+            if (propertyValues.find(tinySampler.output) == propertyValues.end())
+            {
+                // load propertyValues.
+                auto &values = propertyValues[tinySampler.output] = std::make_shared<Armature::Animation::PropertyValues>();
+
+                auto &accessor = tiny.accessors.at(tinySampler.output);
+                if (accessor.componentType != GL_FLOAT)
+                {
+                    throw gu_err("Found an animation (" + tinyAnim.name + ") with componentType " + std::to_string(accessor.componentType));
+                }
+                auto &bufferView = tiny.bufferViews.at(accessor.bufferView);
+                auto &buffer = tiny.buffers.at(bufferView.buffer);
+                assert(buffer.data.size() >= (bufferView.byteOffset + bufferView.byteLength));
+                if (accessor.type == TINYGLTF_TYPE_VEC4)
+                {
+                    // quats
+                    values->quatValues.resize(accessor.count);
+                    assert(bufferView.byteLength == accessor.count * sizeof(vec4));
+                    for (int i = 0; i < accessor.count; i++)
+                    {
+                        vec4 xyzw = *((vec4 *) &buffer.data[bufferView.byteOffset + i * sizeof(vec4)]);
+                        values->quatValues[i] = quat(xyzw[3], xyzw[0], xyzw[1], xyzw[2]);
+                    }
+                }
+                else if (accessor.type == TINYGLTF_TYPE_VEC3)
+                {
+                    // vec3s
+                    values->vec3Values.resize(accessor.count);
+                    assert(bufferView.byteLength == accessor.count * sizeof(vec3));
+                    for (int i = 0; i < accessor.count; i++)
+                    {
+                        values->vec3Values[i] = *((vec3 *) &buffer.data[bufferView.byteOffset + i * sizeof(vec3)]);
+                    }
+                }
+                else std::cerr << "Found an animation (" << tinyAnim.name << ") with property values with type " << accessor.type << ". Animation will not work!" << std::endl;
+            }
+
+        }
+
+        for (auto &tinyChannel : tinyAnim.channels)
+        {
+            if (bones.find(tinyChannel.target_node) == bones.end())
+                continue;
+
+            auto &channel = anim.channels.emplace_back();
+            channel.target = bones[tinyChannel.target_node];
+
+            auto &tinySampler = tinyAnim.samplers[tinyChannel.sampler];
+
+            if (tinySampler.interpolation == "STEP")
+                channel.interpolation = Armature::Animation::Channel::STEP;
+            else if (tinySampler.interpolation == "LINEAR")
+                channel.interpolation = Armature::Animation::Channel::LINEAR;
+            else if (tinySampler.interpolation == "CUBICSPLINE")
+                channel.interpolation = Armature::Animation::Channel::CUBICSPLINE;
+            else throw gu_err("Channel has unrecognized interpolation: " + tinySampler.interpolation);
+
+            channel.timeline = timelines.at(tinySampler.input);
+            channel.propertyValues = propertyValues.at(tinySampler.output);
+
+            if (tinyChannel.target_path == "translation")
+            {
+                channel.targetProperty = Armature::Animation::Channel::TRANSLATION;
+                if (channel.propertyValues->vec3Values.empty())
+                    throw gu_err("The translation channel for bone \"" + channel.target->name + "\" for animation \"" + anim.name + "\" does not have vec3 values!");
+            }
+            else if (tinyChannel.target_path == "rotation")
+            {
+                channel.targetProperty = Armature::Animation::Channel::ROTATION;
+                if (channel.propertyValues->quatValues.empty())
+                    throw gu_err("The rotation channel for bone \"" + channel.target->name + "\" for animation \"" + anim.name + "\" does not have quaternion values!");
+            }
+            else if (tinyChannel.target_path == "scale")
+            {
+                channel.targetProperty = Armature::Animation::Channel::SCALE;
+                if (channel.propertyValues->vec3Values.empty())
+                    throw gu_err("The scale channel for bone \"" + channel.target->name + "\" for animation \"" + anim.name + "\" does not have vec3 values!");
+            }
+            else throw gu_err("Found a channel for bone \"" + channel.target->name + "\" for animation \"" + anim.name + "\" with target.path == \"" + tinyChannel.target_path + "\"");
+
+            boneToArmature[tinyChannel.target_node]->animations[anim.name] = anim;
+        }
     }
 }
 
 void load(GltfModelLoader &loader, tinygltf::Model &tiny)
 {
+    loadTextures(loader, tiny);
     loadMaterials(loader, tiny);
     loadMeshes(loader, tiny);
+    loadArmatures(loader, tiny);
     loadModels(loader, tiny);
 }
 

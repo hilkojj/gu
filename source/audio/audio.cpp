@@ -86,7 +86,18 @@ void au::init()
 {
     openALDevice = alcOpenDevice(nullptr);
     if(!openALDevice)
+    {
+        #ifdef linux
+        throw gu_err("No OpenAL device found!\n"
+                     "This is a known issue that might happen when you only have OSS installed, which is deprecated.\n"
+                     "Try installing ALSA (libasound2-dev) and/or Pulseaudio (libpulse-dev pulseaudio apulse).");
+        #else
         throw gu_err("No OpenAL device found!");
+        #endif
+
+        // todo: add support for running game without audio.
+    }
+
 
     if(!alcCall(alcCreateContext, openALContext, openALDevice, openALDevice, nullptr) || !openALContext)
         throw gu_err("Could not create audio context!");

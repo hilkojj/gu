@@ -251,6 +251,7 @@ void JsonModelLoader::loadArmatures()
 
     if (!obj.contains("animations")) return;
 
+#if 0
     for (const json &animJson : obj["animations"])
     {
         if (!animJson.contains("bones")) continue;  // this is not an armature animation.
@@ -289,4 +290,5 @@ void JsonModelLoader::loadArmatures()
             }
         }
     }
+#endif
 }

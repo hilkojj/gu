@@ -22,7 +22,8 @@ const vec3
     X = vec3(1, 0, 0),
     Y = vec3(0, 1, 0),
     Z = vec3(0, 0, 1),
-    ZERO_3 = vec3(0);
+    ZERO_3 = vec3(0),
+    ONE_3 = vec3(1);
 
 const float
 
@@ -31,6 +32,7 @@ const float
     DEGREES_TO_RAD = PI / 180.0f,
     RAD_TO_DEGREES = 180.0f / PI;
 
+const quat NO_ROTATION = quat(1, 0, 0, 0);
 
 inline float random()
 {

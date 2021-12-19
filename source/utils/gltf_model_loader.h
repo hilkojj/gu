@@ -20,6 +20,7 @@ class GltfModelLoader
     GltfModelLoader(const VertAttributes &);
 
     std::vector<SharedArmature> armatures;
+    std::vector<SharedTexture> textures;
     std::vector<SharedMaterial> materials;
     std::vector<SharedModel> models;
     std::vector<SharedMesh> meshes;

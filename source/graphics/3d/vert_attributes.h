@@ -27,6 +27,13 @@ public:
             NORMAL = {"NORMAL", 3},
             TANGENT = {"TANGENT", 3},
             BI_NORMAL = {"BI_NORMAL", 3},
+
+            // Four bone ids (used by gltf model loader):
+            JOINTS = {"JOINTS_0", 4, 4, GL_UNSIGNED_BYTE},
+            // Four bone weights (used by gltf model loader):
+            WEIGHTS = {"WEIGHTS_0", 4},
+
+            // Four bone id & weights (used by the json model loader):
             BONE_WEIGHT_0 = {"BONE_WEIGHT_0", 2},
             BONE_WEIGHT_1 = {"BONE_WEIGHT_1", 2},
             BONE_WEIGHT_2 = {"BONE_WEIGHT_2", 2},
