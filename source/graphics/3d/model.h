@@ -69,7 +69,6 @@ struct ModelPart
     SharedMaterial material;
 
     SharedArmature armature;
-    std::vector<SharedBone> bones;
 };
 
 class Model

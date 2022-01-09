@@ -19,8 +19,9 @@ struct Bone
     vec3 translation = mu::ZERO_3;
     quat rotation = mu::NO_ROTATION;
     vec3 scale = mu::ONE_3;
+    mat4 inverseBindMatrix;
 
-    mat4 getBoneSpaceTransform() const;
+    mat4 getBoneTransform(const vec3 *overrideTranslation= NULL, const quat *overrideRotation= NULL, const vec3 *overrideScale= NULL) const;
 };
 
 struct Armature
@@ -62,12 +63,12 @@ struct Armature
 
         std::string name;
         std::vector<Channel> channels;
+        float duration = 0;
     };
 
     std::string name;
     SharedBone root;
     std::vector<SharedBone> bones;
-    std::unordered_map<std::string, SharedBone> bonesByName;
     std::unordered_map<std::string, Animation> animations;
 };
 

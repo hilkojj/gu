@@ -180,8 +180,13 @@ void loadModels(GltfModelLoader &loader, const tinygltf::Model &tiny)
         {
             auto &modelPart = model->parts.emplace_back();
             modelPart.mesh = mesh;
-            modelPart.material = loader.materials.at(tinyMesh.primitives.at(partI).material);
-            modelPart.armature = loader.armatures.at(node.skin);
+
+            auto materialI = tinyMesh.primitives.at(partI).material;
+            if (materialI >= 0)
+                modelPart.material = loader.materials.at(materialI);
+
+            if (node.skin >= 0)
+                modelPart.armature = loader.armatures.at(node.skin);
 
             modelPart.meshPartIndex = partI++;
         }
@@ -306,6 +311,25 @@ void loadArmatures(GltfModelLoader &loader, const tinygltf::Model &tiny)
             armature->root = bones[tinySkin.skeleton];
         }
 
+        // inverse bind matrices:
+        if (tinySkin.inverseBindMatrices >= 0)
+        {
+            auto &ibmAccessor = tiny.accessors.at(tinySkin.inverseBindMatrices);
+            assert(ibmAccessor.count == bones.size());
+
+            auto &bufferView = tiny.bufferViews.at(ibmAccessor.bufferView);
+            auto &buffer = tiny.buffers.at(bufferView.buffer);
+
+            assert(ibmAccessor.componentType == GL_FLOAT);
+            assert(ibmAccessor.type == TINYGLTF_TYPE_MAT4);
+            assert(bufferView.byteLength == ibmAccessor.count * sizeof(mat4));
+            assert(buffer.data.size() >= (bufferView.byteOffset + bufferView.byteLength));
+            for (int i = 0; i < ibmAccessor.count; i++)
+            {
+                armature->bones.at(i)->inverseBindMatrix = *((mat4 *) &buffer.data[bufferView.byteOffset + i * sizeof(mat4)]);
+            }
+        }
+
         loader.armatures.push_back(armature);
     }
 
@@ -335,6 +359,7 @@ void loadArmatures(GltfModelLoader &loader, const tinygltf::Model &tiny)
                 for (int i = 0; i < accessor.count; i++)
                 {
                     timeline->times[i] = *((float *) &buffer.data[bufferView.byteOffset + i * sizeof(float)]);
+                    anim.duration = max(timeline->times[i], anim.duration);
                 }
             }
 

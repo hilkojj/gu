@@ -145,19 +145,19 @@ void JsonModelLoader::loadModels()
             for (SharedMaterial &m : materials)
                 if (m->name == partJson["materialid"]) modelPart.material = m;  // todo, also give error when material was not found.
 
-            if (partJson.contains("bones"))
-            {
-                for (const json &boneJson : partJson["bones"])
-                {
-                    for (auto &arm : armatures)
-                    {
-                        auto &bone = arm->bonesByName[boneJson["node"]];
-                        if (bone == NULL) continue;
-                        modelPart.bones.push_back(bone);
-                        modelPart.armature = arm;
-                    }
-                }
-            }
+//            if (partJson.contains("bones"))
+//            {
+//                for (const json &boneJson : partJson["bones"])
+//                {
+//                    for (auto &arm : armatures)
+//                    {
+//                        auto &bone = arm->bonesByName[boneJson["node"]];
+//                        if (bone == NULL) continue;
+//                        modelPart.bones.push_back(bone);
+//                        modelPart.armature = arm;
+//                    }
+//                }
+//            }
         }
 
         models.push_back(model);
@@ -218,7 +218,7 @@ void loadChildBones(const json &boneJson, std::vector<SharedBone> &out, SharedAr
         auto &child = out.emplace_back(new Bone);
         child->name = childJson.at("id");
         arm->bones.push_back(child);
-        arm->bonesByName[child->name] = child;
+//        arm->bonesByName[child->name] = child;
 
         readTransScaleAndRot(childJson, child->translation, child->scale, child->rotation);
 
