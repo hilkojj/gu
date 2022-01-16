@@ -24,11 +24,12 @@ static const char *fragSource = MULTILINE(
     precision mediump float;
 
     uniform vec3 u_color;
-    out vec3 color;
+    out vec4 color;
 
     void main()
     {
-        color = u_color;
+        color = vec4(u_color, 1.0);
+        // We must explicitly set alpha to 1.0 in WebGL, otherwise the screen becomes black.
     }
 
 );
