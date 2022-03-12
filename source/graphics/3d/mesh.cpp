@@ -115,14 +115,14 @@ Mesh::~Mesh()
         vertBuffer->onMeshDestroyed();
 }
 
-void Mesh::renderArrays(GLenum mode) const
+void Mesh::renderArrays(GLenum mode, int nrOfVerts) const
 {
     if (!vertBuffer || !vertBuffer->isUploaded()) throw gu_err(name + " is not uploaded. Upload it first with a VertBuffer");
     vertBuffer->bind();
     glDrawArrays(
             mode,
             baseVertex,
-            _nrOfVertices
+            nrOfVerts == -1 ? _nrOfVertices : nrOfVerts
     );
 }
 

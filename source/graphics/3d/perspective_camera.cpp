@@ -10,7 +10,7 @@ PerspectiveCamera::PerspectiveCamera(float near_, float far_, float viewportWidt
 
 void PerspectiveCamera::update()
 {
-    projection = glm::perspective(glm::radians(fOV), viewportWidth / viewportHeight, near_, far_);
+    projection = glm::perspective(glm::radians(fOV), viewportHeight == 0 ? 0 : viewportWidth / viewportHeight, near_, far_);
     view = glm::lookAt(
         position,
         position + direction,

@@ -143,15 +143,17 @@ void VertBuffer::setAttrPointersAndEnable(VertAttributes &attrs, unsigned int di
             case GL_UNSIGNED_SHORT:
             case GL_BYTE:
             case GL_UNSIGNED_BYTE:
-
-                glVertexAttribIPointer(
+                if (!attr.normalized)
+                {
+                    glVertexAttribIPointer(
                         i,                                    // location of attribute that can be used in vertex shaders. eg: 'layout(location = 0) in vec3 position'
                         attr.size,                            // size.
                         attr.type,                             // type
                         attrs.getVertSize(),                  // stride
                         (void *)(uintptr_t)offset             // offset
-                );
-                break;
+                    );
+                    break;
+                }
             default:
                 glVertexAttribPointer(
                         i,                                    // location of attribute that can be used in vertex shaders. eg: 'layout(location = 0) in vec3 position'

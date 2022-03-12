@@ -110,7 +110,7 @@ class Mesh : public VertData
 
     void renderInstances(GLsizei count, int part=0);
 
-    void renderArrays(GLenum mode = GL_TRIANGLES) const;
+    void renderArrays(GLenum mode = GL_TRIANGLES, int nrOfVerts=-1) const;
 
     // removes the vertices + indices that are stored in RAM,
     // but the mesh can still be drawn if it is uploaded to VRAM/OpenGL using a VertBuffer
