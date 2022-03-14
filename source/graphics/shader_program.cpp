@@ -182,6 +182,10 @@ double &ShaderDefinitions::getLastEditTime()
 
 std::string &ShaderDefinitions::getVersionLine()
 {
+    #ifdef EMSCRIPTEN
+    static std::string str = "#version 300 es\n";
+    #else
     static std::string str = "#version 400\n";
+    #endif // EMSCRIPTEN
     return str;
 }
