@@ -6,23 +6,29 @@
 #include "../files/file.h"
 #include "../utils/string.h"
 
-ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *fragSource)
+ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *fragSource, bool compile)
 
     : name(std::move(name))
 {
-    compile(vertSource, fragSource);
+    if (compile)
+        this->compile(vertSource, fragSource);
 }
 
-ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *geomSource, const char *fragSource)
+ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *geomSource, const char *fragSource, bool compile)
     : name(std::move(name))
 {
-    compile(vertSource, fragSource, geomSource);
+    if (compile)
+        this->compile(vertSource, fragSource, geomSource);
 }
 
 int realSourceCodeStartsAt = 0;
 
 void ShaderProgram::compile(const char *vertSource, const char *fragSource, const char *geomSource)
 {
+    #ifdef EMSCRIPTEN
+    geomSource = NULL;
+    #endif
+
     programId = glCreateProgram();
     GLuint vertShaderId = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragShaderId = glCreateShader(GL_FRAGMENT_SHADER);
@@ -58,14 +64,16 @@ void ShaderProgram::compile(const char *vertSource, const char *fragSource, cons
     if (geomSource)
         glDeleteShader(geomShaderId);
 
-    compiled_ = success;
+    compiled_ = true;
     compileFinishTime = glfwGetTime();
 }
 
+#include <utils/gu_error.h>
+
 void ShaderProgram::compileAndAttach(const char *source, GLuint shaderId, const char *shaderType)
 {
-    auto versionStr = ShaderDefinitions::getVersionLine();
-    auto definitions = ShaderDefinitions::getGLSLString();
+    auto versionStr = ShaderDefinitions::global().getVersionLine();
+    auto definitions = ShaderDefinitions::global().getGLSLString() + this->definitions.getGLSLString() + "#define " + shaderType + "_SHADER\n";
     realSourceCodeStartsAt = nrOfNewlines(versionStr) + nrOfNewlines(definitions) + 2;
 
     const GLchar *sources[] = {versionStr.c_str(), definitions.c_str(), source};
@@ -108,6 +116,8 @@ GLuint ShaderProgram::location(const char *uniformName) const
 
 void ShaderProgram::use()
 {
+    if (!compiled_)
+        throw gu_err("This shader is not compiled!");
     glUseProgram(programId);
 }
 
@@ -132,17 +142,12 @@ ShaderProgram ShaderProgram::fromFiles(std::string name, const std::string &vert
     return ShaderProgram(std::move(name), vertCode.c_str(), geomCode.c_str(), fragCode.c_str());
 }
 
-std::map<std::string, std::string> &ShaderDefinitions::getDefinitionsMap()
-{
-    static std::map<std::string, std::string> map;
-    return map;
-}
 
-std::string ShaderDefinitions::getGLSLString()
+std::string ShaderDefinitions::getGLSLString() const
 {
     std::string str;
 
-    for (auto &[key, val] : getDefinitionsMap())
+    for (auto &[key, val] : definitionsMap)
         str += "#define " + key + " " + val + "\n";
 
     return str;
@@ -150,13 +155,13 @@ std::string ShaderDefinitions::getGLSLString()
 
 void ShaderDefinitions::define(const char *name, std::string val)
 {
-    getDefinitionsMap()[name] = std::move(val);
-    getLastEditTime() = glfwGetTime();
+    definitionsMap[name] = std::move(val);
+    lastEditTime = glfwGetTime();
 }
 
 void ShaderDefinitions::undef(const char *name)
 {
-    getDefinitionsMap().erase(name);
+    definitionsMap.erase(name);
 }
 
 void ShaderDefinitions::defineInt(const char *name, int val)
@@ -174,10 +179,10 @@ void ShaderDefinitions::defineDouble(const char *name, double val)
     define(name, std::to_string(val));
 }
 
-double &ShaderDefinitions::getLastEditTime()
+ShaderDefinitions &ShaderDefinitions::global()
 {
-    static double lastEditTime = glfwGetTime();
-    return lastEditTime;
+    static ShaderDefinitions global;
+    return global;
 }
 
 std::string &ShaderDefinitions::getVersionLine()

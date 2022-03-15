@@ -15,6 +15,9 @@ class VertBuffer
 {
   public:
 
+    // This class keeps track of what vertex array is bound in the game. If you are going to call glBindVertexArray() yourself, then please update this value or things can break.
+    static GLuint currentlyBoundVao;
+
     GLenum vboUsage = GL_STATIC_DRAW;
     GLenum iboUsage = GL_STATIC_DRAW;
 
@@ -83,8 +86,6 @@ class VertBuffer
     VertAttributes attrs;
 
     bool uploaded = false;
-
-    static GLuint currentlyBoundVao;
 
 };
 
