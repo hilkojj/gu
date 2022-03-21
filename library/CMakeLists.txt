@@ -22,7 +22,7 @@ endif()
 
 add_library(glad ../external/glad/include/glad/glad.h ../external/glad/src/glad.c)
 target_include_directories(glad PUBLIC ../external/glad/include/)
-target_link_libraries(gameutils glad)
+target_link_libraries(gameutils PUBLIC glad)
 
 
 # ---GLFW---
@@ -35,7 +35,7 @@ if(NOT DEFINED EMSCRIPTEN)
     add_subdirectory(../external/glfw ./bin/glfw)
     include_directories(../external/glfw/include)
 
-    target_link_libraries(gameutils glfw)
+    target_link_libraries(gameutils PUBLIC glfw)
 endif()
 
 
@@ -43,7 +43,7 @@ endif()
 set(GLM_TEST_ENABLE OFF)
 add_subdirectory(../external/glm/glm ./bin/glm)
 include_directories(../external/glm/glm)
-target_link_libraries(gameutils glm)
+target_link_libraries(gameutils PUBLIC glm)
 
 
 # ---OpenAL soft---
@@ -54,7 +54,7 @@ if (NOT DEFINED EMSCRIPTEN)
 
     add_subdirectory(../external/openal-soft ./bin/openal)
     include_directories(../external/openal-soft/include)
-    target_link_libraries(gameutils OpenAL)
+    target_link_libraries(gameutils PUBLIC OpenAL)
 endif ()
 
 
@@ -80,7 +80,7 @@ endif ()
 
 target_include_directories(imgui PUBLIC ${IMGUI_DIR})
 target_link_libraries(imgui glfw)
-target_link_libraries(gameutils imgui)
+target_link_libraries(gameutils PUBLIC imgui)
 
 
 
@@ -93,7 +93,7 @@ file(GLOB ZLIB_HEADERS ${ZLIB_DIR}/*.h)
 add_library(zlib ${ZLIB_SOURCES} ${ZLIB_HEADERS})
 
 target_include_directories(zlib PUBLIC ${ZLIB_DIR})
-target_link_libraries(gameutils zlib)
+target_link_libraries(gameutils PUBLIC zlib)
 
 
 
@@ -112,6 +112,10 @@ else()
     message(FATAL_ERROR "Error occurred during tiny_gltf.h download: ${ERROR_MESSAGE}")
 endif()
 
+
+# ---Bullet2---
+add_subdirectory(../external/bullet2/src ./bin/bullet2)
+target_link_libraries(gameutils PUBLIC Bullet)
 
 
 target_include_directories(gameutils PUBLIC ../source/)

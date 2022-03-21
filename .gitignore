@@ -1,5 +1,5 @@
 
-*/out/*
+out/
 external/tiny_gltf.h
 
 # Created by https://www.gitignore.io/api/c++,cmake,visualstudiocode
