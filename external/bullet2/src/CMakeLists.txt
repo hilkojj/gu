@@ -15,8 +15,9 @@ add_subdirectory(BulletDynamics ./bin/BulletDynamics)
 add_subdirectory(LinearMath ./bin/LinearMath)
 
 target_link_libraries(Bullet INTERFACE
-	BulletCollision
+	# order is important here: Dynamics needs Collision, and therefore this order is required somehow.
 	BulletDynamics
+	BulletCollision
 	#BulletSoftBody
 	LinearMath
 )
