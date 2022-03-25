@@ -180,7 +180,7 @@ void VertBuffer::setAttrPointersAndEnable(VertAttributes &attrs, unsigned int di
     }
 }
 
-GLuint VertBuffer::uploadPerInstanceData(const VertData &data, GLuint advanceRate, int id)
+GLuint VertBuffer::uploadPerInstanceData(const VertData &data, GLuint advanceRate, int id, GLenum usage)
 {
     bind();
     if (id == -1)
@@ -198,7 +198,7 @@ GLuint VertBuffer::uploadPerInstanceData(const VertData &data, GLuint advanceRat
 
     glBindBuffer(GL_ARRAY_BUFFER, instanceVbos[id]);
     if (data.vertices.size() > 0)
-        glBufferData(GL_ARRAY_BUFFER, data.vertices.size(), &data.vertices[0], vboUsage);
+        glBufferData(GL_ARRAY_BUFFER, data.vertices.size(), &data.vertices[0], usage);
     usePerInstanceData(id, advanceRate);
     return id;
 }
