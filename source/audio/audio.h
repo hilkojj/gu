@@ -26,11 +26,10 @@ struct Sound
     ~Sound();
 };
 
-class SoundSource
+struct SoundSource
 {
     ALuint source;
-
-  public:
+    
     SoundSource(const Sound &sound);
 
     /**
