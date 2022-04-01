@@ -9,6 +9,49 @@
 #include "../utils/math_utils.h"
 #include "../json.hpp"
 
+#ifdef EMSCRIPTEN
+// emscripten does not have the GLFW gamepad api implemented, it does have the joystick api implemented, which should be enough.
+
+// original glfw button index,              javascript button index
+#define GLFW_GAMEPAD_BUTTON_A               0
+#define GLFW_GAMEPAD_BUTTON_B               1
+#define GLFW_GAMEPAD_BUTTON_X               2
+#define GLFW_GAMEPAD_BUTTON_Y               3
+#define GLFW_GAMEPAD_BUTTON_LEFT_BUMPER     4
+#define GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER    5
+#define GLFW_GAMEPAD_BUTTON_BACK            8
+#define GLFW_GAMEPAD_BUTTON_START           9
+#define GLFW_GAMEPAD_BUTTON_GUIDE           16
+#define GLFW_GAMEPAD_BUTTON_LEFT_THUMB      10
+#define GLFW_GAMEPAD_BUTTON_RIGHT_THUMB     11
+#define GLFW_GAMEPAD_BUTTON_DPAD_UP         12
+#define GLFW_GAMEPAD_BUTTON_DPAD_RIGHT      15
+#define GLFW_GAMEPAD_BUTTON_DPAD_DOWN       13
+#define GLFW_GAMEPAD_BUTTON_DPAD_LEFT       14
+
+#define GLFW_GAMEPAD_BUTTON_LAST            GLFW_GAMEPAD_BUTTON_GUIDE
+
+
+// original glfw axis index,            javascript axis index
+#define GLFW_GAMEPAD_AXIS_LEFT_X        0
+#define GLFW_GAMEPAD_AXIS_LEFT_Y        1
+#define GLFW_GAMEPAD_AXIS_RIGHT_X       2
+#define GLFW_GAMEPAD_AXIS_RIGHT_Y       3
+
+// these have no purpose:
+#define GLFW_GAMEPAD_AXIS_FAKE_X        4
+#define GLFW_GAMEPAD_AXIS_FAKE_Y        5
+
+// these are floating-point buttons in Javascript, instead of axes. So I gave them the js button index:
+#define GLFW_GAMEPAD_AXIS_LEFT_TRIGGER  6
+#define GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER 7
+
+#define GLFW_GAMEPAD_AXIS_LAST          GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER
+
+
+#endif // EMSCRIPTEN
+
+
 namespace GamepadInput
 {
 delegate<void(uint gamepad, const std::string &name)> &getOnConnected();
@@ -28,7 +71,6 @@ bool pressed(uint gamepad, uint button);
 bool justReleased(uint gamepad, uint button);
 
 float getAxis(uint gamepad, uint axis);
-
 
 inline const std::map<uint, const char *> BUTTON_NAMES = {
         {GLFW_GAMEPAD_BUTTON_A, "A"},

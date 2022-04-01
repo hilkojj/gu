@@ -1,9 +1,4 @@
 #include "gamepad_input.h"
-#include "gamepad_input.h"
-#include "gamepad_input.h"
-#include "gamepad_input.h"
-
-#include "gamepad_input.h"
 #include <iostream>
 #include <utils/gu_error.h>
 
@@ -27,23 +22,37 @@ namespace
 
     static std::map<uint, std::string> gamepads;
 
+#ifdef EMSCRIPTEN
+
+    struct GLFWgamepadstate
+    {
+
+        std::vector<bool> buttons = std::vector<bool>(GLFW_GAMEPAD_BUTTON_LAST + 1, false);
+        std::vector<float> axes = std::vector<float>(GLFW_GAMEPAD_AXIS_LAST + 1, 0.f);
+
+    };
+#endif
+
     static std::map<uint, GLFWgamepadstate[2]> states;
+    
 
     void joystick_callback(int jid, int event)
     {
+        
+#ifndef EMSCRIPTEN  // in emscripten: just assume its a gamepad...
         if (!glfwJoystickIsGamepad(jid))
             return;
+#endif // !EMSCRIPTEN
 
         if (event == GLFW_CONNECTED)
         {
             // The joystick was connected
 
             std::string joystickName = glfwGetJoystickName(jid);
-            std::string gamepadName = glfwGetGamepadName(jid);
 
             gamepads[jid] = joystickName;
 
-            std::cout << "Gamepad " << jid << " '" << joystickName << "'/'" << gamepadName << "' connected." << std::endl;
+            std::cout << "Gamepad " << jid << " '" << joystickName << "' connected." << std::endl;
             getOnConnected()(jid, joystickName);
         }
         else if (event == GLFW_DISCONNECTED)
@@ -82,7 +91,36 @@ void update()
             }
 
             states[jid][0] = states[jid][1];
+
+#ifdef EMSCRIPTEN
+
+            auto &state = states[jid][1];
+            state = GLFWgamepadstate();
+
+            int buttonCount;
+            const unsigned char *buttons = glfwGetJoystickButtons(jid, &buttonCount);
+
+            for (int button = 0; button < min(buttonCount, GLFW_GAMEPAD_BUTTON_LAST + 1), button++)
+            {
+                state.buttons[button] = buttons[button] == GLFW_PRESS;
+            }
+
+            int axesCount;
+            const float *axes = glfwGetJoystickAxes(jid, &axesCount);
+
+            for (int axis = 0; axis < min(axesCount, GLFW_GAMEPAD_AXIS_LAST + 1), axis++)
+            {
+                state.axes[axis] = axes[axis];
+            }
+
+            state.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER] = state.buttons[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER] ? 1 : -1;
+            state.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER] = state.buttons[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER] ? 1 : -1;
+
+#else
+
             glfwGetGamepadState(jid, &states[jid][1]);
+
+#endif
             
             for (int axis = GLFW_GAMEPAD_AXIS_LEFT_X; axis < GLFW_GAMEPAD_AXIS_LAST; axis += 2)
             {
@@ -116,7 +154,6 @@ void update()
             }
         }
     }
-
 }
 
 const std::map<uint, std::string> &getGamepads()
