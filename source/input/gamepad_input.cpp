@@ -100,7 +100,7 @@ void update()
             int buttonCount;
             const unsigned char *buttons = glfwGetJoystickButtons(jid, &buttonCount);
 
-            for (int button = 0; button < min(buttonCount, GLFW_GAMEPAD_BUTTON_LAST + 1), button++)
+            for (int button = 0; button < min(buttonCount, GLFW_GAMEPAD_BUTTON_LAST + 1); button++)
             {
                 state.buttons[button] = buttons[button] == GLFW_PRESS;
             }
@@ -108,7 +108,7 @@ void update()
             int axesCount;
             const float *axes = glfwGetJoystickAxes(jid, &axesCount);
 
-            for (int axis = 0; axis < min(axesCount, GLFW_GAMEPAD_AXIS_LAST + 1), axis++)
+            for (int axis = 0; axis < min(axesCount, GLFW_GAMEPAD_AXIS_LAST + 1); axis++)
             {
                 state.axes[axis] = axes[axis];
             }
