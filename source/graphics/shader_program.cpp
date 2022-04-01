@@ -153,6 +153,11 @@ std::string ShaderDefinitions::getGLSLString() const
     return str;
 }
 
+bool ShaderDefinitions::isDefined(const std::string &key)
+{
+    return definitionsMap.find(key) != definitionsMap.end();
+}
+
 void ShaderDefinitions::define(const char *name, std::string val)
 {
     definitionsMap[name] = std::move(val);

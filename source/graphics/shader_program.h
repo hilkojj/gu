@@ -21,6 +21,8 @@ public:
 
     std::string getGLSLString() const;
 
+    bool isDefined(const std::string &);
+
     void define(const char *name, std::string val = "");
     void undef(const char *name);
     void defineInt(const char *name, int val);
