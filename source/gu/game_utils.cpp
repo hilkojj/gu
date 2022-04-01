@@ -3,6 +3,8 @@
 #include "../utils/gu_error.h"
 #include <string>
 
+#include "../input/gamepad_input.h"
+
 #include "imgui.h"
 #include "examples/imgui_impl_glfw.h"
 #include "examples/imgui_impl_opengl3.h"
@@ -250,6 +252,7 @@ bool init(Config config_)
 
     KeyInput::setInputWindow(window);
     MouseInput::setInputWindow(window);
+    GamepadInput::setInputWindow(window);
 
 
     if (config.printOpenGLMessages || config.printOpenGLErrors)
@@ -349,6 +352,7 @@ void mainLoop()
         profiler::Zone z("input");
         KeyInput::update();
         MouseInput::update();
+        GamepadInput::update();
     }
 
     profiler::frames.back().time = glfwGetTime() - currTime;

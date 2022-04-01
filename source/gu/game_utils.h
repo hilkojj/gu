@@ -6,6 +6,7 @@
 #include "../gl_includes.h"
 #include "../input/key_input.h"
 #include "../input/mouse_input.h"
+#include "../input/gamepad_input.h"
 #include "screen.h"
 #include "profiler.h"
 #include "../utils/delegate.h"
