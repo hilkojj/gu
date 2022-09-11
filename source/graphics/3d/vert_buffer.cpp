@@ -44,21 +44,26 @@ VertBuffer *VertBuffer::add(SharedMesh mesh)
     if (mesh->vertBuffer)
         throw gu_err(mesh->name + " was already added to a VertBuffer");
 
-    #ifdef EMSCRIPTEN
+#ifdef EMSCRIPTEN
+    if (mesh->nrOfVertices() > std::numeric_limits<GLushort>::max())
+    {
+        throw gu_err("Mesh \"" + mesh->name + "\" has more than " + std::to_string(std::numeric_limits<GLushort>::max()) + " vertices!");
+    }
+
     if (next || nrOfVerts + mesh->nrOfVertices() > std::numeric_limits<GLushort>::max())
     {
         if (!next) next = VertBuffer::with(attrs);
         next->add(mesh);
         return this;
     }
-    #endif
+#endif
 
     // std::cout << "Adding " << mesh->name << " to VertBuffer " << vaoId << "\n";
     meshes.push_back(mesh);
 
     mesh->baseVertex = nrOfVerts;
-    mesh->_nrOfVertices = mesh->nrOfVertices();
-    nrOfVerts += mesh->_nrOfVertices;
+    mesh->nrOfVertsReservedInVertBuffer = mesh->nrOfVertices();
+    nrOfVerts += mesh->nrOfVertsReservedInVertBuffer;
 
     for (auto &part : mesh->parts)
     {
@@ -97,10 +102,10 @@ void VertBuffer::upload(bool disposeOfflineData)
 
         SharedMesh mesh = m.lock();
 
-        if (mesh->nrOfVertices() != mesh->_nrOfVertices)
+        if (mesh->nrOfVertices() != mesh->nrOfVertsReservedInVertBuffer)
             throw gu_err("Mesh vertices have resized between .add() and .upload() for " + mesh->name);
 
-        GLuint vertsSize = mesh->_nrOfVertices * vertSize;
+        GLuint vertsSize = mesh->nrOfVertsReservedInVertBuffer * vertSize;
         mesh->vertBufferOffset = vertsOffset;
         glBufferSubData(GL_ARRAY_BUFFER, mesh->vertBufferOffset, vertsSize, mesh->vertices.data());
         vertsOffset += vertsSize;
@@ -273,8 +278,8 @@ void VertBuffer::reuploadVertices(const SharedMesh &mesh, int nrOfVerticesToReup
     bind();
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
     int vertsOffset = mesh->vertBufferOffset;
-    if (nrOfVerticesToReupload > mesh->_nrOfVertices)
+    if (nrOfVerticesToReupload > mesh->nrOfVertsReservedInVertBuffer)
         throw gu_err("Cannot reupload more verts than before. Mesh: " + mesh->name);
-    uint vertsSize = (nrOfVerticesToReupload == -1 ? mesh->_nrOfVertices : uint(nrOfVerticesToReupload)) * vertSize;
+    uint vertsSize = (nrOfVerticesToReupload == -1 ? mesh->nrOfVertsReservedInVertBuffer : uint(nrOfVerticesToReupload)) * vertSize;
     glBufferSubData(GL_ARRAY_BUFFER, vertsOffset, vertsSize, mesh->vertices.data());
 }

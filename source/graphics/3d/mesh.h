@@ -117,6 +117,8 @@ class Mesh : public VertData
     // WARNING: vertices & indices are resized to 0!
     void disposeOfflineData();
 
+    unsigned int getNrOfVertsReservedInVertBuffer() const;
+
     ~Mesh();
 
   private:
@@ -127,7 +129,7 @@ class Mesh : public VertData
     friend VertBuffer;
     int baseVertex = 0;
     int vertBufferOffset = 0;
-    unsigned int _nrOfVertices;
+    unsigned int nrOfVertsReservedInVertBuffer;
 };
 
 #endif

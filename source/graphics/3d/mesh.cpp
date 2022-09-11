@@ -122,7 +122,7 @@ void Mesh::renderArrays(GLenum mode, int nrOfVerts) const
     glDrawArrays(
             mode,
             baseVertex,
-            nrOfVerts == -1 ? _nrOfVertices : nrOfVerts
+            nrOfVerts == -1 ? nrOfVertsReservedInVertBuffer : nrOfVerts
     );
 }
 
@@ -176,6 +176,15 @@ SharedMesh Mesh::getCube()
         VertBuffer::uploadSingleMesh(cube);
     }
     return cube;
+}
+
+unsigned int Mesh::getNrOfVertsReservedInVertBuffer() const
+{
+    if (!vertBuffer)
+    {
+        throw gu_err("Mesh \"" + name + "\" was not added to a VertBuffer.");
+    }
+    return nrOfVertsReservedInVertBuffer;
 }
 
 void VertData::removeVertices(int count)
