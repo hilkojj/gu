@@ -47,10 +47,9 @@ VertBuffer *VertBuffer::add(SharedMesh mesh)
 #ifdef EMSCRIPTEN
     if (mesh->nrOfVertices() > std::numeric_limits<GLushort>::max())
     {
-        throw gu_err("Mesh \"" + mesh->name + "\" has more than " + std::to_string(std::numeric_limits<GLushort>::max()) + " vertices!");
+        std::cerr << "WARNING: Mesh '" << mesh->name << "' has " << mesh->nrOfVertices() << " vertices. (More than max of unsigned short)." << std::endl;
     }
-
-    if (next || nrOfVerts + mesh->nrOfVertices() > std::numeric_limits<GLushort>::max())
+    else if (next || nrOfVerts + mesh->nrOfVertices() > std::numeric_limits<GLushort>::max())
     {
         if (!next) next = VertBuffer::with(attrs);
         next->add(mesh);
