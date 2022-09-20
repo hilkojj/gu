@@ -6,17 +6,17 @@ This library is used in my game engine ([repo](https://github.com/dibidabidab/di
 ## Features
 (Incomplete list because I update this list like 2 times a decade.)
 
-- Graphics:
-    - Textures (loading `.DDS` files, TextureArrays, CubeMap etc.)
+- Graphics using OpenGL:
+    - Textures (loading `.DDS`/`.PNG`/etc. files, TextureArrays, CubeMap etc.)
     - FrameBuffers
     - ShaderPrograms
-    - Meshes, Models & ModelInstances
+    - Meshes, Models & animated Armatures
     - Cameras
 - Audio:
     - Loading `.wav` and `.ogg` files
     - Playing sounds using OpenAL
 - AssetManager
-    - Live reload of assets (linux only)
+    - Live reload of assets (automatically using file change detection on Linux)
 - Mouse & key input
 - Loading models from Blender (use the GltfModelLoader to load .glb or .gltf) (~~use [this Blender addon](https://github.com/hilkojj/blender_UBJSON_exporter) and load the exported files with the JsonModelLoader~~)
 - Loading [Aseprite](https://www.aseprite.org/) sprites directly from [`.ase` files](https://github.com/aseprite/aseprite/blob/master/docs/ase-file-specs.md). (Only indexed sprites supported) 
