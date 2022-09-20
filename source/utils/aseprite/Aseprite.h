@@ -10,7 +10,6 @@
 namespace aseprite
 {
 
-using Pixel = uint8;
 using ColorRGBA = u8vec4;
 using ColorRGB = u8vec3;
 
@@ -37,7 +36,7 @@ struct Slice : UserData
 
 struct Cel : UserData
 {
-    std::vector<Pixel> pixels;
+    std::vector<uint8> pixels;
 
     int layer;
     int x, y, width, height;
@@ -48,7 +47,7 @@ struct Frame
 {
     float duration;
     std::vector<Cel> cels;
-    std::vector<Pixel> pixels;
+    std::vector<uint8> pixels;
 };
 
 struct Tag

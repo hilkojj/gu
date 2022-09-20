@@ -27,10 +27,10 @@ class Texture
 
     Texture(GLuint id, GLuint width, GLuint height);
 
-    void bind(GLuint unit);
+    void bind(GLuint unit) const;
 
     // same as bind() but also sets sampler uniform for shader.
-    void bind(GLuint unit, const ShaderProgram &shader, const char* name);
+    void bind(GLuint unit, const ShaderProgram &shader, const char* name) const;
 
     ~Texture();
 

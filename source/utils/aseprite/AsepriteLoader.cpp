@@ -64,8 +64,8 @@ void Loader::loadHeader()
     sprite.height = read<WORD>();
     sprite.mode = Mode(read<WORD>() / 8);
 
-    if (sprite.mode == Mode::grayscale || sprite.mode == Mode::rgba)
-        throw gu_err("rgba & grayscale mode not supported, for now only indexed mode is supported");
+    if (sprite.mode == Mode::grayscale)
+        throw gu_err("Grayscale mode not supported, for now only indexed mode & rgba mode is supported");
 
     // Other Info, Ignored
     skip<DWORD>();       // Flags
@@ -88,7 +88,7 @@ void Loader::loadFrames()
         sprite.frames.emplace_back();
         Frame &frame = sprite.frames.back();
 
-        frame.pixels.resize(sprite.width * sprite.height, 0);
+        frame.pixels.resize(sprite.width * sprite.height * sprite.mode, 0);
 
         int
             frameStart = currentPosition(),
@@ -188,7 +188,6 @@ void Loader::loadCel(Frame &frame, int celEnd)
     cel.height = read<WORD>();
 
     int count = cel.width * cel.height * sprite.mode;
-    assert(sprite.mode == 1 && 1 == Mode::indexed);
 
     cel.pixels.resize(count, 0);
 
@@ -336,10 +335,31 @@ void Loader::celToFrame(Frame &frame, Cel &cel)
 
         for (int i = 0, sy = 0; i < cel.height; i++, sy += cel.width, dy += sprite.width)
         {
-            // todo: custom blending
-            Pixel &p = cel.pixels[sx + sy];
-            if (p != 0)
-                frame.pixels[dx + dy] = p;
+            switch (sprite.mode) {
+                case indexed:
+                {
+                    // todo: custom blending
+                    uint8 &p = cel.pixels[sx + sy];
+                    if (p != 0)
+                        frame.pixels[dx + dy] = p;
+                    break;
+                }
+                case grayscale:
+                    throw gu_err("grayscale not implemented");
+                case rgba:
+                {
+                    const ColorRGBA *celPixels = (ColorRGBA *) cel.pixels.data();
+                    ColorRGBA *framePixels = (ColorRGBA *) frame.pixels.data();
+
+                    const ColorRGBA &p = celPixels[sx + sy];
+                    if (p.a != 0u) // todo: very very bad
+                        framePixels[dx + dy] = p;
+
+                    break;
+                }
+            }
+
+
         }
     }
 }

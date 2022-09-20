@@ -78,13 +78,13 @@ Texture::Texture(GLuint id, GLuint width, GLuint height)
     #endif
 }
 
-void Texture::bind(GLuint unit)
+void Texture::bind(GLuint unit) const
 {
     glActiveTexture(GL_TEXTURE0 + unit);
     glBindTexture(GL_TEXTURE_2D, id);
 }
 
-void Texture::bind(GLuint unit, const ShaderProgram &shader, const char* name)
+void Texture::bind(GLuint unit, const ShaderProgram &shader, const char* name) const
 {
     bind(unit);
     glUniform1i(shader.location(name), unit);
