@@ -26,6 +26,7 @@ public:
             TEX_COORDS = {"TEX_COORDS", 2},
             NORMAL = {"NORMAL", 3},
             TANGENT = {"TANGENT", 3},
+            TANGENT_AND_SIGN = {"TANGENT_AND_SIGN", 4},
             BI_NORMAL = {"BI_NORMAL", 3},
 
             // Four bone ids (used by gltf model loader):

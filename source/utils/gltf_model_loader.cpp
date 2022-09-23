@@ -102,6 +102,8 @@ void loadMeshes(GltfModelLoader &loader, const tinygltf::Model &tiny)
                     attr = VertAttributes::TEX_COORDS;
                 else if (attrName == "COLOR_0")
                     attr = accessor.type == 3 ? VertAttributes::RGB : VertAttributes::RGBA;
+                else if (attrName == "TANGENT" && accessor.type == TINYGLTF_TYPE_VEC4)
+                    attr = VertAttributes::TANGENT_AND_SIGN;
 
                 attr.type = accessor.componentType;
                 attr.size = accessor.type;
