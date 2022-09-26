@@ -21,6 +21,12 @@ class VertData
     std::vector<u_char> vertices;
 
     template <class type>
+    inline type &getRef(int vertI, int attrOffset)
+    {
+        return *((type *) &(vertices[vertI * attributes.getVertSize() + attrOffset]));
+    }
+
+    template <class type>
     inline type get(int vertI, int attrOffset)
     {
         type v;
