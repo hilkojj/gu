@@ -8,8 +8,15 @@ class GltfModelLoader
 {
   public:
 
+    enum CalculateTangents
+    {
+        NEVER,
+        IF_NOT_PROVIDED,
+        ALWAYS
+    };
+
     VertAttributes vertAttributes;
-    bool calculateTangents = true;
+    CalculateTangents calculateTangents = ALWAYS;
     bool
         loadDiffuseTextures = true,
         loadNormalMaps = true,

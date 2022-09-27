@@ -91,6 +91,7 @@ void loadMeshes(GltfModelLoader &loader, const tinygltf::Model &tiny)
             }
 
             // vertices:
+            bool tangentsProvided = false;
             int primitiveVerts = 0;
             for (auto &[attrName, accessorI] : primitive.attributes)
             {
@@ -103,7 +104,10 @@ void loadMeshes(GltfModelLoader &loader, const tinygltf::Model &tiny)
                 else if (attrName == "COLOR_0")
                     attr = accessor.type == 3 ? VertAttributes::RGB : VertAttributes::RGBA;
                 else if (attrName == "TANGENT" && accessor.type == TINYGLTF_TYPE_VEC4)
+                {
                     attr = VertAttributes::TANGENT_AND_SIGN;
+                    tangentsProvided = true;
+                }
 
                 attr.type = accessor.componentType;
                 attr.size = accessor.type;
@@ -154,15 +158,22 @@ void loadMeshes(GltfModelLoader &loader, const tinygltf::Model &tiny)
                 }
             }
             nrOfVertsLoaded += primitiveVerts;
+
+            switch (loader.calculateTangents)
+            {
+                case GltfModelLoader::NEVER:
+                    break;
+                case GltfModelLoader::IF_NOT_PROVIDED:
+                    if (tangentsProvided)
+                    {
+                        break;
+                    }
+                case GltfModelLoader::ALWAYS:
+                    TangentCalculator::addTangentsToMesh(mesh, mesh->parts.size() - 1);
+                    break;
+            }
         }
         assert(nrOfVertsLoaded == nrOfVerts);
-    }
-
-    if (loader.calculateTangents && loader.vertAttributes.contains(VertAttributes::TANGENT))
-    {
-        for (auto &mesh : loader.meshes)
-            for (int i = 0; i < mesh->parts.size(); i++)
-                TangentCalculator::addTangentsToMesh(mesh, i);
     }
 }
 

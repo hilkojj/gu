@@ -32,21 +32,39 @@ void addTangentsToMesh(SharedMesh mesh, int meshPart)
 
 void addTangentsToMesh(Mesh *mesh, int meshPart)
 {
+    auto &part = mesh->parts.at(meshPart);
+
     VertAttributes &attrs = mesh->attributes;
     int posOffset = attrs.getOffset(VertAttributes::POSITION);
     int texOffset = attrs.getOffset(VertAttributes::TEX_COORDS);
-    int tanOffset = attrs.getOffset(VertAttributes::TANGENT);
+    int tanOffset = 0;
 
-    auto &part = mesh->parts.at(meshPart);
 
-    // set tangents to vec3(0) first, to prevent NaN floats when adding in the next loop.
-    for (int i = 0; i < part.indices.size(); i += 3)
+    if (attrs.contains(VertAttributes::TANGENT_AND_SIGN))
     {
-        int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
+        tanOffset = attrs.getOffset(VertAttributes::TANGENT_AND_SIGN);
+        // set tangents to vec4(0, 0, 0, 1) first, to prevent NaN floats when adding in the next loop.
+        for (int i = 0; i < part.indices.size(); i += 3)
+        {
+            int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
 
-        mesh->set<vec3>(vec3(0), vertI0, tanOffset);
-        mesh->set<vec3>(vec3(0), vertI1, tanOffset);
-        mesh->set<vec3>(vec3(0), vertI2, tanOffset);
+            mesh->set<vec4>(vec4(0, 0, 0, 1), vertI0, tanOffset);
+            mesh->set<vec4>(vec4(0, 0, 0, 1), vertI1, tanOffset);
+            mesh->set<vec4>(vec4(0, 0, 0, 1), vertI2, tanOffset);
+        }
+    }
+    else
+    {
+        tanOffset = attrs.getOffset(VertAttributes::TANGENT);
+        // set tangents to vec3(0) first, to prevent NaN floats when adding in the next loop.
+        for (int i = 0; i < part.indices.size(); i += 3)
+        {
+            int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
+
+            mesh->set<vec3>(vec3(0), vertI0, tanOffset);
+            mesh->set<vec3>(vec3(0), vertI1, tanOffset);
+            mesh->set<vec3>(vec3(0), vertI2, tanOffset);
+        }
     }
 
     for (int i = 0; i < part.indices.size(); i += 3)
