@@ -1,6 +1,7 @@
 
 #include <imgui.h>
 #include <examples/imgui_impl_glfw.h>
+#include <iostream>
 #include "mouse_input.h"
 #include "../../external/openal-soft/common/vector.h"
 
@@ -118,11 +119,11 @@ void update()
 
 void setLockedMode(bool lockedMode)
 {
-    static bool prev = false;
-    if (lockedMode != prev)
+    int newVal = lockedMode ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL;
+    if (newVal != glfwGetInputMode(window, GLFW_CURSOR))
     {
-        glfwSetInputMode(window, GLFW_CURSOR, lockedMode ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
-        prev = lockedMode;
+        std::cout << "Locking cursor: " << lockedMode << std::endl;
+        glfwSetInputMode(window, GLFW_CURSOR, newVal);
     }
 }
 
