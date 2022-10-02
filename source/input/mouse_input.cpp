@@ -118,7 +118,12 @@ void update()
 
 void setLockedMode(bool lockedMode)
 {
-    glfwSetInputMode(window, GLFW_CURSOR, lockedMode ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+    static bool prev = false;
+    if (lockedMode != prev)
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, lockedMode ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+        prev = lockedMode;
+    }
 }
 
 void setMousePos(double x, double y)
