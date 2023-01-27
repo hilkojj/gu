@@ -1,6 +1,6 @@
 
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <functional>
 #include <limits>
 
@@ -21,19 +21,20 @@ template <class nodeType>
 bool findAStarPath(
     nodeType start,
     nodeType goal,
-    std::function<float(nodeType &n)> h,
-    std::function<float(nodeType &n0, nodeType &n1)> d,
-    std::function<std::vector<nodeType>&(nodeType &n)> neighbors,
+    std::function<float(const nodeType &n)> h,
+    std::function<float(const nodeType &n0, const nodeType &n1)> d,
+    std::function<void(const nodeType &n, std::vector<nodeType> &out)> neighborsGetter,
 
-    std::vector<nodeType> &path
+    std::list<nodeType> &path
 )
 {
     std::vector<nodeType> openSet{start}, closedSet;
+    std::vector<nodeType> neighbors;
 
-    std::map<nodeType, nodeType> cameFrom;
-    std::map<nodeType, float> gScore{{start, 0}};
+    std::unordered_map<nodeType, nodeType> cameFrom;
+    std::unordered_map<nodeType, float> gScore{{start, 0}};
 
-    std::map<nodeType, float> fScore{{start, 0}};
+    std::unordered_map<nodeType, float> fScore{{start, 0}};
 
     while (!openSet.empty())
     {
@@ -64,7 +65,9 @@ bool findAStarPath(
 
         closedSet.push_back(current);
 
-        for (auto &nb : neighbors(current))
+        neighbors.clear();
+        neighborsGetter(current, neighbors);
+        for (auto &nb : neighbors)
         {
             // if neighbor in closedSet: continue
             if (std::find(closedSet.begin(), closedSet.end(), nb) != closedSet.end()) continue;

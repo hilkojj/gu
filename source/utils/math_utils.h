@@ -235,6 +235,16 @@ inline void loop3d(int size, const std::function<bool(int x, int y, int z)> &cal
                 if (!callback(x, y, z)) return;
 }
 
+template<typename vec3Type>
+inline void loop3d(const vec3Type &from, const vec3Type &to, const std::function<bool(const vec3Type &)> &callback)
+{
+    vec3Type curr;
+    for (curr.z = min(from.z, to.z); curr.z <= max(from.z, to.z); curr.z++)
+        for (curr.y = min(from.y, to.y); curr.y <= max(from.y, to.y); curr.y++)
+            for (curr.x = min(from.x, to.x); curr.x <= max(from.x, to.x); curr.x++)
+                if (!callback(curr)) return;
+}
+
 inline bool findRayOriginInsideGrid(vec3 &rayOrigin, const vec3 &rayDirection, const uvec3 &gridSize)
 {
     for (int axis = 0; axis < 3; axis++)
