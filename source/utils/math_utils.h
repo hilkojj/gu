@@ -235,13 +235,17 @@ inline void loop3d(int size, const std::function<bool(int x, int y, int z)> &cal
                 if (!callback(x, y, z)) return;
 }
 
-template<typename vec3Type>
-inline void loop3d(const vec3Type &from, const vec3Type &to, const std::function<bool(const vec3Type &)> &callback)
+inline void loop3d(const ivec3 &from, const ivec3 &to, const std::function<bool(const ivec3 &)> &callback)
 {
-    vec3Type curr;
-    for (curr.z = min(from.z, to.z); curr.z <= max(from.z, to.z); curr.z++)
-        for (curr.y = min(from.y, to.y); curr.y <= max(from.y, to.y); curr.y++)
-            for (curr.x = min(from.x, to.x); curr.x <= max(from.x, to.x); curr.x++)
+    ivec3 curr;
+    ivec3 direction = ivec3(    // Note: this is different from sign() because sign() can return 0.
+        from.x > to.x ? -1 : 1,
+        from.y > to.y ? -1 : 1,
+        from.z > to.z ? -1 : 1
+    );
+    for (curr.z = from.z; curr.z != to.z + direction.z; curr.z += direction.z)
+        for (curr.y = from.y; curr.y != to.y + direction.y; curr.y += direction.y)
+            for (curr.x = from.x; curr.x != to.x + direction.x; curr.x += direction.x)
                 if (!callback(curr)) return;
 }
 
