@@ -51,8 +51,7 @@ inline float random(float min, float max)
 
 inline int randomInt(int max)
 {
-    if (max == 0) return 0;
-    return std::rand() % max;
+    return std::rand() % (max + 1);
 }
 
 inline int randomInt(int min, int max)
