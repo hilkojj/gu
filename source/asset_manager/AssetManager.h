@@ -112,10 +112,38 @@ class AssetManager
 
     static void load(const char *directory, bool verbose=false)
     {
+        std::vector<std::string> filePaths;
         File::iterateDirectoryRecursively(directory, [&](auto path, bool isDir) {
             if (!isDir)
-                loadFile(path, std::string(directory) + "/", verbose);
+            {
+                filePaths.push_back(path);
+            }
         });
+        std::sort(filePaths.begin(), filePaths.end(), [&] (const std::string &a, const std::string &b) {
+            int aIndex = -1, bIndex = -1;
+            int i = 0;
+            for (const AssetLoader &loader : loaders)
+            {
+                if (aIndex < 0 && loader.match(a))
+                {
+                    aIndex = i;
+                }
+                if (bIndex < 0 && loader.match(b))
+                {
+                    bIndex = i;
+                }
+                i++;
+                if (aIndex >= 0 && bIndex >= 0)
+                {
+                    break;
+                }
+            }
+            return aIndex < bIndex;
+        });
+        for (const std::string &path : filePaths)
+        {
+            loadFile(path, std::string(directory) + "/", verbose);
+        }
     }
 
     static void loadFile(const std::string &path, const std::string &removePreFix, bool verbose=false)

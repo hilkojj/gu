@@ -21,7 +21,8 @@ class Texture
 
     static Texture fromImageFile(const char *path);
 
-    static Texture fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLuint magFilter, GLuint minFilter);
+    static Texture fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height,
+        GLuint magFilter, GLuint minFilter, bool bGenerateMipMaps = true);
 
     const GLuint id, width, height;
 

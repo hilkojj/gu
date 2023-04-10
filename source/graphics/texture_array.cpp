@@ -6,7 +6,8 @@
 #include "../utils/gu_error.h"
 #include "../utils/quad_renderer.h"
 
-SharedTexArray TextureArray::fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLsizei depth, GLuint magFilter, GLuint minFilter)
+SharedTexArray TextureArray::fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLsizei depth,
+    GLuint magFilter, GLuint minFilter, bool bGenerateMipMaps)
 {
     GLuint id;
     glGenTextures(1, &id);
@@ -14,7 +15,10 @@ SharedTexArray TextureArray::fromByteData(const GLubyte *data, GLenum format, GL
 
     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, format, width, height, depth, 0, format, GL_UNSIGNED_BYTE, data);
 
-    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+    if (bGenerateMipMaps)
+    {
+        glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+    }
 
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, magFilter);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, minFilter);

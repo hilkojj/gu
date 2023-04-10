@@ -99,7 +99,7 @@ Texture::~Texture()
 }
 
 Texture Texture::fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLuint magFilter,
-                              GLuint minFilter)
+                              GLuint minFilter, bool bGenerateMipMaps)
 {
     GLuint id;
     glGenTextures(1, &id);
@@ -111,8 +111,10 @@ Texture Texture::fromByteData(const GLubyte *data, GLenum format, GLsizei width,
 
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
-    glGenerateMipmap(GL_TEXTURE_2D);
-
+    if (bGenerateMipMaps)
+    {
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
     return Texture(id, width, height);
 }
 
