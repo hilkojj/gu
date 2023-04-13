@@ -38,7 +38,7 @@ class FrameBuffer
 
     void addColorBuffer(GLuint format);
 
-    void addDepthTexture(GLuint magFilter, GLuint minFilter, GLenum format=GL_DEPTH_COMPONENT32F);  // 32bit floats can be used for shadow mapping
+    void addDepthTexture(GLuint magFilter, GLuint minFilter, GLenum internalFormat=GL_DEPTH_COMPONENT32F);  // 32bit floats can be used for shadow mapping
 
     void addDepthBuffer(GLenum format=GL_DEPTH_COMPONENT24);    // 24bits is (the most) common depth in applications
 

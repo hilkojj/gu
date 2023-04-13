@@ -138,7 +138,7 @@ void FrameBuffer::addColorBuffer(GLuint format)
     unbindCurrent();
 }
 
-void FrameBuffer::addDepthTexture(GLuint magFilter, GLuint minFilter, GLenum format)
+void FrameBuffer::addDepthTexture(GLuint magFilter, GLuint minFilter, GLenum internalFormat)
 {
     if (sampled)
     {
@@ -156,7 +156,7 @@ void FrameBuffer::addDepthTexture(GLuint magFilter, GLuint minFilter, GLenum for
     GLuint texId;
     glGenTextures(1, &texId);
     glBindTexture(GL_TEXTURE_2D, texId);
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);

@@ -174,6 +174,11 @@ void ShaderDefinitions::defineInt(const char *name, int val)
     define(name, std::to_string(val));
 }
 
+void ShaderDefinitions::defineUint(const char *name, unsigned int val)
+{
+    define(name, std::to_string(val) + "u");
+}
+
 void ShaderDefinitions::defineFloat(const char *name, float val)
 {
     define(name, std::to_string(val) + "f");
