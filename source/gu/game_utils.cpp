@@ -272,7 +272,14 @@ bool init(Config config_)
 
     // Initialize helper Platform and Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, false);
-    ImGui_ImplOpenGL3_Init(glsl_version);
+    if (config.customImGuiRenderingInit)
+    {
+        config.customImGuiRenderingInit(glsl_version);
+    }
+    else
+    {
+        ImGui_ImplOpenGL3_Init(glsl_version);
+    }
     #ifdef EMSCRIPTEN
 
     EM_ASM(
@@ -334,7 +341,14 @@ void mainLoop()
     }
 
     // Feed inputs to dear imgui, start new frame
-    ImGui_ImplOpenGL3_NewFrame();
+    if (config.customImGuiRenderingNewFrame)
+    {
+        config.customImGuiRenderingNewFrame();
+    }
+    else
+    {
+        ImGui_ImplOpenGL3_NewFrame();
+    }
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
@@ -360,7 +374,14 @@ void mainLoop()
 
     // Render dear imgui into screen
     ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    if (config.customImGuiRenderingRenderDrawData)
+    {
+        config.customImGuiRenderingRenderDrawData(ImGui::GetDrawData());
+    }
+    else
+    {
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
 
     // Swap buffers
     glfwSwapBuffers(window);

@@ -11,6 +11,8 @@
 #include "profiler.h"
 #include "../utils/delegate.h"
 
+struct ImDrawData;
+
 namespace gu
 {
 
@@ -29,6 +31,12 @@ struct Config
     std::string htmlCanvasId = "canvas";
 
     int openGLMajorVersion = 4, openGLMinorVersion = 2;
+
+    bool (*customImGuiRenderingInit)(const char *glslVersion);
+
+    void (*customImGuiRenderingNewFrame)();
+
+    void (*customImGuiRenderingRenderDrawData)(ImDrawData *);
 };
 
 extern Config config;
