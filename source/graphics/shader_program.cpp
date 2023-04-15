@@ -42,9 +42,7 @@ void ShaderProgram::compile(const char *vertSource, const char *fragSource, cons
     glLinkProgram(programId);
 
     // check program:
-    GLint success = GL_FALSE;
     int logLength;
-    glGetProgramiv(programId, GL_COMPILE_STATUS, &success);
     glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength > 1)
     {
@@ -84,9 +82,7 @@ void ShaderProgram::compileAndAttach(const char *source, GLuint shaderId, const 
 
     #ifdef EMSCRIPTEN
     // check shader:
-    GLint success = GL_FALSE;
     int logLength;
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
     glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength > 1)
     {
