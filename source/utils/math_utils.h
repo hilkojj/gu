@@ -159,6 +159,13 @@ inline float sign(const vec2 &p0, const vec2 &p1, const vec2 &p2)
     return (p0.x - p2.x) * (p1.y - p2.y) - (p1.x - p2.x) * (p0.y - p2.y);
 }
 
+template<typename type>
+inline type map(type value, type min1, type max1, type min2, type max2)
+{
+    const float x = (value - min1) / (max1 - min1);
+    return x * (max2 - min2) + min2;
+}
+
 inline bool pointInTriangle(const vec2 &point, const vec2 &p0, const vec2 &p1, const vec2 &p2)
 {
     float d1 = sign(point, p0, p1),
