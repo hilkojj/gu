@@ -268,7 +268,7 @@ void loadTextures(GltfModelLoader &loader, const tinygltf::Model &tiny)
 
             GLenum format = std::vector<GLenum>{GL_R, GL_RG, GL_RGB, GL_RGBA}[tinyImage.component - 1];
 
-            loader.textures.push_back(SharedTexture(new Texture(Texture::fromByteData(tinyImage.image.data(), format, tinyImage.width, tinyImage.height, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR))));
+            loader.textures.push_back(SharedTexture(new Texture(Texture::fromByteData(tinyImage.image.data(), format, format, tinyImage.width, tinyImage.height, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR))));
         }
         else loader.textures.push_back(SharedTexture());
     }
