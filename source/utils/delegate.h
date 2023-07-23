@@ -11,7 +11,16 @@ struct delegate_method
 {
     void reset()
     {
-        ptr_to_callable = NULL;
+        ptr_to_callable.reset();
+    }
+
+    /**
+     * Returns true if this wrapper keeps a callback alive.
+     * NOTE: The callback being alive does not guarantee the delegate itself to be still alive.
+     */
+    bool isSet()
+    {
+        return ptr_to_callable.has_value();
     }
 
   protected:
@@ -19,7 +28,7 @@ struct delegate_method
     template<typename>
     friend struct delegate_base;
 
-    std::any ptr_to_callable = NULL;
+    std::any ptr_to_callable;
 };
 
 
