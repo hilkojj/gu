@@ -124,3 +124,19 @@ void DebugLineRenderer::circle(const vec2 &p, float radius, int resolution, cons
         prev = curr;
     }
 }
+
+void DebugLineRenderer::circle(const vec3 &p, float radius, int resolution, const vec3 &color, const vec3 &xAxis,
+        const vec3 &yAxis)
+{
+    vec3 prev;
+    for (int i = 0; i <= resolution; i++)
+    {
+        vec3 off = xAxis * radius;
+        off = rotate(off, mu::PI * (2.f / resolution) * i, yAxis);
+        vec3 curr = p + off;
+
+        if (i != 0)
+            line(prev, curr, color);
+        prev = curr;
+    }
+}

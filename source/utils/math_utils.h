@@ -154,6 +154,25 @@ inline bool lineSegmentsIntersect(const vec2 &p1, const vec2 &q1, const vec2 &p2
     return false; // Doesn't fall in any of the above cases
 }
 
+template<typename vec>
+inline vec projectOnLineSegment(const vec &point, const vec &a, const vec &b)
+{
+    vec point0 = point - a;
+    vec b0 = b - a;
+
+    const float dot0 = dot(point0, b0);
+    if (dot0 <= 0.0f)
+    {
+        return a;
+    }
+    const float dot1 = dot(b0, b0);
+    if (dot1 <= dot0)
+    {
+        return b;
+    }
+    return a + b0 * (dot0 / dot1);
+}
+
 inline float sign(const vec2 &p0, const vec2 &p1, const vec2 &p2)
 {
     return (p0.x - p2.x) * (p1.y - p2.y) - (p1.x - p2.x) * (p0.y - p2.y);
