@@ -30,6 +30,8 @@ class DebugLineRenderer
 
     void arrow(const vec2 &p0, const vec2 &p1, float size, const vec3 &color);
 
+    void arrow(const vec3 &p0, const vec3 &p1, float size, const vec3 &color, const vec3 &arrowHeadAxis=mu::Y);
+
     void arrows(const vec2 &p, float size, const vec3 &color);
 
     void square(const vec3 &p, float size, const vec3 &color, const vec3 &xAxis=mu::X, const vec3 &yAxis=mu::Y);

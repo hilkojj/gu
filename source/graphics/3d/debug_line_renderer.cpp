@@ -80,11 +80,23 @@ void DebugLineRenderer::square(const vec3 &p, float size, const vec3 &color, con
 void DebugLineRenderer::arrow(const vec2 &p0, const vec2 &p1, float size, const vec3 &color)
 {
     line(p0, p1, color);
-    vec2 dir = p1 - p0;
+    const vec2 dir = p1 - p0;
     auto line0 = normalize(rotate(dir, -135 * mu::DEGREES_TO_RAD)) * size;
     line(p1, p1 + line0, color);
 
     auto line1 = normalize(rotate(dir, 135 * mu::DEGREES_TO_RAD)) * size;
+    line(p1, p1 + line1, color);
+}
+
+void DebugLineRenderer::arrow(const vec3 &p0, const vec3 &p1, float size, const vec3 &color, const vec3 &arrowHeadAxis)
+{
+    line(p0, p1, color);
+    const vec3 dir = p1 - p0;
+
+    auto line0 = normalize(rotate(dir, -135 * mu::DEGREES_TO_RAD, arrowHeadAxis)) * size;
+    line(p1, p1 + line0, color);
+
+    auto line1 = normalize(rotate(dir, 135 * mu::DEGREES_TO_RAD, arrowHeadAxis)) * size;
     line(p1, p1 + line1, color);
 }
 
