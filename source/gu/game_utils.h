@@ -32,11 +32,11 @@ struct Config
 
     int openGLMajorVersion = 4, openGLMinorVersion = 2;
 
-    bool (*customImGuiRenderingInit)(const char *glslVersion);
+    bool (*customImGuiRenderingInit)(const char *glslVersion) = nullptr;
 
-    void (*customImGuiRenderingNewFrame)();
+    void (*customImGuiRenderingNewFrame)() = nullptr;
 
-    void (*customImGuiRenderingRenderDrawData)(ImDrawData *);
+    void (*customImGuiRenderingRenderDrawData)(ImDrawData *) = nullptr;
 };
 
 extern Config config;
