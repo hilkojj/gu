@@ -14,6 +14,9 @@ class PerspectiveCamera : public Camera {
     void update() override;
 
     ~PerspectiveCamera() override = default;
+
+  protected:
+    bool isInViewPort(const vec4 &homogeneousCoordinates, const vec3 &h3Coordinates) const override;
 };
 
 #endif

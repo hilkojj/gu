@@ -48,31 +48,24 @@ vec3 Camera::getRayDirection(float viewportX, float viewportY) const
 vec3 Camera::getCursorRayDirection() const
 {
     return getRayDirection(MouseInput::mouseX / gu::widthPixels * viewportWidth,
-            MouseInput::mouseY / gu::heightPixels * viewportHeight);
+        MouseInput::mouseY / gu::heightPixels * viewportHeight);
 }
 
-vec3 Camera::project(const vec3 &p, bool &inViewport) const
+vec3 Camera::project(const vec3 &p, bool *bInViewport) const
 {
     vec4 homogeneous = combined * vec4(p, 1);
     vec3 h3 = homogeneous / homogeneous.w;
-    if (!inViewport && homogeneous.z >= 0 && all(lessThanEqual(h3, vec3(1))) && all(greaterThanEqual(h3, vec3(-1))))
-        inViewport = true;
+    if (bInViewport != nullptr && isInViewPort(homogeneous, h3))
+        *bInViewport = true;
     return h3;
 }
 
-bool blah = true;
-
-vec3 Camera::project(const vec3 &p) const
+vec3 Camera::projectPixels(const vec3 &p, bool *bInViewport) const
 {
-    return project(p, blah);
+    return (project(p, bInViewport) + vec3(1, -1, 0)) * vec3(.5, -.5, 1) * vec3(viewportWidth, viewportHeight, 1);
 }
 
-vec3 Camera::projectPixels(const vec3 &p, bool &inViewport) const
+bool Camera::isInViewPort(const vec4 &homogeneousCoordinates, const vec3 &h3Coordinates) const
 {
-    return (project(p, inViewport) + vec3(1, -1, 0)) * vec3(.5, -.5, 1) * vec3(viewportWidth, viewportHeight, 1);
-}
-
-vec3 Camera::projectPixels(const vec3 &p) const
-{
-    return projectPixels(p, blah);
+    return all(lessThanEqual(h3Coordinates, vec3(1))) && all(greaterThanEqual(h3Coordinates, vec3(-1)));
 }

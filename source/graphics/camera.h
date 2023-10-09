@@ -38,20 +38,20 @@ class Camera
 
     /**
      * returns the point in 'normalized device space'.
-     * IF inViewport is originally set to false then inViewport will be set to true if the point is inside the viewport.
+     * If bInViewport points to a bool it will be set to if the point is inside the viewport.
      */
-    vec3 project(const vec3 &p, bool &inViewport) const;
-    vec3 project(const vec3 &p) const;
+    vec3 project(const vec3 &p, bool *bInViewport = nullptr) const;
 
     /**
      * returns the point in 'viewport space'.
      * IF inViewport is originally set to false then inViewport will be set to true if the point is inside the viewport.
      */
-    vec3 projectPixels(const vec3 &p, bool &inViewport) const;
-    vec3 projectPixels(const vec3 &p) const;
+    vec3 projectPixels(const vec3 &p, bool *bInViewport = nullptr) const;
 
     virtual ~Camera() = default;
 
+  protected:
+    virtual bool isInViewPort(const vec4 &homogeneousCoordinates, const vec3 &h3Coordinates) const;
 };
 
 #endif

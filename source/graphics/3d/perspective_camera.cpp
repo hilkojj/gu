@@ -19,3 +19,7 @@ void PerspectiveCamera::update()
     combined = projection * view;
 }
 
+bool PerspectiveCamera::isInViewPort(const vec4 &homogeneousCoordinates, const vec3 &h3Coordinates) const
+{
+    return homogeneousCoordinates.z >= 0 && Camera::isInViewPort(homogeneousCoordinates, h3Coordinates);
+}
