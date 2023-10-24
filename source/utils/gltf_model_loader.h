@@ -22,7 +22,11 @@ class GltfModelLoader
         loadNormalMaps = true,
         loadAOTextures = true,
         loadEmissiveTextures = true,
-        loadMetallicRoughnessTextures = true;
+        loadMetallicRoughnessTextures = true,
+        generateMipMaps = true;
+
+    GLuint textureMagFilter = GL_LINEAR;
+    GLuint textureMinFilter = GL_LINEAR_MIPMAP_LINEAR;
 
     GltfModelLoader(const VertAttributes &);
 
