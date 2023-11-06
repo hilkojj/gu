@@ -37,7 +37,7 @@ struct TextureAssetOrPtr
 struct Material
 {
     std::string name;
-    vec3 diffuse, ambient, emissive;
+    vec3 diffuse = mu::ZERO_3, ambient = mu::ZERO_3, emissive = mu::ZERO_3;
     float metallic = .0, roughness = .5;
 
     bool doubleSided = false;
@@ -49,14 +49,16 @@ struct Material
         aoTexture,   // or occlusionTexture
         emissiveTexture;
 
-    float normalMapScale = 1.;
-    float aoTextureStrength = 1.; // occludedColor = lerp(color, color * <sampled occlusion
+    float normalMapScale = 1.0f;
+    float aoTextureStrength = 1.0f; // occludedColor = lerp(color, color * <sampled occlusion
                                   // texture value>, <occlusion strength>)
 
+    // for backwards compatibility, or the specular extension for glTF/PBR.
+    vec4 specular = vec4(1.0f);
+
     // backwards compatibility, not PBR:
-    vec3 reflection;
-    vec4 specular;
-    float shininess;
+    vec3 reflection = vec3(1.0f);
+    float shininess = 1.0f;
     TextureAssetOrPtr specularMap;
 };
 

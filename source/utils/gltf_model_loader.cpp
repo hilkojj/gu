@@ -233,6 +233,39 @@ void loadMaterials(GltfModelLoader &loader, const tinygltf::Model &tiny)
         material->doubleSided = tinyMaterial.doubleSided;
         material->roughness = tinyMaterial.pbrMetallicRoughness.roughnessFactor;
         material->metallic = tinyMaterial.pbrMetallicRoughness.metallicFactor;
+        material->specular = vec4(1.0f);
+        for (auto &[key, value] : tinyMaterial.extensions)
+        {
+            if (key == "KHR_materials_specular")
+            {
+                if (!value.IsObject())
+                {
+                    throw gu_err("Could not read specular");
+                }
+                const tinygltf::Value::Object &specObj = value.Get<tinygltf::Value::Object>();
+                auto it = specObj.find("specularColorFactor");
+                if (it == specObj.end() || !specObj.at("specularColorFactor").IsArray())
+                {
+                    throw gu_err("Could not read specular");
+                }
+                const tinygltf::Value &specArray = specObj.at("specularColorFactor");
+                switch (specArray.Size())
+                {
+                    case 1:
+                        material->specular = vec4(float(specArray.Get(0).Get<double>()));
+                        break;
+                    case 3:
+                        material->specular = vec4(specArray.Get(0).Get<double>(), specArray.Get(1).Get<double>(),
+                            specArray.Get(2).Get<double>(), 1.0f);
+                    case 4:
+                        material->specular = vec4(specArray.Get(0).Get<double>(), specArray.Get(1).Get<double>(),
+                            specArray.Get(2).Get<double>(), specArray.Get(3).Get<double>());
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
 
         stdVectorToGlmVec(tinyMaterial.pbrMetallicRoughness.baseColorFactor, material->diffuse);
         stdVectorToGlmVec(tinyMaterial.emissiveFactor, material->emissive);
