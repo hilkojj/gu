@@ -5,7 +5,7 @@
 #include <iostream>
 #include <map>
 
-#include "GLFW/glfw3.h"
+#include "../gl_includes.h"
 #include "../json.hpp"
 
 namespace KeyInput

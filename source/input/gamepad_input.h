@@ -2,7 +2,7 @@
 #ifndef GAMEPAD_INPUT_H
 #define GAMEPAD_INPUT_H
 
-#include "GLFW/glfw3.h"
+#include "../gl_includes.h"
 #include "../utils/delegate.h"
 #include <map>
 #include <string>
