@@ -242,27 +242,42 @@ void loadMaterials(GltfModelLoader &loader, const tinygltf::Model &tiny)
                 {
                     throw gu_err("Could not read specular");
                 }
+                bool bReadSpecular = false;
                 const tinygltf::Value::Object &specObj = value.Get<tinygltf::Value::Object>();
-                auto it = specObj.find("specularColorFactor");
-                if (it == specObj.end() || !specObj.at("specularColorFactor").IsArray())
+
+                auto colorFactorIt = specObj.find("specularColorFactor");
+                if (colorFactorIt != specObj.end() && colorFactorIt->second.IsArray())
                 {
-                    throw gu_err("Could not read specular");
+                    const tinygltf::Value &specArray = colorFactorIt->second;
+                    switch (specArray.Size())
+                    {
+                        case 1:
+                            material->specular = vec4(float(specArray.Get(0).Get<double>()));
+                            break;
+                        case 3:
+                            material->specular = vec4(specArray.Get(0).Get<double>(), specArray.Get(1).Get<double>(),
+                                specArray.Get(2).Get<double>(), 1.0f);
+                        case 4:
+                            material->specular = vec4(specArray.Get(0).Get<double>(), specArray.Get(1).Get<double>(),
+                                specArray.Get(2).Get<double>(), specArray.Get(3).Get<double>());
+                            break;
+                        default:
+                            break;
+                    }
+                    bReadSpecular = true;
                 }
-                const tinygltf::Value &specArray = specObj.at("specularColorFactor");
-                switch (specArray.Size())
+
+                auto valueFactorIt = specObj.find("specularFactor");
+                if (valueFactorIt != specObj.end() && valueFactorIt->second.IsNumber())
                 {
-                    case 1:
-                        material->specular = vec4(float(specArray.Get(0).Get<double>()));
-                        break;
-                    case 3:
-                        material->specular = vec4(specArray.Get(0).Get<double>(), specArray.Get(1).Get<double>(),
-                            specArray.Get(2).Get<double>(), 1.0f);
-                    case 4:
-                        material->specular = vec4(specArray.Get(0).Get<double>(), specArray.Get(1).Get<double>(),
-                            specArray.Get(2).Get<double>(), specArray.Get(3).Get<double>());
-                        break;
-                    default:
-                        break;
+                    const float valueFactor = valueFactorIt->second.GetNumberAsDouble();
+                    material->specular *= valueFactor;
+                    bReadSpecular = true;
+                }
+
+                if (!bReadSpecular)
+                {
+                    throw gu_err("Specular extension found, but no `specularColorFactor` or `specularFactor` found!");
                 }
             }
         }
