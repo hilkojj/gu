@@ -379,7 +379,6 @@ void loadArmatures(GltfModelLoader &loader, const tinygltf::Model &tiny)
         if (tinySkin.inverseBindMatrices >= 0)
         {
             auto &ibmAccessor = tiny.accessors.at(tinySkin.inverseBindMatrices);
-            assert(ibmAccessor.count == bones.size());
 
             auto &bufferView = tiny.bufferViews.at(ibmAccessor.bufferView);
             auto &buffer = tiny.buffers.at(bufferView.buffer);
@@ -405,7 +404,8 @@ void loadArmatures(GltfModelLoader &loader, const tinygltf::Model &tiny)
 
         for (auto &tinySampler : tinyAnim.samplers)
         {
-            if (timelines.find(tinySampler.input) == timelines.end())
+            auto existingTimelineIt = timelines.find(tinySampler.input);
+            if (existingTimelineIt == timelines.end())
             {
                 // load timeline.
                 auto &timeline = timelines[tinySampler.input] = std::make_shared<Armature::Animation::Timeline>();
@@ -424,6 +424,13 @@ void loadArmatures(GltfModelLoader &loader, const tinygltf::Model &tiny)
                 {
                     timeline->times[i] = *((float *) &buffer.data[bufferView.byteOffset + i * sizeof(float)]);
                     anim.duration = max(timeline->times[i], anim.duration);
+                }
+            }
+            else
+            {
+                for (const float time : existingTimelineIt->second->times)
+                {
+                    anim.duration = max(time, anim.duration);
                 }
             }
 
