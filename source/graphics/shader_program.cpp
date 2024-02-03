@@ -1,21 +1,21 @@
+#include "shader_program.h"
+#include "../files/file.h"
+#include "../utils/string.h"
+#include "../utils/gu_error.h"
+
 #include <iostream>
 #include <utility>
 #include <vector>
 
-#include "shader_program.h"
-#include "../files/file.h"
-#include "../utils/string.h"
-
-ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *fragSource, bool compile)
-
-    : name(std::move(name))
+ShaderProgram::ShaderProgram(const std::string &name, const char *vertSource, const char *fragSource, bool compile)
+    : name(name)
 {
     if (compile)
         this->compile(vertSource, fragSource);
 }
 
-ShaderProgram::ShaderProgram(std::string name, const char *vertSource, const char *geomSource, const char *fragSource, bool compile)
-    : name(std::move(name))
+ShaderProgram::ShaderProgram(const std::string &name, const char *vertSource, const char *geomSource, const char *fragSource, bool compile)
+    : name(name)
 {
     if (compile)
         this->compile(vertSource, fragSource, geomSource);
@@ -31,14 +31,22 @@ void ShaderProgram::compile(const char *vertSource, const char *fragSource, cons
 
     programId = glCreateProgram();
     GLuint vertShaderId = glCreateShader(GL_VERTEX_SHADER);
-    GLuint fragShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+    GLuint fragShaderId = fragSource ? glCreateShader(GL_FRAGMENT_SHADER) : 0;
     GLuint geomShaderId = geomSource ? glCreateShader(GL_GEOMETRY_SHADER) : 0;
 
     compileAndAttach(vertSource, vertShaderId, "VERTEX");
-    compileAndAttach(fragSource, fragShaderId, "FRAGMENT");
+    if (fragSource)
+    {
+        compileAndAttach(fragSource, fragShaderId, "FRAGMENT");
+    }
     if (geomSource)
+    {
         compileAndAttach(geomSource, geomShaderId, "GEOMETRY");
-
+    }
+    if (!feedbackVaryings.empty())
+    {
+        glTransformFeedbackVaryings(programId, feedbackVaryings.size(), feedbackVaryings.data(), GL_INTERLEAVED_ATTRIBS);
+    }
     glLinkProgram(programId);
 
     // check program:
@@ -49,24 +57,32 @@ void ShaderProgram::compile(const char *vertSource, const char *fragSource, cons
         std::vector<char> log(logLength + 1);
         glGetProgramInfoLog(programId, logLength, NULL, &log[0]);
         std::cout << name << " compilation log:\n" << "(note: line count starts at " << realSourceCodeStartsAt << ")\n"
-                    << &log[0] << std::endl;
+            << &log[0] << std::endl;
     }
 
     glDetachShader(programId, vertShaderId);
-    glDetachShader(programId, fragShaderId);
+    if (fragSource)
+    {
+        glDetachShader(programId, fragShaderId);
+    }
     if (geomSource)
+    {
         glDetachShader(programId, geomShaderId);
+    }
 
     glDeleteShader(vertShaderId);
-    glDeleteShader(fragShaderId);
+    if (fragSource)
+    {
+        glDeleteShader(fragShaderId);
+    }
     if (geomSource)
+    {
         glDeleteShader(geomShaderId);
+    }
 
     compiled_ = true;
     compileFinishTime = glfwGetTime();
 }
-
-#include <utils/gu_error.h>
 
 void ShaderProgram::compileAndAttach(const char *source, GLuint shaderId, const char *shaderType)
 {
@@ -117,11 +133,16 @@ void ShaderProgram::use()
     glUseProgram(programId);
 }
 
-ShaderProgram ShaderProgram::fromFiles(std::string name, const std::string& vertPath, const std::string& fragPath)
+void ShaderProgram::setFeedbackVaryings(const std::vector<const char *> &varyings)
 {
-    std::string vertCode = File::readString(vertPath.c_str());
-    std::string fragCode = File::readString(fragPath.c_str());
-    return ShaderProgram(std::move(name), vertCode.c_str(), fragCode.c_str());
+    feedbackVaryings = varyings;
+}
+
+ShaderProgram ShaderProgram::fromFiles(const std::string &name, const std::string& vertPath, const std::string& fragPath)
+{
+    const std::string vertCode = File::readString(vertPath.c_str());
+    const std::string fragCode = File::readString(fragPath.c_str());
+    return ShaderProgram(name, vertCode.c_str(), fragCode.c_str());
 }
 
 ShaderProgram::~ShaderProgram()
@@ -129,15 +150,14 @@ ShaderProgram::~ShaderProgram()
     glDeleteProgram(programId);
 }
 
-ShaderProgram ShaderProgram::fromFiles(std::string name, const std::string &vertPath, const std::string &geomPath,
-                                       const std::string &fragPath)
+ShaderProgram ShaderProgram::fromFiles(const std::string &name, const std::string &vertPath, const std::string &geomPath,
+    const std::string &fragPath)
 {
-    std::string vertCode = File::readString(vertPath.c_str());
-    std::string geomCode = File::readString(geomPath.c_str());
-    std::string fragCode = File::readString(fragPath.c_str());
-    return ShaderProgram(std::move(name), vertCode.c_str(), geomCode.c_str(), fragCode.c_str());
+    const std::string vertCode = File::readString(vertPath.c_str());
+    const std::string geomCode = File::readString(geomPath.c_str());
+    const std::string fragCode = File::readString(fragPath.c_str());
+    return ShaderProgram(name, vertCode.c_str(), geomCode.c_str(), fragCode.c_str());
 }
-
 
 std::string ShaderDefinitions::getGLSLString() const
 {

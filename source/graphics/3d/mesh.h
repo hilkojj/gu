@@ -97,6 +97,8 @@ class Mesh : public VertData
         GLenum mode = GL_TRIANGLES;
         int nrOfIndicesToRender = -1; // -1 => all
 
+        int getNrOfIndicesToRender() const;
+
       private:
         // also used for glDrawElementsBaseVertex
         friend VertBuffer;

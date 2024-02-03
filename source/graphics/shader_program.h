@@ -2,9 +2,11 @@
 #ifndef SHADER_PROGRAM_H
 #define SHADER_PROGRAM_H
 
+#include "../gl_includes.h"
+
 #include <string>
 #include <map>
-#include "../gl_includes.h"
+#include <vector>
 
 class ShaderDefinitions
 {
@@ -37,16 +39,16 @@ class ShaderProgram
   public:
     ShaderDefinitions definitions;
 
-    static ShaderProgram fromFiles(std::string name, const std::string& vertPath, const std::string& fragPath);
+    static ShaderProgram fromFiles(const std::string &name, const std::string& vertPath, const std::string& fragPath);
 
     static ShaderProgram fromFiles(
-            std::string name, const std::string& vertPath, const std::string& geomPath, const std::string& fragPath
+        const std::string &name, const std::string& vertPath, const std::string& geomPath, const std::string& fragPath
     );
 
-    ShaderProgram(std::string name, const char *vertSource, const char *fragSource, bool compile=true);
+    ShaderProgram(const std::string &name, const char *vertSource, const char *fragSource, bool compile=true);
 
     ShaderProgram(
-            std::string name, const char *vertSource, const char *geomSource, const char *fragSource, bool compile=true
+        const std::string &name, const char *vertSource, const char *geomSource, const char *fragSource, bool compile=true
     );
 
     ~ShaderProgram();
@@ -57,12 +59,17 @@ class ShaderProgram
 
     virtual void use();
 
+    // Set varyings to load from the program into C++. Program must be compiled after setting this.
+    void setFeedbackVaryings(const std::vector<const char *> &varyings);
+
   protected:
     GLuint programId = 0;
     std::string name;
     bool compiled_ = false;
 
     double compileFinishTime = 0;
+
+    std::vector<const char *> feedbackVaryings;
 
     void compile(const char *vertSource, const char *fragSource, const char *geomSource=NULL);
 

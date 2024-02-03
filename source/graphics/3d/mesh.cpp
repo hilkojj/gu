@@ -59,14 +59,14 @@ void Mesh::render(int partI)
     #ifdef EMSCRIPTEN
     glDrawElements(
         part.mode,
-        part.nrOfIndicesToRender < 0 ? part.nrOfIndices : part.nrOfIndicesToRender,
+        part.getNrOfIndicesToRender(),
         GL_UNSIGNED_SHORT,
         (void *)(uintptr_t) part.indicesBufferOffset
     );
     #else
     glDrawElementsBaseVertex(
         part.mode,
-        part.nrOfIndicesToRender < 0 ? part.nrOfIndices : part.nrOfIndicesToRender,
+        part.getNrOfIndicesToRender(),
         GL_UNSIGNED_SHORT,
         (void *)(uintptr_t) part.indicesBufferOffset,
         baseVertex
@@ -87,7 +87,7 @@ void Mesh::renderInstances(GLsizei count, int partI)
     },
     // glDrawElementsInstanced(
         part.mode,
-        part.nrOfIndicesToRender < 0 ? part.nrOfIndices : part.nrOfIndicesToRender,
+        part.getNrOfIndicesToRender(),
         GL_UNSIGNED_SHORT,
         (void *)(uintptr_t) part.indicesBufferOffset,
         count
@@ -96,7 +96,7 @@ void Mesh::renderInstances(GLsizei count, int partI)
     #else
     glDrawElementsInstancedBaseVertex(
         part.mode,
-        part.nrOfIndicesToRender < 0 ? part.nrOfIndices : part.nrOfIndicesToRender,
+        part.getNrOfIndicesToRender(),
         GL_UNSIGNED_SHORT,
         (void *)(uintptr_t) part.indicesBufferOffset,
         count,
@@ -200,4 +200,9 @@ void VertData::addVertices(int count)
 int VertData::nrOfVertices() const
 {
     return vertices.size() / attributes.getVertSize();
+}
+
+int Mesh::Part::getNrOfIndicesToRender() const
+{
+    return nrOfIndicesToRender < 0 ? nrOfIndices : nrOfIndicesToRender;
 }
