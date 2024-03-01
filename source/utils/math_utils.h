@@ -382,6 +382,10 @@ inline void fastVoxelTraversal(vec3 rayOrigin, const vec3 &rayDirection, const u
 
     while (true)
     {
+        if (!callback(currentVoxel))
+        {
+            return;
+        }
         if (tMax.x < tMax.y)
         {
             if (tMax.x < tMax.z)
@@ -423,10 +427,6 @@ inline void fastVoxelTraversal(vec3 rayOrigin, const vec3 &rayDirection, const u
                 }
                 tMax.z += tDelta.z;
             }
-        }
-        if (!callback(currentVoxel))
-        {
-            return;
         }
     }
 }
