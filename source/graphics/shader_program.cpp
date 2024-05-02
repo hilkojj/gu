@@ -56,8 +56,7 @@ void ShaderProgram::compile(const char *vertSource, const char *fragSource, cons
     {
         std::vector<char> log(logLength + 1);
         glGetProgramInfoLog(programId, logLength, NULL, &log[0]);
-        std::cout << name << " compilation log:\n" << "(note: line count starts at " << realSourceCodeStartsAt << ")\n"
-            << &log[0] << std::endl;
+        std::cout << name << " compilation log:\n" << &log[0] << std::endl;
     }
 
     glDetachShader(programId, vertShaderId);
@@ -87,7 +86,7 @@ void ShaderProgram::compile(const char *vertSource, const char *fragSource, cons
 void ShaderProgram::compileAndAttach(const char *source, GLuint shaderId, const char *shaderType)
 {
     auto versionStr = ShaderDefinitions::global().getVersionLine();
-    auto definitions = ShaderDefinitions::global().getGLSLString() + this->definitions.getGLSLString() + "#define " + shaderType + "_SHADER\n";
+    auto definitions = ShaderDefinitions::global().getGLSLString() + this->definitions.getGLSLString() + "#define " + shaderType + "_SHADER\n#line 1\n";
     realSourceCodeStartsAt = nrOfNewlines(versionStr) + nrOfNewlines(definitions) + 2;
 
     const GLchar *sources[] = {versionStr.c_str(), definitions.c_str(), source};
@@ -105,7 +104,6 @@ void ShaderProgram::compileAndAttach(const char *source, GLuint shaderId, const 
         std::vector<char> log(logLength + 1);
         glGetShaderInfoLog(shaderId, logLength, NULL, &log[0]);
         std::cout << name << " " << shaderType <<  " SHADER compilation log:\n"
-                    << "(note: line count starts at " << realSourceCodeStartsAt << ")\n"
                     << &log[0] << "\n";
     }
     #endif
