@@ -25,12 +25,21 @@ void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mod
 {
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
 
-    if (action == GLFW_REPEAT || ImGui::GetIO().WantCaptureKeyboard)
+    if (action == GLFW_REPEAT || (ImGui::GetIO().WantCaptureKeyboard && action != GLFW_RELEASE))
+    {
         return;
+    }
 
     // printf("%s was %s\n", glfwGetKeyName(key, 0), action == GLFW_PRESS ? "pressed" : "released");
 
-    keyStatuses[key] = action == GLFW_PRESS ? JUST_PRESSED : JUST_RELEASED;
+    KeyStatus &status = keyStatuses[key];
+
+    if (action == GLFW_RELEASE && status == NOT_PRESSED)
+    {
+        return;
+    }
+
+    status = action == GLFW_PRESS ? JUST_PRESSED : JUST_RELEASED;
 }
 
 } // namespace
