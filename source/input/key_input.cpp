@@ -21,10 +21,8 @@ enum KeyStatus
 
 std::map<int, KeyStatus> keyStatuses;
 
-void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void keyCallbackWithoutImGui(int key, int action)
 {
-    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-
     if (action == GLFW_REPEAT || (ImGui::GetIO().WantCaptureKeyboard && action != GLFW_RELEASE))
     {
         return;
@@ -40,6 +38,19 @@ void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mod
     }
 
     status = action == GLFW_PRESS ? JUST_PRESSED : JUST_RELEASED;
+}
+
+void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+
+#ifndef DO_NOT_COMBINE_RIGHT_AND_LEFT_MODIFIER_KEYS
+    if (key >= GLFW_KEY_RIGHT_SHIFT && key <= GLFW_KEY_RIGHT_SUPER)
+    {
+        keyCallbackWithoutImGui(key - (GLFW_KEY_RIGHT_SHIFT - GLFW_KEY_LEFT_SHIFT), action);
+    }
+#endif
+    keyCallbackWithoutImGui(key, action);
 }
 
 } // namespace
