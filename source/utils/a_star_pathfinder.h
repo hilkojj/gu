@@ -25,7 +25,9 @@ bool findAStarPath(
     std::function<float(const nodeType &n0, const nodeType &n1)> d,
     std::function<void(const nodeType &n, std::vector<nodeType> &out)> neighborsGetter,
 
-    std::list<nodeType> &path
+    std::list<nodeType> &path,
+
+    bool bToClosestNodeOnFail = false
 )
 {
     std::vector<nodeType> openSet{start}, closedSet;
@@ -35,6 +37,9 @@ bool findAStarPath(
     std::unordered_map<nodeType, float> gScore{{start, 0}};
 
     std::unordered_map<nodeType, float> fScore{{start, 0}};
+
+    float lowestHValue = INFINITY_FLOAT;
+    nodeType finalNode = start;
 
     while (!openSet.empty())
     {
@@ -52,13 +57,8 @@ bool findAStarPath(
 
         if (current == goal)
         {
-            path.push_back(current);
-            while (current != start)
-            {
-                current = cameFrom[current];
-                path.insert(path.begin(), current);
-            }
-            return true;
+            finalNode = goal;
+            break;
         }
         // remove 'current' from openSet:
         openSet.erase(std::find(openSet.begin(), openSet.end(), current));
@@ -77,11 +77,32 @@ bool findAStarPath(
             {
                 cameFrom[nb] = current;
                 gScore[nb] = tentativeGScore;
-                fScore[nb] = tentativeGScore + h(nb);
+                const float hValue = h(nb);
+                fScore[nb] = tentativeGScore + hValue;
 
-                if (std::find(openSet.begin(), openSet.end(), nb) == openSet.end()) openSet.push_back(nb);
+                if (std::find(openSet.begin(), openSet.end(), nb) == openSet.end())
+                {
+                    openSet.push_back(nb);
+                    if (hValue < lowestHValue)
+                    {
+                        lowestHValue = hValue;
+                        finalNode = nb;
+                    }
+                }
             }
         }
+    }
+
+    if (finalNode == goal || bToClosestNodeOnFail)
+    {
+        nodeType current = finalNode;
+        path.push_back(current);
+        while (current != start)
+        {
+            current = cameFrom[current];
+            path.push_front(current);
+        }
+        return true;
     }
     return false;
 }
