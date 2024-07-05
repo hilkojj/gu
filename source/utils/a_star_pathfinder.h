@@ -6,13 +6,14 @@
 
 const float INFINITY_FLOAT = std::numeric_limits<float>::infinity();
 
-// https://stackoverflow.com/questions/2333728/stdmap-default-value
-template <template<class,class,class...> class C, typename K, typename V, typename... Args>
-V getWithDefault(const C<K,V,Args...>& m, K const& key, const V & defval)
+template <typename K, typename V>
+V getWithDefault(const std::unordered_map<K, V> &map, const K &key, const V &defaultValue)
 {
-    typename C<K,V,Args...>::const_iterator it = m.find(key);
-    if (it == m.end())
-        return defval;
+    auto it = map.find(key);
+    if (it == map.end())
+    {
+        return defaultValue;
+    }
     return it->second;
 }
 
