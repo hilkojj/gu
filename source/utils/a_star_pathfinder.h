@@ -28,10 +28,14 @@ bool findAStarPath(
 
     std::list<nodeType> &path,
 
-    bool bToClosestNodeOnFail = false
+    bool bToClosestNodeOnFail = false,
+
+    std::vector<nodeType> *outClosedSet = nullptr
 )
 {
-    std::vector<nodeType> openSet{start}, closedSet;
+    std::vector<nodeType> openSet{start};
+    std::vector<nodeType> localClosedSet;
+    std::vector<nodeType> &closedSet = outClosedSet ? *outClosedSet : localClosedSet;
     std::vector<nodeType> neighbors;
 
     std::unordered_map<nodeType, nodeType> cameFrom;
