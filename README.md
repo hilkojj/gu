@@ -14,7 +14,7 @@ This library is used in my game engine ([repo](https://github.com/dibidabidab/di
     - Cameras
 - Audio:
     - Loading `.wav` and `.ogg` files
-    - Playing sounds using OpenAL
+    - ~~Playing sounds using OpenAL~~ To be replaced with something else.
 - AssetManager
     - Live reload of assets (automatically using file change detection on Linux)
 - Mouse & key input

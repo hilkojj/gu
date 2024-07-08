@@ -1,9 +1,11 @@
 
+#include "mouse_input.h"
+
 #include <imgui.h>
 #include <examples/imgui_impl_glfw.h>
+
 #include <iostream>
-#include "mouse_input.h"
-#include "../../external/openal-soft/common/vector.h"
+#include <vector>
 
 #define NR_OF_BUTTONS 8
 

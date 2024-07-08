@@ -46,18 +46,6 @@ include_directories(../external/glm/glm)
 target_link_libraries(gameutils PUBLIC glm)
 
 
-# ---OpenAL soft---
-if (NOT DEFINED EMSCRIPTEN)
-    set(ALSOFT_EXAMPLES OFF)
-    set(ALSOFT_TESTS OFF)
-    set(ALSOFT_UTILS OFF)
-
-    add_subdirectory(../external/openal-soft ./bin/openal)
-    include_directories(../external/openal-soft/include)
-    target_link_libraries(gameutils PUBLIC OpenAL)
-endif ()
-
-
 # ---IMGUI---
 
 set(IMGUI_DIR ../external/imgui)

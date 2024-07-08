@@ -85,6 +85,7 @@ void au::WavLoader::loadData()
 
 void au::WavLoader::bufferData()
 {
+    /* TODO
     alCall(alGenBuffers, 1, &output.buffer);
 
     ALenum format;
@@ -100,4 +101,5 @@ void au::WavLoader::bufferData()
         throw gu_err("unrecognised wave format");
 
     alCall(alBufferData, output.buffer, format, data.data(), data.size(), output.sampleRate);
+     */
 }

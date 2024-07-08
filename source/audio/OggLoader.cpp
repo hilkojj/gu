@@ -23,6 +23,7 @@ void au::OggLoader::load(const char *path, Sound &s)
     s.sampleRate = sampleRate;
     s.bitsPerSample = 16;
 
+    /* TODO
     alGenBuffers(1, &s.buffer);
 
     int format;
@@ -35,5 +36,6 @@ void au::OggLoader::load(const char *path, Sound &s)
         throw gu_err("unrecognised .ogg format");
 
     alCall(alBufferData, s.buffer, format, decoded, samples * s.channels * sizeof(short), s.sampleRate);
+     */
     free(decoded);
 }
