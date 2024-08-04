@@ -6,43 +6,45 @@
 #include <string>
 #include <algorithm>
 
-/**
- * taken from https://stackoverflow.com/a/37454181/10386780
- */
-inline std::vector<std::string> splitString(const std::string& str, const std::string& delim)
+inline std::vector<std::string> splitString(const std::string &string, const std::string &delimiter, bool bKeepEmptyParts = false)
 {
-    using namespace std;
-
-    vector<string> tokens;
-    size_t prev = 0, pos = 0;
-    do
+    std::vector<std::string> parts;
+    size_t firstDelimIndex = 0;
+    size_t secondDelimIndex = 0;
+    while (firstDelimIndex < string.length() && secondDelimIndex < string.length())
     {
-        pos = str.find(delim, prev);
-        if (pos == string::npos) pos = str.length();
-        string token = str.substr(prev, pos-prev);
-        if (!token.empty()) tokens.push_back(token);
-        prev = pos + delim.length();
+        secondDelimIndex = string.find(delimiter, firstDelimIndex);
+        if (secondDelimIndex == std::string::npos)
+        {
+            secondDelimIndex = string.length();
+        }
+        const size_t newPartLength = secondDelimIndex - firstDelimIndex;
+        const std::string newPart = string.substr(firstDelimIndex, newPartLength);
+        if (bKeepEmptyParts || !newPart.empty())
+        {
+            parts.push_back(newPart);
+        }
+        firstDelimIndex = delimiter.length() + secondDelimIndex;
     }
-    while (pos < str.length() && prev < str.length());
-    return tokens;
+    return parts;
 }
 
-/**
- * taken from https://stackoverflow.com/a/874160/10386780
- */
-inline bool stringEndsWith(std::string const &fullString, std::string const &ending)
+inline bool stringEndsWith(const std::string &fullString, const std::string &ending)
 {
-    if (fullString.length() >= ending.length())
-        return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
-    else
+    if (fullString.length() < ending.length())
+    {
         return false;
+    }
+    return fullString.compare(fullString.length() - ending.length(), ending.length(), ending) == 0;
 }
-inline bool stringStartsWith(std::string const &fullString, std::string const &start)
+
+inline bool stringStartsWith(const std::string &fullString, const std::string &start)
 {
-    if (fullString.length() >= start.length())
-        return (0 == fullString.compare(0, start.length(), start));
-    else
+    if (fullString.length() < start.length())
+    {
         return false;
+    }
+    return fullString.compare(0, start.length(), start) == 0;
 }
 
 inline int nrOfNewlines(const std::string &str)
