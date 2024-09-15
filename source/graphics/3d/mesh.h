@@ -130,14 +130,11 @@ class Mesh : public VertData
     ~Mesh();
 
   private:
-    static SharedMesh quad, cube;
-
-
     // variables used for glDrawElementsBaseVertex: (https://www.khronos.org/opengl/wiki/GLAPI/glDrawElementsBaseVertex)
     friend VertBuffer;
     int baseVertex = 0;
     int vertBufferOffset = 0;
-    unsigned int nrOfVertsReservedInVertBuffer;
+    unsigned int nrOfVertsReservedInVertBuffer = 0;
 };
 
 #endif

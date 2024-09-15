@@ -43,7 +43,7 @@ class VertBuffer
 
     void onMeshDestroyed(); // Called by ~Mesh()
 
-    void reuploadVertices(const SharedMesh &, int nrOfVerticesToReupload=-1); // -1 -> all
+    void reuploadVertices(const SharedMesh &, int numVerticesToReuploadOrAll=-1); // -1 -> all
 
     /**
      * upload vertex-attributes that do not advance per vertex, but per instance (glDrawElementsInstanced() & glVertexAttribDivisor())
@@ -79,7 +79,7 @@ class VertBuffer
     std::vector<GLuint> instanceVbos;
     std::vector<VertAttributes> instanceVboAttrs;
     
-    GLuint nrOfVerts = 0, vertSize = 0, nrOfIndices = 0;
+    GLuint nrOfVerts = 0, nrOfIndices = 0;
 
     std::vector<std::weak_ptr<Mesh>> meshes;
 

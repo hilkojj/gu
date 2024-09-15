@@ -22,9 +22,8 @@ void VertBuffer::uploadSingleMesh(SharedMesh mesh)
     with(mesh->attributes)->add(mesh)->upload(false);
 }
 
-VertBuffer::VertBuffer(const VertAttributes &attributes)
-
-    : vertSize(attributes.getVertSize()), attrs(attributes)
+VertBuffer::VertBuffer(const VertAttributes &attributes) :
+    attrs(attributes)
 {
     glGenVertexArrays(1, &vaoId);
 }
@@ -41,8 +40,10 @@ void VertBuffer::bind()
 
 VertBuffer *VertBuffer::add(SharedMesh mesh)
 {
-    if (mesh->vertBuffer)
+    if (mesh->vertBuffer != nullptr)
+    {
         throw gu_err(mesh->name + " was already added to a VertBuffer");
+    }
 
 #ifdef EMSCRIPTEN
     if (mesh->nrOfVertices() > std::numeric_limits<GLushort>::max())
@@ -57,7 +58,6 @@ VertBuffer *VertBuffer::add(SharedMesh mesh)
     }
 #endif
 
-    // std::cout << "Adding " << mesh->name << " to VertBuffer " << vaoId << "\n";
     meshes.push_back(mesh);
 
     mesh->baseVertex = nrOfVerts;
@@ -78,7 +78,9 @@ VertBuffer *VertBuffer::add(SharedMesh mesh)
 void VertBuffer::upload(bool disposeOfflineData)
 {
     if (vboId)
+    {
         throw gu_err("VertBuffer already uploaded");
+    }
 
     #ifndef PUT_A_SOCK_IN_IT
     std::cout << "Uploading vbo\n";
@@ -87,24 +89,28 @@ void VertBuffer::upload(bool disposeOfflineData)
 
     glGenBuffers(1, &vboId);    // create VertexBuffer
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
-    glBufferData(GL_ARRAY_BUFFER, nrOfVerts * vertSize, NULL, vboUsage);
+    glBufferData(GL_ARRAY_BUFFER, nrOfVerts * attrs.getVertSize(), NULL, vboUsage);
 
     glGenBuffers(1, &iboId);    // create IndexBuffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * nrOfIndices, NULL, iboUsage);
 
     GLuint vertsOffset = 0, indicesOffset = 0;
-    for (std::weak_ptr<Mesh> m : meshes)
+    for (const std::weak_ptr<Mesh> m : meshes)
     {
         if (m.expired())
+        {
             throw gu_err("Trying to upload a VertBuffer whose Meshes are already destroyed");
+        }
 
-        SharedMesh mesh = m.lock();
+        const SharedMesh mesh = m.lock();
 
         if (mesh->nrOfVertices() != mesh->nrOfVertsReservedInVertBuffer)
+        {
             throw gu_err("Mesh vertices have resized between .add() and .upload() for " + mesh->name);
+        }
 
-        GLuint vertsSize = mesh->nrOfVertsReservedInVertBuffer * vertSize;
+        const GLuint vertsSize = mesh->nrOfVertsReservedInVertBuffer * attrs.getVertSize();
         mesh->vertBufferOffset = vertsOffset;
         glBufferSubData(GL_ARRAY_BUFFER, mesh->vertBufferOffset, vertsSize, mesh->vertices.data());
         vertsOffset += vertsSize;
@@ -112,24 +118,32 @@ void VertBuffer::upload(bool disposeOfflineData)
         for (auto &part : mesh->parts)
         {
             if (part.indices.size() != part.nrOfIndices)
+            {
                 throw gu_err("Mesh part indices have resized between .add() and .upload() for mesh: " + mesh->name + " part: " + part.name);
+            }
 
             #if EMSCRIPTEN
             for (auto &i : part.indices) i += mesh->baseVertex;
             if (!disposeOfflineData) for (auto &i : part.indices) i -= mesh->baseVertex;
             #endif
 
-            GLuint indicesSize = part.nrOfIndices * sizeof(GLushort);
+            const GLuint indicesSize = part.nrOfIndices * sizeof(GLushort);
 
             glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indicesOffset, indicesSize, part.indices.data());
             indicesOffset += indicesSize;
         }
 
-        if (disposeOfflineData) mesh->disposeOfflineData();
+        if (disposeOfflineData)
+        {
+            mesh->disposeOfflineData();
+        }
     }
     setAttrPointersAndEnable(attrs);
     uploaded = true;
-    if (next) next->upload(disposeOfflineData);
+    if (next)
+    {
+        next->upload(disposeOfflineData);
+    }
 }
 
 void VertBuffer::setAttrPointersAndEnable(VertAttributes &attrs, unsigned int divisor, unsigned int locationOffset)
@@ -202,7 +216,9 @@ GLuint VertBuffer::uploadPerInstanceData(const VertData &data, GLuint advanceRat
 
     glBindBuffer(GL_ARRAY_BUFFER, instanceVbos[id]);
     if (data.vertices.size() > 0)
+    {
         glBufferData(GL_ARRAY_BUFFER, data.vertices.size(), &data.vertices[0], usage);
+    }
     usePerInstanceData(id, advanceRate);
     return id;
 }
@@ -212,7 +228,10 @@ void VertBuffer::onMeshDestroyed()
     #ifndef PUT_A_SOCK_IN_IT
     std::cout << "A mesh in this VB was destroyed\n";
     #endif
-    if (!inUse()) delete this;
+    if (!inUse())
+    {
+        delete this;
+    }
 }
 
 bool VertBuffer::isUploaded() const
@@ -223,7 +242,12 @@ bool VertBuffer::isUploaded() const
 bool VertBuffer::inUse() const
 {
     for (std::weak_ptr<Mesh> m : meshes)
-        if (!m.expired()) return true;
+    {
+        if (!m.expired())
+        {
+            return true;
+        }
+    }
     return false;
 }
 
@@ -235,13 +259,17 @@ VertBuffer::~VertBuffer()
         bool first = true;
 
         for (std::weak_ptr<Mesh> m : meshes)
+        {
             if (!m.expired())
             {
                 if (!first)
+                {
                     std::cerr << ", ";
+                }
                 std::cerr << m.lock()->name;
                 first = false;
             }
+        }
         std::cerr << "]" << std::endl;
     }
     #ifndef PUT_A_SOCK_IN_IT
@@ -252,10 +280,17 @@ VertBuffer::~VertBuffer()
     glDeleteBuffers(1, &iboId);
 
     for (auto &id : instanceVbos)
-        if (id != -1) glDeleteBuffers(1, &id);
+    {
+        if (id != -1)
+        {
+            glDeleteBuffers(1, &id);
+        }
+    }
 
     if (vaoId == currentlyBoundVao)
+    {
         currentlyBoundVao = 0;
+    }
 }
 
 void VertBuffer::usePerInstanceData(GLuint instanceDataId, GLuint advanceRate)
@@ -272,13 +307,28 @@ void VertBuffer::deletePerInstanceData(GLuint instanceDataId)
     instanceVbos[instanceDataId] = -1;
 }
 
-void VertBuffer::reuploadVertices(const SharedMesh &mesh, int nrOfVerticesToReupload)
+void VertBuffer::reuploadVertices(const SharedMesh &mesh, int numVerticesToReuploadOrAll)
 {
     bind();
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
-    int vertsOffset = mesh->vertBufferOffset;
-    if (nrOfVerticesToReupload > mesh->nrOfVertsReservedInVertBuffer)
-        throw gu_err("Cannot reupload more verts than before. Mesh: " + mesh->name);
-    uint vertsSize = (nrOfVerticesToReupload == -1 ? mesh->nrOfVertsReservedInVertBuffer : uint(nrOfVerticesToReupload)) * vertSize;
-    glBufferSubData(GL_ARRAY_BUFFER, vertsOffset, vertsSize, mesh->vertices.data());
+
+    const uint numVerticesToReupload = numVerticesToReuploadOrAll == -1 ? mesh->nrOfVertices() : numVerticesToReuploadOrAll;
+    const uint numBytesToUpload = numVerticesToReupload * attrs.getVertSize();
+
+    if (!meshes.empty() && !meshes.back().expired() && meshes.back().lock() == mesh)
+    {
+        // We can resize the buffer because this mesh is the last.
+        if (numVerticesToReupload > mesh->nrOfVertsReservedInVertBuffer)
+        {
+            nrOfVerts = nrOfVerts - mesh->nrOfVertsReservedInVertBuffer + numVerticesToReupload;
+            glBufferData(GL_ARRAY_BUFFER, long(nrOfVerts) * attrs.getVertSize(), NULL, vboUsage);
+
+            mesh->nrOfVertsReservedInVertBuffer = numVerticesToReupload;
+        }
+    }
+    else if (numVerticesToReupload > mesh->nrOfVertsReservedInVertBuffer)
+    {
+        throw gu_err("Cannot resize buffer for a mesh that is not last in the buffer. Mesh: " + mesh->name);
+    }
+    glBufferSubData(GL_ARRAY_BUFFER, mesh->vertBufferOffset, numBytesToUpload, mesh->vertices.data());
 }
