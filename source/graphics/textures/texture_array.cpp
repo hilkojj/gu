@@ -2,9 +2,9 @@
 #include <iostream>
 #include "texture_array.h"
 #include "texture.h"
-#include "frame_buffer.h"
-#include "../utils/gu_error.h"
-#include "../utils/quad_renderer.h"
+#include "graphics/frame_buffer.h"
+#include "utils/gu_error.h"
+#include "graphics/3d/renderers/quad_renderer.h"
 
 SharedTexArray TextureArray::fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLsizei depth,
     GLuint magFilter, GLuint minFilter, bool bGenerateMipMaps)

@@ -1,12 +1,13 @@
 
-#include <graphics/3d/tangent_calculator.h>
 #include "gltf_model_loader.h"
 
-#include "../graphics/stb_image.h"
+#include "../tangent_calculator.h"
+
+#include "../../external/stb_image.h"
 #define TINYGLTF_IMPLEMENTATION
 #define TINYGLTF_NO_INCLUDE_STB_IMAGE
 #define TINYGLTF_NO_STB_IMAGE_WRITE
-#include "../../external/tiny_gltf.h"
+#include "../../../../external/tiny_gltf.h"
 
 GltfModelLoader::GltfModelLoader(const VertAttributes &attrs) : vertAttributes(attrs)
 {

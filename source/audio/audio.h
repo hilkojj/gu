@@ -2,11 +2,11 @@
 #ifndef GAME_AUDIO_H
 #define GAME_AUDIO_H
 
+#include "../utils/gu_error.h"
+#include "../math/math_utils.h" // used for integer types.
+
 #include <vector>
 #include <string>
-#include "../utils/gu_error.h"
-
-#include "math/math_utils.h" // used for integer types.
 
 namespace au
 {

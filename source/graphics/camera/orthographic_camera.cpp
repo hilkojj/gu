@@ -1,7 +1,8 @@
 
-#include <gu/game_utils.h>
-#include "graphics/orthographic_camera.h"
-#include "../input/mouse_input.h"
+#include "orthographic_camera.h"
+
+#include "../../gu/game_utils.h"
+#include "../../input/mouse_input.h"
 
 OrthographicCamera::OrthographicCamera(float near_, float far_, float viewportWidth, float viewportHeight)
     : Camera(near_, far_, viewportWidth, viewportHeight)

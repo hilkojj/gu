@@ -2,8 +2,6 @@
 #define TANGENT_CALCULATOR_H
 
 #include "mesh.h"
-#include "glm/glm.hpp"
-using namespace glm;
 
 namespace TangentCalculator
 {
@@ -14,8 +12,9 @@ namespace TangentCalculator
  * https://youtu.be/4DUfwAEx4Ts?t=423
  */
 vec3 calculateTangent(
-    vec3 &p0, vec3 &p1, vec3 &p2,
-    vec2 &uv0, vec2 &uv1, vec2 &uv2);
+    const vec3 &p0, const vec3 &p1, const vec3 &p2,
+    const vec2 &uv0, const vec2 &uv1, const vec2 &uv2
+);
 
 /**
  * Adds Tangents to mesh.

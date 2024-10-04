@@ -16,7 +16,7 @@ struct loaded_asset
     explicit loaded_asset(type *obj) :
         obj((void *) obj),
         typeHash(typeid(type).hash_code()),
-        typeName(getTypeName<type>())
+        typeName(typename_utils::getTypeName<type>())
     {
         loadedSinceTime = getTime();
         destructor = [obj]
@@ -72,7 +72,7 @@ class AssetManager
         }
         getLoaders().push_back({
             typeid(type).hash_code(),
-            getTypeName<type>(),
+            typename_utils::getTypeName<type>(),
             assetFileSuffixes,
             [=] (const std::string &path) {
                 return new loaded_asset(loadFunction(path));

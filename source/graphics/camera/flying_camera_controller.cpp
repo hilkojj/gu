@@ -1,9 +1,10 @@
 
-#include "../../gu/game_utils.h"
 #include "flying_camera_controller.h"
+
+#include "../../gu/game_utils.h"
 #include "../../input/key_input.h"
 #include "../../input/mouse_input.h"
-#include "math/math_utils.h"
+#include "../../math/math_utils.h"
 
 FlyingCameraController::FlyingCameraController(Camera *cam)
 : cam(cam)

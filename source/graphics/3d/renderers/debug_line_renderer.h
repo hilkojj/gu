@@ -1,10 +1,11 @@
 #ifndef DEBUG_LINE_RENDERER_H
 #define DEBUG_LINE_RENDERER_H
 
-#include "../shader_program.h"
-#include "mesh.h"
-#include "vert_attributes.h"
-#include "vert_buffer.h"
+#include "../mesh.h"
+#include "../vert_attributes.h"
+#include "../vert_buffer.h"
+
+#include "../../shader_program.h"
 
 /**
  * THIS LINE RENDERER IS VEEEEEEEEEERYYYY SLOOOOOOW, so only use it for debugging

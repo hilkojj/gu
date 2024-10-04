@@ -1,14 +1,11 @@
 #include "game_utils.h"
-#include "math/math_utils.h"
-#include "math/triangle.h"
 #include "../utils/gu_error.h"
-#include <string>
 
-#include "../input/gamepad_input.h"
-
-#include "imgui.h"
+#include <imgui.h>
 #include "examples/imgui_impl_glfw.h"
 #include "examples/imgui_impl_opengl3.h"
+
+#include <string>
 
 #ifdef _WIN32
 // enable dedicated graphics for NVIDIA:

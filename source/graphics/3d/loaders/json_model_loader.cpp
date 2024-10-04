@@ -1,9 +1,8 @@
 
 #include "json_model_loader.h"
-#include "../files/file_utils.h"
-#include "gu_error.h"
 
-using json = nlohmann::json;
+#include "../../../files/file_utils.h"
+#include "../../../utils/gu_error.h"
 
 std::string basePath(const std::string &filePath)
 {

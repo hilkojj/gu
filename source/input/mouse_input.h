@@ -2,7 +2,7 @@
 #ifndef MOUSE_INPUT_H
 #define MOUSE_INPUT_H
 
-#include "../gl_includes.h"
+#include "../graphics/external/gl_includes.h"
 
 namespace MouseInput
 {

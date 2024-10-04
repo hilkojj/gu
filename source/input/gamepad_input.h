@@ -2,12 +2,13 @@
 #ifndef GAMEPAD_INPUT_H
 #define GAMEPAD_INPUT_H
 
-#include "../gl_includes.h"
+#include "../graphics/external/gl_includes.h"
 #include "../utils/delegate.h"
+#include "../math/math_utils.h"
+#include "../json.hpp"
+
 #include <map>
 #include <string>
-#include "math/math_utils.h"
-#include "../json.hpp"
 
 #ifdef EMSCRIPTEN
 // emscripten does not have the GLFW gamepad api implemented, it does have the joystick api implemented, which should be enough.

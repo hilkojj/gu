@@ -1,6 +1,8 @@
 #include "gamepad_input.h"
+
+#include "../utils/gu_error.h"
+
 #include <iostream>
-#include <utils/gu_error.h>
 
 namespace GamepadInput
 {

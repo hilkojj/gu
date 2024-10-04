@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "../gl_includes.h"
+#include "../graphics/external/gl_includes.h"
 #include "../graphics/3d/vert_attributes.h"
 #include "../gu/screen.h"
 #include "../graphics/shader_program.h"
-#include "../graphics/3d/perspective_camera.h"
+#include "../graphics/camera/perspective_camera.h"
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
 

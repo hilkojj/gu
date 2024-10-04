@@ -2,7 +2,7 @@
 #ifndef SHADER_PROGRAM_H
 #define SHADER_PROGRAM_H
 
-#include "../gl_includes.h"
+#include "graphics/external/gl_includes.h"
 
 #include <string>
 #include <map>

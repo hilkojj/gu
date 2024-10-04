@@ -3,8 +3,8 @@
 #include <string>
 
 #include "texture.h"
-#include "stb_image.h"
-#include "../utils/gu_error.h"
+#include "graphics/external/stb_image.h"
+#include "utils/gu_error.h"
 
 #define FOURCC_DXT1 0x31545844 // Equivalent to "DXT1" in ASCII
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII

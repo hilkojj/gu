@@ -2,8 +2,9 @@
 #ifndef GAME_ASEPRITETEXTUREGENERATOR_H
 #define GAME_ASEPRITETEXTUREGENERATOR_H
 
-#include "graphics/texture.h"
 #include "Aseprite.h"
+
+#include "../graphics/textures/texture.h"
 
 namespace aseprite
 {

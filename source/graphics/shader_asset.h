@@ -18,17 +18,17 @@ class ShaderAsset : public ShaderProgram
         COMPILE_ON_FIRST_USE
     };
 
-    ShaderAsset(const std::string &name, const std::string &vertPath, CompileBehavior compile = CompileBehavior::COMPILE_ON_CONSTRUCT)
+    ShaderAsset(const std::string &name, const char *vertPath, CompileBehavior compile = CompileBehavior::COMPILE_ON_CONSTRUCT)
         : ShaderProgram(name, asset<std::string>(vertPath)->c_str(), nullptr, compile == CompileBehavior::COMPILE_ON_CONSTRUCT),
           vertCode(vertPath)
     {}
 
-    ShaderAsset(const std::string &name, const std::string &vertPath, const std::string &fragPath, CompileBehavior compile = CompileBehavior::COMPILE_ON_CONSTRUCT)
+    ShaderAsset(const std::string &name, const char *vertPath, const char *fragPath, CompileBehavior compile = CompileBehavior::COMPILE_ON_CONSTRUCT)
         : ShaderProgram(name, asset<std::string>(vertPath)->c_str(), asset<std::string>(fragPath)->c_str(), compile == CompileBehavior::COMPILE_ON_CONSTRUCT),
           vertCode(vertPath), fragCode(fragPath)
     {}
 
-    ShaderAsset(const std::string &name, const std::string &vertPath, const std::string &geomPath, const std::string &fragPath, CompileBehavior compile = CompileBehavior::COMPILE_ON_CONSTRUCT)
+    ShaderAsset(const std::string &name, const char *vertPath, const char *geomPath, const char *fragPath, CompileBehavior compile = CompileBehavior::COMPILE_ON_CONSTRUCT)
         : ShaderProgram(name, asset<std::string>(vertPath)->c_str(), asset<std::string>(geomPath)->c_str(), asset<std::string>(fragPath)->c_str(), compile == CompileBehavior::COMPILE_ON_CONSTRUCT),
         vertCode(vertPath), fragCode(fragPath), geomCode(geomPath)
     {}

@@ -2,7 +2,8 @@
 #ifndef GAME_CODEEDITOR_H
 #define GAME_CODEEDITOR_H
 
-#include "../../../external/ImGuiColorTextEdit/TextEditor.h"
+#include "../../external/ImGuiColorTextEdit/TextEditor.h"
+
 #include <functional>
 
 namespace CodeEditor
@@ -13,9 +14,9 @@ namespace CodeEditor
         std::string title;
         std::string code;
         std::function<void(Tab &)>
-                save   = [](auto) {},
-                revert = [](auto) {},
-                closed = [](auto) {};
+            save   = [](auto) {},
+            revert = [](auto) {},
+            closed = [](auto) {};
 
         TextEditor::LanguageDefinition languageDefinition;
 

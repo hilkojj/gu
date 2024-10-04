@@ -1,9 +1,9 @@
+#include "key_input.h"
+#include "../utils/gu_error.h"
 
-#include <map>
 #include <imgui.h>
 #include <examples/imgui_impl_glfw.h>
-#include <utils/gu_error.h>
-#include "key_input.h"
+#include <map>
 
 namespace KeyInput
 {

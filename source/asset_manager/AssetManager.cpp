@@ -3,7 +3,7 @@
 
 #include "../files/file_utils.h"
 #include "../utils/string_utils.h"
-#include "../gl_includes.h"
+#include "../graphics/external/gl_includes.h"
 
 #include <cassert>
 #include <iostream>

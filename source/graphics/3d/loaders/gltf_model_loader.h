@@ -2,7 +2,7 @@
 #ifndef GAME_GLTF_MODEL_LOADER_H
 #define GAME_GLTF_MODEL_LOADER_H
 
-#include "../graphics/3d/model.h"
+#include "../model.h"
 
 class GltfModelLoader
 {

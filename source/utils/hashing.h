@@ -2,7 +2,7 @@
 #ifndef GAME_HASHING_H
 #define GAME_HASHING_H
 
-#include "math/math_utils.h"
+#include "../math/math_utils.h"
 
 template<typename T>
 inline size_t hashValue(const T &v)
@@ -11,20 +11,18 @@ inline size_t hashValue(const T &v)
 }
 
 template <typename string>
-inline uint32 hashStringCrossPlatform(const string str)
+inline uint32 hashStringCrossPlatform(const string &inputString)
 {
     uint32 hash = 0x811c9dc5;
     uint32 prime = 0x1000193;
     int i = -1;
-    while (str[++i] != '\0')
+    while (inputString[++i] != '\0')
     {
-        unsigned char c = str[i];
-
+        const unsigned char c = inputString[i];
         hash = hash ^ c;
         hash *= prime;
     }
     return hash;
 }
-
 
 #endif //GAME_HASHING_H

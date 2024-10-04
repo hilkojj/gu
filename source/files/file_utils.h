@@ -1,11 +1,12 @@
+
+#ifndef FILE_H
+#define FILE_H
+
 #include <iostream>
 #include <vector>
 #include <functional>
 #include <fstream>
 #include <sstream>
-
-#ifndef FILE_H
-#define FILE_H
 
 namespace fu
 {

@@ -2,13 +2,13 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include "vert_attributes.h"
+#include "../../math/math_utils.h"
+
 #include <vector>
 #include <memory>
 #include <iostream>
 #include <cstring>
-
-#include "vert_attributes.h"
-#include "math/math_utils.h"
 
 typedef unsigned char u_char;
 

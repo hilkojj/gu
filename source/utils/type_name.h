@@ -2,26 +2,29 @@
 #ifndef GAME_TYPE_NAME_H
 #define GAME_TYPE_NAME_H
 
-#include <sstream>
+#include <string>
+#include <typeinfo>
 
-std::string demangle(const char *name);
+namespace typename_utils
+{
+
+std::string demangleTypeName(const char *typeName);
 void removeKeywords(std::string &str);
 void removeTemplates(std::string &str);
 void removeNamespaces(std::string &str);
 
 /**
- * returns the name of a type.
+ * This function tries to return a clean string representation of any type.
+ * On GCC typeid::name() returns a mangled type name. This is unmangled first.
  *
- * will probably return the same string on all platforms when removeNamespacesAndTemplates = true.
+ * Tested to return the same strings on all platforms when removeNamespacesAndTemplates = true.
  *
  * example: getTypeName<std::vector<std::string>>(true) returns "vector"
- *
- * Thanks to https://stackoverflow.com/a/4541470
  */
 template <typename Type>
-std::string getTypeName(bool removeNamespacesAndTemplates=true)
+std::string getTypeName(bool removeNamespacesAndTemplates = true)
 {
-    std::string name = demangle(typeid(Type).name());
+    std::string name = demangleTypeName(typeid(Type).name());
     if (removeNamespacesAndTemplates)
     {
         removeTemplates(name);
@@ -29,6 +32,7 @@ std::string getTypeName(bool removeNamespacesAndTemplates=true)
     }
     removeKeywords(name);
     return name;
+}
 }
 
 #endif //GAME_TYPE_NAME_H

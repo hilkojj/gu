@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include "../gl_includes.h"
+#include "graphics/external/gl_includes.h"
 #include "texture.h"
 
 class CubeMap

@@ -1,5 +1,6 @@
-#include <string>
 #include "model.h"
+
+#include <string>
 
 Model::Model(std::string name) : name(name)
 {

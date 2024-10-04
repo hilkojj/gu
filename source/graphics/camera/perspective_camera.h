@@ -1,7 +1,7 @@
 #ifndef PERSPECTIVE_CAMERA
 #define PERSPECTIVE_CAMERA
 
-#include "../camera.h"
+#include "camera.h"
 
 class PerspectiveCamera : public Camera {
 

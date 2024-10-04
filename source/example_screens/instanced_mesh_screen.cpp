@@ -1,16 +1,16 @@
 #include <iostream>
 
-#include "../gl_includes.h"
-#include "../graphics/3d/vert_buffer.h"
-#include "../graphics/3d/mesh.h"
-#include "../graphics/3d/perspective_camera.h"
-#include "../gu/game_utils.h"
+#include "../graphics/external/gl_includes.h"
 #include "../graphics/shader_program.h"
-#include "../utils/json_model_loader.h"
-#include "../utils/camera/flying_camera_controller.h"
-#include "math/math_utils.h"
+#include "../graphics/camera/perspective_camera.h"
+#include "../graphics/camera/flying_camera_controller.h"
+#include "../graphics/3d/mesh.h"
+#include "../graphics/3d/vert_buffer.h"
+#include "../graphics/3d/loaders/json_model_loader.h"
+#include "../graphics/3d/renderers/debug_line_renderer.h"
 
-#include "../graphics/3d/debug_line_renderer.h"
+#include "../gu/game_utils.h"
+#include "../math/math_utils.h"
 
 class InstancedMeshScreen : public Screen
 {

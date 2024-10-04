@@ -1,7 +1,7 @@
 #ifndef GU_PROFILER_H
 #define GU_PROFILER_H
 
-#include "gl_includes.h"
+#include "../graphics/external/gl_includes.h"
 
 #include <map>
 #include <iostream>

@@ -2,10 +2,11 @@
 #ifndef MESH_LOADER_H
 #define MESH_LOADER_H
 
-#include "../json.hpp"
-#include "../graphics/3d/mesh.h"
-#include "../graphics/3d/model.h"
-#include "../graphics/3d/vert_attributes.h"
+#include "../mesh.h"
+#include "../model.h"
+#include "../vert_attributes.h"
+
+#include "../../../json.hpp"
 
 /**
  * loads Models that are exported from Blender with https://github.com/hilkojj/blender_UBJSON_exporter

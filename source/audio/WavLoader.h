@@ -2,8 +2,9 @@
 #ifndef GAME_WAVLOADER_H
 #define GAME_WAVLOADER_H
 
-#include "../files/FileReader.h"
 #include "audio.h"
+
+#include "../files/FileReader.h"
 
 namespace au
 {

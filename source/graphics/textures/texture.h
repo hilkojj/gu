@@ -2,8 +2,8 @@
 #define TEXTURE_H
 
 #include <memory>
-#include "../gl_includes.h"
-#include "shader_program.h"
+#include "graphics/external/gl_includes.h"
+#include "graphics/shader_program.h"
 
 class Texture;
 

@@ -1,15 +1,17 @@
 #ifndef GAME_UTILS_H
 #define GAME_UTILS_H
 
-#include <iostream>
-#include <functional>
-#include "../gl_includes.h"
+#include "screen.h"
+#include "profiler.h"
+
+#include "../graphics/external/gl_includes.h"
 #include "../input/key_input.h"
 #include "../input/mouse_input.h"
 #include "../input/gamepad_input.h"
-#include "screen.h"
-#include "profiler.h"
 #include "../utils/delegate.h"
+
+#include <iostream>
+#include <functional>
 
 struct ImDrawData;
 

@@ -1,13 +1,11 @@
-#include <utility>
-
-
-#include <iostream>
-#include <string>
-
 #include "mesh.h"
 #include "vert_buffer.h"    
 #include "vert_attributes.h"
 #include "../../utils/gu_error.h"
+
+#include <utility>
+#include <iostream>
+#include <string>
 
 SharedMesh Mesh::getQuad()
 {

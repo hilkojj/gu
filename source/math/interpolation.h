@@ -44,19 +44,19 @@ template<typename Type>
 inline void interpolate(const Type &a, const Type &b, float x, Type &out)
 {
     if constexpr (std::is_arithmetic_v<Type>)
-        out = glm::mix(a, b, x);
+        out = mix(a, b, x);
 }
 
 template <int len, typename type, qualifier something>
 inline void interpolate(const vec<len, type, something> &a, const vec<len, type, something> &b, float x, vec<len, type, something> &out)
 {
-    out = glm::mix(a, b, x);
+    out = mix(a, b, x);
 }
 
 template <>
 inline void interpolate(const quat &a, const quat &b, float x, quat &out)
 {
-    out = glm::slerp(a, b, x);
+    out = slerp(a, b, x);
 }
 
 template <>

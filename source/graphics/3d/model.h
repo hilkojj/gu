@@ -2,13 +2,14 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include <memory>
-#include <vector>
-
-#include "../texture.h"
-#include "../../asset_manager/asset.h"
 #include "mesh.h"
 #include "armature.h"
+
+#include "../textures/texture.h"
+#include "../../asset_manager/asset.h"
+
+#include <memory>
+#include <vector>
 
 struct TextureAssetOrPtr
 {

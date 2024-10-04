@@ -3,19 +3,22 @@
 bool Sphere::rayIntersection(const vec3 &rayOrigin, const vec3 &rayDirection, vec3 *p0, vec3 *p1) const
 {
     // https://www.youtube.com/watch?v=HFPlKQGChpE
-    vec3 dir = normalize(rayDirection);
-    float t = dot(center - rayOrigin, dir);
-    vec3 p = rayOrigin + dir * vec3(t);
+    const vec3 dir = normalize(rayDirection);
+    const float t = dot(center - rayOrigin, dir);
+    const vec3 p = rayOrigin + dir * vec3(t);
 
-    float y = length(center - p);
+    const float y = length(center - p);
 
-    if (y > radius) return false;
+    if (y > radius)
+    {
+        return false;
+    }
 
-    float x = sqrt((radius * radius) - (y * y));
+    const float x = sqrt((radius * radius) - (y * y));
 
     if (p0)
     {
-        vec3 point0 = rayOrigin + dir * vec3(t - x);
+        const vec3 point0 = rayOrigin + dir * vec3(t - x);
 
         p0->x = point0.x;
         p0->y = point0.y;
@@ -23,7 +26,7 @@ bool Sphere::rayIntersection(const vec3 &rayOrigin, const vec3 &rayDirection, ve
     }
     if (p1)
     {
-        vec3 point1 = rayOrigin + dir * vec3(t + x);
+        const vec3 point1 = rayOrigin + dir * vec3(t + x);
 
         p1->x = point1.x;
         p1->y = point1.y;

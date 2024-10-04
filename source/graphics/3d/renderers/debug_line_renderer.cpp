@@ -1,5 +1,6 @@
-#include <string>
 #include "debug_line_renderer.h"
+
+#include <string>
 
 namespace
 {
@@ -36,8 +37,8 @@ static const char *fragSource = MULTILINE(
 
 } // namespace
 
-DebugLineRenderer::DebugLineRenderer()
-    : shaderProgram("DebugLineShader", vertSource, fragSource)
+DebugLineRenderer::DebugLineRenderer() :
+    shaderProgram("DebugLineShader", vertSource, fragSource)
 {
     VertAttributes attrs;
     attrs.add({"nr", 1, 1, GL_BYTE});
@@ -138,7 +139,7 @@ void DebugLineRenderer::circle(const vec2 &p, float radius, int resolution, cons
 }
 
 void DebugLineRenderer::circle(const vec3 &p, float radius, int resolution, const vec3 &color, const vec3 &xAxis,
-        const vec3 &yAxis)
+    const vec3 &yAxis)
 {
     vec3 prev;
     for (int i = 0; i <= resolution; i++)

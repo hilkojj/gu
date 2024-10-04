@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "texture.h"
-#include "../gl_includes.h"
+#include "graphics/textures/texture.h"
+#include "graphics/external/gl_includes.h"
 
 class FrameBuffer
 {

@@ -2,10 +2,10 @@
 #ifndef VERT_ATTRIBUTES_H
 #define VERT_ATTRIBUTES_H
 
+#include "../external/gl_includes.h"
+
 #include <iostream>
 #include <vector>
-
-#include "../../gl_includes.h"
 
 struct VertAttr
 {
@@ -18,36 +18,36 @@ struct VertAttr
 class VertAttributes
 {
 
-public:
+  public:
     inline const static VertAttr
-            POSITION = {"POSITION", 3},
-            RGB = {"RGB", 3},
-            RGBA = {"RGBA", 4},
-            TEX_COORDS = {"TEX_COORDS", 2},
-            NORMAL = {"NORMAL", 3},
-            TANGENT = {"TANGENT", 3},
-            TANGENT_AND_SIGN = {"TANGENT_AND_SIGN", 4},
-            BI_NORMAL = {"BI_NORMAL", 3},
+        POSITION = {"POSITION", 3},
+        RGB = {"RGB", 3},
+        RGBA = {"RGBA", 4},
+        TEX_COORDS = {"TEX_COORDS", 2},
+        NORMAL = {"NORMAL", 3},
+        TANGENT = {"TANGENT", 3},
+        TANGENT_AND_SIGN = {"TANGENT_AND_SIGN", 4},
+        BI_NORMAL = {"BI_NORMAL", 3},
 
-            // Four bone ids (used by gltf model loader):
-            JOINTS = {"JOINTS_0", 4, 4, GL_UNSIGNED_BYTE},
-            // Four bone weights (used by gltf model loader):
-            WEIGHTS = {"WEIGHTS_0", 4},
+        // Four bone ids (used by gltf model loader):
+        JOINTS = {"JOINTS_0", 4, 4, GL_UNSIGNED_BYTE},
+        // Four bone weights (used by gltf model loader):
+        WEIGHTS = {"WEIGHTS_0", 4},
 
-            // Four bone id & weights (used by the json model loader):
-            BONE_WEIGHT_0 = {"BONE_WEIGHT_0", 2},
-            BONE_WEIGHT_1 = {"BONE_WEIGHT_1", 2},
-            BONE_WEIGHT_2 = {"BONE_WEIGHT_2", 2},
-            BONE_WEIGHT_3 = {"BONE_WEIGHT_3", 2},
+        // Four bone id & weights (used by the json model loader):
+        BONE_WEIGHT_0 = {"BONE_WEIGHT_0", 2},
+        BONE_WEIGHT_1 = {"BONE_WEIGHT_1", 2},
+        BONE_WEIGHT_2 = {"BONE_WEIGHT_2", 2},
+        BONE_WEIGHT_3 = {"BONE_WEIGHT_3", 2},
 
     /* A transform is a 4x4 matrix = 16 floats.
      * An attribute in OpenGL cannot be bigger than 4 floats,
      * therefore the solution is to store a transform in 4 separate columns:
      */
-            TRANSFORM_COL_A = {"TRANSFORM_COL_A", 4},
-            TRANSFORM_COL_B = {"TRANSFORM_COL_B", 4},
-            TRANSFORM_COL_C = {"TRANSFORM_COL_C", 4},
-            TRANSFORM_COL_D = {"TRANSFORM_COL_D", 4};
+        TRANSFORM_COL_A = {"TRANSFORM_COL_A", 4},
+        TRANSFORM_COL_B = {"TRANSFORM_COL_B", 4},
+        TRANSFORM_COL_C = {"TRANSFORM_COL_C", 4},
+        TRANSFORM_COL_D = {"TRANSFORM_COL_D", 4};
 
     /**
      * adds the attribute, and returns the offset in bytes

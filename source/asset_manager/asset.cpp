@@ -3,7 +3,7 @@
 #include "AssetManager.h"
 
 #include "../utils/gu_error.h"
-#include "../gl_includes.h"
+#include "../graphics/external/gl_includes.h"
 
 asset_impl::asset_impl() :
     lastReloadCheckTime(glfwGetTime())

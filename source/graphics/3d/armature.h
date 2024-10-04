@@ -2,11 +2,11 @@
 #ifndef ARMATURE_H
 #define ARMATURE_H
 
+#include "../../math/math_utils.h"
+
 #include <memory>
 #include <vector>
 #include <unordered_map>
-
-#include "math/math_utils.h"
 
 struct Bone;
 typedef std::shared_ptr<Bone> SharedBone;

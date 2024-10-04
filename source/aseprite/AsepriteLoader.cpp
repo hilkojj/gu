@@ -1,6 +1,7 @@
 
 #include "AsepriteLoader.h"
-#include "zlib.h"
+
+#include <zlib.h>
 
 namespace aseprite
 {

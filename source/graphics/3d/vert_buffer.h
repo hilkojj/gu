@@ -2,11 +2,11 @@
 #ifndef VERT_BUFFER_H
 #define VERT_BUFFER_H
 
-#include <memory>
-
-#include "../../gl_includes.h"
 #include "vert_attributes.h"
 #include "mesh.h"
+#include "../external/gl_includes.h"
+
+#include <memory>
 
 /**
  * A class that encapsulates OpenGL VertexArrayObjects, VertexBufferObjects, IndexBufferObjects and Instanced Arrays

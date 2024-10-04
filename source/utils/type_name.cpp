@@ -3,48 +3,55 @@
 
 #ifdef __GNUG__
 #include <cstdlib>
-#include <memory>
 #include <cxxabi.h>
-
-std::string demangle(const char *name) {
-
-    int status = -4; // some arbitrary value to eliminate the compiler warning
-
-    std::unique_ptr<char, void(*)(void*)> res {
-            abi::__cxa_demangle(name, NULL, NULL, &status),
-            std::free
-    };
-    return (status == 0) ? res.get() : name;
-}
-
-#else
-
-// does nothing if not g++
-std::string demangle(const char *name) {
-    return name;
-}
-
 #endif
 
-void removeKeywords(std::string &str)
+std::string typename_utils::demangleTypeName(const char *typeName)
+{
+    std::string demangledTypeName = typeName;
+
+#ifdef __GNUG__ // On other platforms there should not be mangling.
+
+    int demangleStatus = 1; // 1 doesn't mean anything, 0 == Success, < 0 are specific errors.
+
+    char *demangledPtr = abi::__cxa_demangle(typeName, nullptr, nullptr, &demangleStatus);
+
+    if (demangleStatus == 0)
+    {
+        demangledTypeName = demangledPtr;
+    }
+    std::free(demangledPtr);
+#endif
+    return demangledTypeName;
+}
+
+void typename_utils::removeKeywords(std::string &str)
 {
     auto splitted = su::split(str, " ");
     str = splitted.back();
     if (splitted.size() >= 2 && splitted[splitted.size() - 2] == "unsigned") // lol
+    {
         str = "unsigned " + str;
+    }
 }
 
-void removeTemplates(std::string &str)
+void typename_utils::removeTemplates(std::string &str)
 {
-    int pos = str.find('<');
-    if (pos == std::string::npos) return;
+    const int pos = str.find('<');
+    if (pos == std::string::npos)
+    {
+        return;
+    }
     str = str.substr(0, pos);
 }
 
-void removeNamespaces(std::string &str)
+void typename_utils::removeNamespaces(std::string &str)
 {
-    int pos = str.rfind("::");
-    if (pos == std::string::npos) return;
+    const int pos = str.rfind("::");
+    if (pos == std::string::npos)
+    {
+        return;
+    }
     str = str.substr(pos + 2, str.size() - 1);
 }
 

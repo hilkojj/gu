@@ -4,7 +4,7 @@
 #include <string>
 #include <limits>
 
-#include "../../gl_includes.h"
+#include "graphics/external/gl_includes.h"
 #include "vert_buffer.h"
 #include "mesh.h"
 #include "vert_attributes.h"

@@ -1,9 +1,9 @@
-#include "../gu/game_utils.h"
-#include "camera.h"
-#include "math/math_utils.h"
-#include "../input/mouse_input.h"
 
-#include <iostream>
+#include "camera.h"
+
+#include "../../math/math_utils.h"
+#include "../../input/mouse_input.h"
+#include "../../gu/game_utils.h"
 
 Camera::Camera(float near_, float far_, float viewportWidth, float viewportHeight)
     : direction(vec3(0, 0, -1)),

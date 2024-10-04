@@ -1,10 +1,11 @@
+
+#include "vert_attributes.h"
+#include "../external/gl_includes.h"
+#include "../../utils/gu_error.h"
+
 #include <iostream>
 #include <ostream>
 #include <string>
-
-#include "vert_attributes.h"
-#include "../../gl_includes.h"
-#include "../../utils/gu_error.h"
 
 unsigned int VertAttributes::add(const VertAttr& attr)
 {

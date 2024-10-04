@@ -2,10 +2,10 @@
 #ifndef GAME_ASEPRITE_H
 #define GAME_ASEPRITE_H
 
+#include "../math/math_utils.h"
 
 #include <vector>
 #include <optional>
-#include "math/math_utils.h"
 
 namespace aseprite
 {

@@ -1,10 +1,12 @@
 
 #include "CodeEditor.h"
-#include <imgui.h>
-#include <gu/game_utils.h>
-#include "../../input/key_input.h"
 
-#include "../../../external/ImGuiColorTextEdit/TextEditor.cpp"
+#include "../gu/game_utils.h"
+#include "../input/key_input.h"
+
+#include "../../external/ImGuiColorTextEdit/TextEditor.cpp"
+
+#include <imgui.h>
 
 std::vector<CodeEditor::Tab> CodeEditor::tabs;
 

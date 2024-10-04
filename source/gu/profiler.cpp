@@ -1,11 +1,11 @@
 
-#include <imgui.h>
-#include <cmath>
-#include <functional>
-#include <json.hpp>
 #include "profiler.h"
-#include "../utils/code_editor/CodeEditor.h"
+
+#include "../code_editor/CodeEditor.h"
 #include "../files/file_utils.h"
+#include "../json.hpp"
+
+#include <cmath>
 
 namespace gu::profiler
 {

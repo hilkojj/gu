@@ -1,8 +1,8 @@
 #ifndef QUAD_RENDERER_H
 #define QUAD_RENDERER_H
 
-#include "../graphics/texture.h"
-#include "../graphics/3d/mesh.h"
+#include "../mesh.h"
+#include "../../textures/texture.h"
 
 namespace QuadRenderer
 {

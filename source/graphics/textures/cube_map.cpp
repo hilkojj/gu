@@ -2,10 +2,10 @@
 #include <iostream>
 #include "cube_map.h"
 #include "texture.h"
-#include "3d/mesh.h"
-#include "stb_image.h"
-#include "../utils/gu_error.h"
-#include "../gu/game_utils.h"
+#include "graphics/3d/mesh.h"
+#include "graphics/external/stb_image.h"
+#include "utils/gu_error.h"
+#include "gu/game_utils.h"
 
 CubeMap CubeMap::fromDDSFiles(const std::vector<std::string> &paths)
 {
