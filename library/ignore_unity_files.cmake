@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 
 file(GLOB_RECURSE unity_files ${CMAKE_BUILD_DIRECTORY} unity_**.cxx)
 message(${unity_files})

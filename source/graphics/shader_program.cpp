@@ -1,6 +1,6 @@
 #include "shader_program.h"
-#include "../files/file.h"
-#include "../utils/string.h"
+#include "../files/file_utils.h"
+#include "../utils/string_utils.h"
 #include "../utils/gu_error.h"
 
 #include <iostream>
@@ -87,7 +87,7 @@ void ShaderProgram::compileAndAttach(const char *source, GLuint shaderId, const 
 {
     auto versionStr = ShaderDefinitions::global().getVersionLine();
     auto definitions = ShaderDefinitions::global().getGLSLString() + this->definitions.getGLSLString() + "#define " + shaderType + "_SHADER\n#line 1\n";
-    realSourceCodeStartsAt = nrOfNewlines(versionStr) + nrOfNewlines(definitions) + 2;
+    realSourceCodeStartsAt = su::getNumNewlines(versionStr) + su::getNumNewlines(definitions) + 2;
 
     const GLchar *sources[] = {versionStr.c_str(), definitions.c_str(), source};
 
@@ -138,8 +138,8 @@ void ShaderProgram::setFeedbackVaryings(const std::vector<const char *> &varying
 
 ShaderProgram ShaderProgram::fromFiles(const std::string &name, const std::string& vertPath, const std::string& fragPath)
 {
-    const std::string vertCode = File::readString(vertPath.c_str());
-    const std::string fragCode = File::readString(fragPath.c_str());
+    const std::string vertCode = fu::readString(vertPath.c_str());
+    const std::string fragCode = fu::readString(fragPath.c_str());
     return ShaderProgram(name, vertCode.c_str(), fragCode.c_str());
 }
 
@@ -151,9 +151,9 @@ ShaderProgram::~ShaderProgram()
 ShaderProgram ShaderProgram::fromFiles(const std::string &name, const std::string &vertPath, const std::string &geomPath,
     const std::string &fragPath)
 {
-    const std::string vertCode = File::readString(vertPath.c_str());
-    const std::string geomCode = File::readString(geomPath.c_str());
-    const std::string fragCode = File::readString(fragPath.c_str());
+    const std::string vertCode = fu::readString(vertPath.c_str());
+    const std::string geomCode = fu::readString(geomPath.c_str());
+    const std::string fragCode = fu::readString(fragPath.c_str());
     return ShaderProgram(name, vertCode.c_str(), geomCode.c_str(), fragCode.c_str());
 }
 

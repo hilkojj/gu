@@ -1,6 +1,6 @@
 
 #include "json_model_loader.h"
-#include "../files/file.h"
+#include "../files/file_utils.h"
 #include "gu_error.h"
 
 using json = nlohmann::json;
@@ -15,13 +15,13 @@ std::string basePath(const std::string &filePath)
 
 std::vector<SharedModel> JsonModelLoader::fromJsonFile(const char *path, const VertAttributes *predefinedAttrs)
 {
-    JsonModelLoader loader(json::parse(File::readString(path)), path, predefinedAttrs, basePath(path));
+    JsonModelLoader loader(json::parse(fu::readString(path)), path, predefinedAttrs, basePath(path));
     return loader.models;
 }
 
 std::vector<SharedModel> JsonModelLoader::fromUbjsonFile(const char *path, const VertAttributes *predefinedAttrs)
 {
-    JsonModelLoader loader(json::from_ubjson(File::readBinary(path)), path, predefinedAttrs, basePath(path));
+    JsonModelLoader loader(json::from_ubjson(fu::readBinary(path)), path, predefinedAttrs, basePath(path));
     return loader.models;
 }
 
@@ -49,7 +49,7 @@ void JsonModelLoader::loadMeshes()
 
 
         SharedMesh mesh = SharedMesh(new Mesh(
-            splitString(info["id"], "_part").at(0),
+            su::split(info["id"], "_part").at(0),
             verticesJson.size() / originalAttrs.getNrOfComponents(),
             predefinedAttrs ? *predefinedAttrs : originalAttrs
         ));
@@ -184,7 +184,7 @@ void JsonModelLoader::loadMaterials()
         {
             for (const json &texJson : matJson["textures"])
             {
-                asset<Texture> tex((textureBasePath + std::string(texJson.at("filename"))));
+                asset<Texture> tex((textureBasePath + std::string(texJson.at("filename"))).c_str());
 
                 if (texJson.at("type") == "DIFFUSE")
                     mat->diffuseTexture.assetTex = tex;

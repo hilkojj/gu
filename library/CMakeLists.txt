@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 
 project(gameutils)
 
@@ -43,7 +43,6 @@ if(GU_UNITY_BUILD)
     add_dependencies(gameutils ignore_unity_files_in_ide)
 endif()
 
-find_package(OpenGL REQUIRED)
 
 # ---GLAD---
 

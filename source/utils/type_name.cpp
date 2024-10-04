@@ -1,5 +1,5 @@
 #include "type_name.h"
-#include "string.h"
+#include "string_utils.h"
 
 #ifdef __GNUG__
 #include <cstdlib>
@@ -28,7 +28,7 @@ std::string demangle(const char *name) {
 
 void removeKeywords(std::string &str)
 {
-    auto splitted = splitString(str, " ");
+    auto splitted = su::split(str, " ");
     str = splitted.back();
     if (splitted.size() >= 2 && splitted[splitted.size() - 2] == "unsigned") // lol
         str = "unsigned " + str;

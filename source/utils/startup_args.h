@@ -3,7 +3,7 @@
 #define GAME_STARTUP_ARGS_H
 
 #include <map>
-#include "./string.h"
+#include "./string_utils.h"
 
 inline void startupArgsToMap(int argCount, char *argValues[], std::map<std::string, std::string> &map)
 {

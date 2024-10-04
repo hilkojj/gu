@@ -1,27 +1,37 @@
 
 #include "FileWatcher.h"
+
+#include "file_utils.h"
+
 #include "../utils/gu_error.h"
-#include "../utils/string.h"
-#include "file.h"
+#include "../utils/string_utils.h"
 
 #include <thread>
 #include <map>
 
-void FileWatcher::addDirectoryToWatch(const std::string &path, bool recursive)
+void FileWatcher::addDirectoryToWatch(const char *path, bool bRecursive)
 {
-    paths.push_back(path);
-    if (!stringEndsWith(path, "/"))
+    paths.emplace_back(path);
+    if (!su::endsWith(path, "/"))
+    {
         paths.back() += '/';
+    }
 
-    if (recursive)
-        File::iterateDirectoryRecursively(path, [&] (auto path, bool isDir) {
-            if (isDir) addDirectoryToWatch(path, false);
+    if (bRecursive)
+    {
+        fu::iterateDirectoryRecursively(path, [&] (auto childPath, bool bIsDir)
+        {
+            if (bIsDir)
+            {
+                addDirectoryToWatch(childPath.c_str(), false);
+            }
         });
+    }
 }
 
 void FileWatcher::startWatchingAsync()
 {
-    watchThread = std::thread(&FileWatcher::startWatchingSync, this);
+    std::thread(&FileWatcher::startWatchingSync, this);
 }
 
 #ifdef linux
@@ -29,61 +39,75 @@ void FileWatcher::startWatchingAsync()
 #include <sys/inotify.h>
 #include <unistd.h>
 
-#define EVENT_SIZE  ( sizeof (struct inotify_event) )
-#define EVENT_BUF_LEN     ( 1024 * ( EVENT_SIZE + 16 ) )
+#define EVENT_SIZE      sizeof(struct inotify_event)
+#define EVENT_BUF_LEN   (1024 * (EVENT_SIZE + 16))
 
 void FileWatcher::startWatchingSync()
 {
-    int fd = inotify_init();
+    const int inotifyInstance = inotify_init();
 
-    if ( fd < 0 )
-        throw gu_err("inotify_init() failed");
+    if (inotifyInstance < 0)
+    {
+        throw gu_err("Failed to get inotify instance");
+    }
 
     std::map<int, std::string> watchToPath;
 
-    for (auto &p : paths)
+    for (auto &path : paths)
     {
-        int wd = inotify_add_watch(fd, p.c_str(), IN_CREATE | IN_DELETE | IN_CLOSE_WRITE);
-        watchToPath[wd] = p;
+        const int watch = inotify_add_watch(inotifyInstance, path.c_str(), IN_CREATE | IN_DELETE | IN_CLOSE_WRITE);
+        watchToPath[watch] = path;
     }
 
-    std::cout << "start watching " << watchToPath.size() << " directories.\n";
+    std::cout << "Started watching " << watchToPath.size() << " directories.\n";
 
-    while (continueWatching)
+    while (bContinueWatching)
     {
         char buffer[EVENT_BUF_LEN];
-        int length = read( fd, buffer, EVENT_BUF_LEN );
+        const int eventLength = read(inotifyInstance, buffer, EVENT_BUF_LEN);
 
-        if (length < 0)
-            throw gu_err("reading inotify events failed");
+        if (eventLength < 0)
+        {
+            throw gu_err("Reading inotify events failed");
+        }
 
         inotify_event *event = (inotify_event *) &buffer[0];
         if (!event->len || event->mask & IN_ISDIR)
+        {
             continue;
+        }
 
-        auto &directory = watchToPath[event->wd];
-        std::string filePath = directory + std::string(event->name);
+        const std::string &directoryPath = watchToPath[event->wd];
+        const std::string filePath = directoryPath + std::string(event->name);
 
-        if (event->mask & IN_CREATE)
+        if (event->mask & IN_CREATE && onCreate)
+        {
             onCreate(filePath);
-        else if (event->mask & IN_DELETE)
+        }
+        else if (event->mask & IN_DELETE && onDelete)
+        {
             onDelete(filePath);
-        else if (event->mask & IN_CLOSE_WRITE)
+        }
+        else if (event->mask & IN_CLOSE_WRITE && onChange)
+        {
             onChange(filePath);
+        }
     }
-    for (auto &w : watchToPath)
-        inotify_rm_watch(fd, w.first);
+    for (auto &[watch, path] : watchToPath)
+    {
+        inotify_rm_watch(inotifyInstance, watch);
+    }
 
-    close(fd);
+    close(inotifyInstance);
 
-    std::cout << "ended watching " << watchToPath.size() << " directories.\n";
+    std::cout << "Stopped watching " << watchToPath.size() << " directories.\n";
 }
 
 #else
 
 void FileWatcher::startWatchingSync()
 {
-    throw gu_err("FileWatcher is not implemented on this platform");
+    throw gu_err("Not implemented on this platform");
 }
 
 #endif

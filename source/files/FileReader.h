@@ -2,14 +2,15 @@
 #ifndef GAME_FILEREADER_H
 #define GAME_FILEREADER_H
 
+#include "file_utils.h"
+#include "../utils/gu_error.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
 #include <cstring>
 
-#include "../utils/gu_error.h"
-#include "file.h"
 
 class FileReader
 {
@@ -21,7 +22,7 @@ class FileReader
 //    std::ifstream stream;
 
     FileReader(const char *path)// : stream(path, std::ios::in | std::ios::binary)
-        : data(File::readBinary(path))
+        : data(fu::readBinary(path))
     {}
 
     template<typename type>

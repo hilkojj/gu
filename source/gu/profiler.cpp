@@ -5,7 +5,7 @@
 #include <json.hpp>
 #include "profiler.h"
 #include "../utils/code_editor/CodeEditor.h"
-#include "../files/file.h"
+#include "../files/file_utils.h"
 
 namespace gu::profiler
 {
@@ -44,8 +44,9 @@ void dumpToJson()
 
     CodeEditor::tabs.emplace_back().title = "profiler_dump_" + std::to_string(glfwGetTime()) + ".json";
     CodeEditor::tabs.back().code = j.dump(2);
-    CodeEditor::tabs.back().save = [] (CodeEditor::Tab &t) {
-        File::writeBinary(("./" + t.title).c_str(), t.code);
+    CodeEditor::tabs.back().save = [] (CodeEditor::Tab &t)
+    {
+        fu::writeBinary(("./" + t.title).c_str(), t.code);
     };
 }
 

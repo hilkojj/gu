@@ -3,35 +3,44 @@
 #define GAME_ASSET_H
 
 #include <memory>
-#include "../utils/gu_error.h"
-#include "../utils/type_name.h"
 
-#include "AssetManager.h"
+struct loaded_asset;
+
+class asset_impl
+{
+  public:
+    asset_impl();
+
+    void *get() const;
+
+    void set(size_t typeHash, const char *path);
+
+    bool hasReloaded();
+
+    std::shared_ptr<loaded_asset> loadedAsset;
+    double lastReloadCheckTime;
+};
 
 template<typename type>
 class asset
 {
-
-    std::shared_ptr<loaded_asset> loadedAsset;
-    double lastCheckTime = glfwGetTime();
-
   public:
 
     asset() = default;
 
-    asset(const std::string &path)
+    asset(const char *path)
     {
         set(path);
     }
 
     type* operator->()
     {
-        return getPtrToObj();
+        return (type *) impl.get();
     }
 
     const type* operator->() const
     {
-        return getPtrToObj();
+        return (type *) impl.get();
     }
 
     type &get()
@@ -46,47 +55,32 @@ class asset
 
     bool hasReloaded()
     {
-        if (!loadedAsset)
-            throw gu_err("trying to use an asset that is not initialized!");
-        if (loadedAsset->loadedSinceTime > lastCheckTime)
-        {
-            lastCheckTime = glfwGetTime();
-            return true;
-        }
-        return false;
+        return impl.hasReloaded();
     }
 
-    void set(const std::string &path)
+    void set(const char *path)
     {
-        loadedAsset = AssetManager::assets[typeid(type).hash_code()][path];
-        if (!loadedAsset)
-            throw gu_err(getTypeName<type>() + "-asset '"  +  path + "' is not loaded.");
-        if (loadedAsset->objType != typeid(type).hash_code())
-            throw gu_err(loadedAsset->objTypeName + "-asset '"  +  path + "' is not a " + getTypeName<type>());
+        impl.set(typeid(type).hash_code(), path);
     }
 
     void unset()
     {
-        loadedAsset = NULL;
+        impl.loadedAsset = nullptr;
     }
 
-    bool isSet() const { return !!loadedAsset; }
-
-    const loaded_asset &getLoadedAsset() const
+    bool isSet() const
     {
-        if (!loadedAsset)
-            throw gu_err("trying to use an asset that is not initialized!");
-        return *loadedAsset;
+        return impl.loadedAsset != nullptr;
+    }
+
+    const loaded_asset *getLoadedAsset() const
+    {
+        return impl.loadedAsset.get();
     }
 
   private:
 
-    type *getPtrToObj() const
-    {
-        if (!loadedAsset)
-            throw gu_err("trying to use an asset that is not initialized!");
-        return (type *) loadedAsset->obj;
-    }
+    asset_impl impl;
 
 };
 
