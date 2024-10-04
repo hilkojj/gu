@@ -5,7 +5,7 @@
 #include "model_instance.h"
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
-#include "../../utils/math_utils.h"
+#include "math/math_utils.h"
 
 ModelInstance::ModelInstance(SharedModel model)
     : model(model)

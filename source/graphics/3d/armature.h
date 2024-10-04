@@ -6,7 +6,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "../../utils/math_utils.h"
+#include "math/math_utils.h"
 
 struct Bone;
 typedef std::shared_ptr<Bone> SharedBone;

@@ -5,7 +5,7 @@
 
 #include <vector>
 #include <optional>
-#include "../math_utils.h"
+#include "math/math_utils.h"
 
 namespace aseprite
 {

@@ -92,22 +92,21 @@ void AssetManager::loadFile(const std::string &path, const std::string &removePr
 
         try
         {
-            loaded_asset *loaded = loader->loadFunction(path);
+            std::shared_ptr<loaded_asset> loaded(loader->loadFunction(path));
             std::string key = su::split(path, removePreFix)[0];
-            auto shared = std::shared_ptr<loaded_asset>(loaded);
 
             auto existing = getAssets()[loaded->typeHash][key];
 
             if (existing)
-                existing->moveFrom(loaded);
+                existing->moveFrom(loaded.get());
             else
-                getAssets()[loaded->typeHash][key] = shared;
+                getAssets()[loaded->typeHash][key] = loaded;
 
             loader->removeSuffix(key);
             if (!existing)
             {
-                getAssets()[loaded->typeHash][key] = shared;
-                getAssets()[loaded->typeHash][path] = shared;
+                getAssets()[loaded->typeHash][key] = loaded;
+                getAssets()[loaded->typeHash][path] = loaded;
             }
 
             loaded->fullPath = path;

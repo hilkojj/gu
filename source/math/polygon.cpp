@@ -21,16 +21,3 @@ bool Polygon::contains(float x, float y) const
     }
     return (intersections & 1) == 1;
 }
-
-std::string Polygon::toString() const
-{
-    std::string s = "";
-    bool first = true;
-    for (const vec2 &p : points)
-    {
-        if (!first) s += ", ";
-        first = false;
-        s += to_string(p);
-    }
-    return s;
-}

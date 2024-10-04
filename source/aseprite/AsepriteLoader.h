@@ -3,9 +3,9 @@
 #define GAME_ASEPRITELOADER_H
 
 
-#include "../../files/FileReader.h"
+#include "files/FileReader.h"
 #include "Aseprite.h"
-#include "../math_utils.h"
+#include "math/math_utils.h"
 
 namespace aseprite
 {

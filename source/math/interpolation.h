@@ -2,11 +2,9 @@
 #ifndef INTERPOLATION_H
 #define INTERPOLATION_H
 
-#include "../gu_error.h"
-#include "../type_name.h"
-#include "../math_utils.h"
+#include "math_utils.h"
 
-namespace Interpolation
+namespace mu::interpolation
 {
 
 inline float circleIn(float x)
@@ -42,18 +40,11 @@ inline float pow(float x, int power)
     else return powOut(x * 2. - 1., power) * .5 + .5;
 }
 
-// todo: add more.
-
-
-
-
 template<typename Type>
 inline void interpolate(const Type &a, const Type &b, float x, Type &out)
 {
     if constexpr (std::is_arithmetic_v<Type>)
         out = glm::mix(a, b, x);
-    else
-        throw gu_err("Cannot interpolate a " + getTypeName<Type>() + " value.");
 }
 
 template <int len, typename type, qualifier something>
@@ -81,5 +72,4 @@ inline void interpolate(const mat4& a, const mat4& b, float x, mat4& out)
 }
 
 }
-
 #endif

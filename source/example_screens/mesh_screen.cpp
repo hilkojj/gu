@@ -12,7 +12,7 @@
 #include "../graphics/3d/perspective_camera.h"
 #include "../utils/json_model_loader.h"
 #include "../utils/camera/flying_camera_controller.h"
-#include "../utils/math_utils.h"
+#include "math/math_utils.h"
 
 #include "../graphics/3d/debug_line_renderer.h"
 

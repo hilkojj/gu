@@ -3,7 +3,7 @@
 #include "flying_camera_controller.h"
 #include "../../input/key_input.h"
 #include "../../input/mouse_input.h"
-#include "../../utils/math_utils.h"
+#include "math/math_utils.h"
 
 FlyingCameraController::FlyingCameraController(Camera *cam)
 : cam(cam)

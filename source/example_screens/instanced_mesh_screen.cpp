@@ -8,7 +8,7 @@
 #include "../graphics/shader_program.h"
 #include "../utils/json_model_loader.h"
 #include "../utils/camera/flying_camera_controller.h"
-#include "../utils/math_utils.h"
+#include "math/math_utils.h"
 
 #include "../graphics/3d/debug_line_renderer.h"
 

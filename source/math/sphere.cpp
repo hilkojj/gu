@@ -1,11 +1,4 @@
 #include "sphere.h"
-#include "../math_utils.h"
-
-Sphere::Sphere(float radius) : radius(radius), center(vec3(0))
-{}
-
-Sphere::Sphere(float radius, vec3 center) : radius(radius), center(center)
-{}
 
 bool Sphere::rayIntersection(const vec3 &rayOrigin, const vec3 &rayDirection, vec3 *p0, vec3 *p1) const
 {

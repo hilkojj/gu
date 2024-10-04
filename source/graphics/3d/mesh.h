@@ -8,7 +8,7 @@
 #include <cstring>
 
 #include "vert_attributes.h"
-#include "../../utils/math_utils.h"
+#include "math/math_utils.h"
 
 typedef unsigned char u_char;
 

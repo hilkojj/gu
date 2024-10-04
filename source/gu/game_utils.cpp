@@ -1,5 +1,6 @@
 #include "game_utils.h"
-#include "../utils/math_utils.h"
+#include "math/math_utils.h"
+#include "math/triangle.h"
 #include "../utils/gu_error.h"
 #include <string>
 

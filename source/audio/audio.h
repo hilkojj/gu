@@ -6,7 +6,7 @@
 #include <string>
 #include "../utils/gu_error.h"
 
-#include "../utils/math_utils.h" // used for integer types.
+#include "math/math_utils.h" // used for integer types.
 
 namespace au
 {

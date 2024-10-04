@@ -1,5 +1,5 @@
 
-#include "../gu_error.h"
+#include "utils/gu_error.h"
 #include "Aseprite.h"
 
 const aseprite::Slice &aseprite::Sprite::getSliceByName(const char *name, int frame) const

@@ -1,6 +1,6 @@
 #include "../gu/game_utils.h"
 #include "camera.h"
-#include "../utils/math_utils.h"
+#include "math/math_utils.h"
 #include "../input/mouse_input.h"
 
 #include <iostream>

@@ -1,15 +1,8 @@
 
 #include "sphere_mesh_generator.h"
-#include "glm/glm.hpp"
-#include "../math_utils.h"
-#include "../../graphics/3d/tangent_calculator.h"
+#include "math_utils.h"
 
-using namespace glm;
-
-namespace SphereMeshGenerator
-{
-
-SharedMesh generate(const std::string &meshName, float radius, int segments, int rings, VertAttributes &attrs)
+SharedMesh mu::generateSphereMesh(const std::string &meshName, float radius, int segments, int rings, VertAttributes &attrs)
 {
     int nrOfVerts = (segments + 1) * rings;
     SharedMesh mesh = SharedMesh(new Mesh(meshName, nrOfVerts, attrs));
@@ -61,5 +54,3 @@ SharedMesh generate(const std::string &meshName, float radius, int segments, int
     assert(part.indices.size() == i);
     return mesh;
 }
-
-} // namespace SphereMeshGenerator
