@@ -2,9 +2,9 @@
 #include <graphics/3d/tangent_calculator.h>
 #include "gltf_model_loader.h"
 
+#include "../graphics/stb_image.h"
 #define TINYGLTF_IMPLEMENTATION
 #define TINYGLTF_NO_INCLUDE_STB_IMAGE
-#include "../../external/stb/stb_image.h"
 #define TINYGLTF_NO_STB_IMAGE_WRITE
 #include "../../external/tiny_gltf.h"
 

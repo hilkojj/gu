@@ -1,10 +1,8 @@
 
 #include "OggLoader.h"
 
-namespace au {
-    using std::ldexp; // fixes clash with glm::ldexp
-    #include "../../external/stb/stb_vorbis.c"
-}
+using std::ldexp; // fixes clash with glm::ldexp
+#include "../../external/stb/stb_vorbis.c"
 
 void au::OggLoader::load(const char *path, Sound &s)
 {
