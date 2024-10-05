@@ -1,9 +1,9 @@
 
 #include "AsepriteTextureGenerator.h"
 
-#include <memory>
+#include "../graphics/textures/texture.h"
 
-SharedTexture aseprite::TextureGenerator::frameToTexture(const Sprite &sprite, int frameI)
+SharedTexture aseprite::frameToTexture(const Sprite &sprite, int frameI)
 {
     GLuint textureID;
     glGenTextures(1, &textureID);

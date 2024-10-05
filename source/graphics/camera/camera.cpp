@@ -1,16 +1,13 @@
 
 #include "camera.h"
 
-#include "../../math/math_utils.h"
-#include "../../input/mouse_input.h"
-#include "../../gu/game_utils.h"
-
-Camera::Camera(float near_, float far_, float viewportWidth, float viewportHeight)
-    : direction(vec3(0, 0, -1)),
-      up(vec3(0, 1, 0)),
-      right(vec3(1, 0, 0)),
-      near_(near_), far_(far_),
-      viewportWidth(viewportWidth), viewportHeight(viewportHeight)
+Camera::Camera(float near_, float far_, float viewportWidth, float viewportHeight) :
+    direction(vec3(0, 0, -1)),
+    up(vec3(0, 1, 0)),
+    right(vec3(1, 0, 0)),
+    near_(near_), far_(far_),
+    viewportWidth(viewportWidth),
+    viewportHeight(viewportHeight)
 {
 }
 
@@ -43,12 +40,6 @@ vec3 Camera::getRayDirection(float viewportX, float viewportY) const
     vec3 worldCoords = inverse(view) * eyeCoords;
 
     return worldCoords;
-}
-
-vec3 Camera::getCursorRayDirection() const
-{
-    return getRayDirection(MouseInput::mouseX / gu::widthPixels * viewportWidth,
-        MouseInput::mouseY / gu::heightPixels * viewportHeight);
 }
 
 vec3 Camera::project(const vec3 &p, bool *bInViewport) const

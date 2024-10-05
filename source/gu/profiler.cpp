@@ -1,14 +1,17 @@
 
 #include "profiler.h"
 
+#include "../graphics/external/gl_includes.h"
 #include "../code_editor/CodeEditor.h"
 #include "../files/file_utils.h"
 #include "../json.hpp"
 
-#include <cmath>
-
 namespace gu::profiler
 {
+double getTime()
+{
+    return glfwGetTime();
+}
 
 std::list<ZoneTime> frames = { ZoneTime() };
 bool showGUI = false;
@@ -46,7 +49,7 @@ void dumpToJson()
     CodeEditor::tabs.back().code = j.dump(2);
     CodeEditor::tabs.back().save = [] (CodeEditor::Tab &t)
     {
-        fu::writeBinary(("./" + t.title).c_str(), t.code);
+        fu::writeBinary(("./" + t.title).c_str(), t.code.c_str(), t.code.size());
     };
 }
 

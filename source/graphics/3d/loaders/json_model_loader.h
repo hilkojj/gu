@@ -1,12 +1,14 @@
 
-#ifndef MESH_LOADER_H
-#define MESH_LOADER_H
+#ifndef GU_JSON_MODEL_LOADER_H
+#define GU_JSON_MODEL_LOADER_H
+
+#ifndef GU_PBR_ONLY
 
 #include "../mesh.h"
 #include "../model.h"
 #include "../vert_attributes.h"
 
-#include "../../../json.hpp"
+#include "../../../json_fwd.hpp"
 
 /**
  * loads Models that are exported from Blender with https://github.com/hilkojj/blender_UBJSON_exporter
@@ -33,7 +35,7 @@ class JsonModelLoader
   private:
     
     const VertAttributes *predefinedAttrs;
-    const json &obj;
+    const json *obj;
     std::string id, textureBasePath;
 
     void loadMaterials();
@@ -48,4 +50,5 @@ class JsonModelLoader
 
 };
 
+#endif
 #endif

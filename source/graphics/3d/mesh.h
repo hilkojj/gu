@@ -3,62 +3,32 @@
 #define MESH_H
 
 #include "vert_attributes.h"
-#include "../../math/math_utils.h"
+#include "shared_3d.h"
 
 #include <vector>
-#include <memory>
-#include <iostream>
-#include <cstring>
-
-typedef unsigned char u_char;
 
 class VertData
 {
   public:
-    VertData(VertAttributes attrs, std::vector<u_char> vertices);
+    const VertAttributes attributes;
+    std::vector<unsigned char> vertexData;
 
-    VertAttributes attributes;
-    std::vector<u_char> vertices;
-
-    template <class type>
-    inline type &getRef(int vertI, int attrOffset)
-    {
-        return *((type *) &(vertices[vertI * attributes.getVertSize() + attrOffset]));
-    }
+    VertData(VertAttributes attrs, std::vector<unsigned char> vertices);
 
     template <class type>
-    inline type get(int vertI, int attrOffset)
+    inline type &get(int vertI, int attrOffset)
     {
-        type v;
-        memcpy(
-                &v,
-                &(vertices[vertI * attributes.getVertSize() + attrOffset]),
-                sizeof(type)
-        );
-        return v;
-    }
-
-    template <class type>
-    inline void set(const type &v, int vertI, int attrOffset)
-    {
-        memcpy(
-                &(vertices[vertI * attributes.getVertSize() + attrOffset]),
-                &v,
-                sizeof(type)
-        );
-    }
-
-    template <class type>
-    inline void add(const type &v, int vertI, int attrOffset)
-    {
-        set(get<type>(vertI, attrOffset) + v, vertI, attrOffset);
+        return *((type *) &(vertexData[vertI * attributes.getVertSize() + attrOffset]));
     }
 
     template <class vecType>
     void normalizeVecAttribute(int attrOffset)
     {
-        for (int vertI = 0; vertI < vertices.size() / attributes.getVertSize(); vertI++)
-            set(normalize(get<vecType>(vertI, attrOffset)), vertI, attrOffset);
+        for (int vertI = 0; vertI < vertexData.size() / attributes.getVertSize(); vertI++)
+        {
+            vecType &value = get<vecType>(vertI, attrOffset);
+            value = normalize(value);
+        }
     }
 
     void removeVertices(int count);
@@ -68,28 +38,12 @@ class VertData
     int nrOfVertices() const;
 };
 
-class VertBuffer;
-class Mesh;
 
-typedef std::shared_ptr<Mesh> SharedMesh;
+class VertBuffer;
 
 class Mesh : public VertData
 {
   public:
-    // returns a shared(!) uploaded quad mesh with only the Position attribute. (position attribute can also be used for texture coordinates)
-    static SharedMesh getQuad();
-
-    // creates a quad mesh. Not the same as getQuad()
-    static SharedMesh createQuad(float min=-1, float max=1);
-
-    static SharedMesh getCube();
-
-    static SharedMesh createCube(float min=-.5, float max=.5);
-
-    std::string name;
-
-    VertBuffer *vertBuffer = nullptr;
-
     struct Part
     {
         std::string name;
@@ -97,44 +51,68 @@ class Mesh : public VertData
         GLenum mode = GL_TRIANGLES;
         int nrOfIndicesToRender = -1; // -1 => all
 
-        int getNrOfIndicesToRender() const;
+        int getNumIndicesToRender() const;
 
       private:
         // also used for glDrawElementsBaseVertex
         friend VertBuffer;
         friend Mesh;
-        int indicesBufferOffset = 0;
-        unsigned int nrOfIndices;
+
+        // The position and size of this Part when it was added to a VertBuffer:
+        struct
+        {
+            int indicesOffset = 0;
+            int numIndices = 0;
+        }
+        inBuffer;
     };
 
-    std::vector<Part> parts;
-
     Mesh(
-        const std::string& name,
+        const std::string &name,
         unsigned int nrOfVertices,
-        VertAttributes attributes);
+        const VertAttributes &attributes
+    );
 
-    void render(int part=0);
+    void render(int part = 0);
 
-    void renderInstances(GLsizei count, int part=0);
+    void renderInstances(GLsizei count, int part = 0);
 
-    void renderArrays(GLenum mode = GL_TRIANGLES, int nrOfVerts=-1) const;
+    void renderArrays(GLenum mode = GL_TRIANGLES, int numVerts = -1 /* -1 => all */) const;
 
-    // removes the vertices + indices that are stored in RAM,
-    // but the mesh can still be drawn if it is uploaded to VRAM/OpenGL using a VertBuffer
-    // WARNING: vertices & indices are resized to 0!
+    /* Removes the vertices + indices that are stored in memory,
+     * but the mesh can still be drawn if it was uploaded to VRAM/OpenGL using a VertBuffer.
+     * WARNING: vertices & indices are resized to 0!
+     */
     void disposeOfflineData();
-
-    unsigned int getNrOfVertsReservedInVertBuffer() const;
 
     ~Mesh();
 
+    // Returns a static shared quad, which has been uploaded.
+    static SharedMesh getUploadedQuad();
+
+    static SharedMesh createQuad(float min = -1.0f, float max = 1.0f);
+
+    // Returns a static shared cube, which has been uploaded.
+    static SharedMesh getUploadedCube();
+
+    static SharedMesh createCube(float min= -0.5f, float max = 0.5f);
+
+    std::string name;
+    VertBuffer *vertBuffer = nullptr;
+    std::vector<Part> parts;
+
   private:
     // variables used for glDrawElementsBaseVertex: (https://www.khronos.org/opengl/wiki/GLAPI/glDrawElementsBaseVertex)
+
     friend VertBuffer;
-    int baseVertex = 0;
-    int vertBufferOffset = 0;
-    unsigned int nrOfVertsReservedInVertBuffer = 0;
+    // Position and size of the mesh in the vert buffer:
+    struct
+    {
+        int baseVertex = 0;
+        int vertOffset = 0;
+        unsigned int numVertsReserved = 0;
+    }
+    inBuffer;
 };
 
 #endif

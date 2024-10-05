@@ -3,6 +3,7 @@
 #define GAME_SHADER_ASSET_H
 
 #include "shader_program.h"
+
 #include "../asset_manager/asset.h"
 
 class ShaderAsset : public ShaderProgram
@@ -33,23 +34,7 @@ class ShaderAsset : public ShaderProgram
         vertCode(vertPath), fragCode(fragPath), geomCode(geomPath)
     {}
 
-    void use() override
-    {
-        if (vertCode.hasReloaded()
-            || (fragCode.isSet() && fragCode.hasReloaded())
-            || (geomCode.isSet() && geomCode.hasReloaded())
-            || compileFinishTime < ShaderDefinitions::global().lastEditTime || compileFinishTime < definitions.lastEditTime
-            || !compiled_)
-        {
-            glDeleteProgram(programId);
-            compile(
-                vertCode->c_str(),
-                fragCode.isSet() ? fragCode->c_str() : nullptr,
-                geomCode.isSet() ? geomCode->c_str() : nullptr
-            );
-        }
-        ShaderProgram::use();
-    }
+    void use() override;
 
 };
 

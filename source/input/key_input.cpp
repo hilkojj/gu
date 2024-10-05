@@ -1,5 +1,7 @@
 #include "key_input.h"
+
 #include "../utils/gu_error.h"
+#include "../json.hpp"
 
 #include <imgui.h>
 #include <examples/imgui_impl_glfw.h>
@@ -55,7 +57,7 @@ void glfwCallback(GLFWwindow *window, int key, int scancode, int action, int mod
 
 } // namespace
 
-void setInputWindow(GLFWwindow* window)
+void setInputWindow(GLFWwindow *window)
 {
     glfwSetKeyCallback(window, KeyInput::glfwCallback);
     glfwSetCharCallback(window, ImGui_ImplGlfw_CharCallback);

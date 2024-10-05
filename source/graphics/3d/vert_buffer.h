@@ -3,10 +3,7 @@
 #define VERT_BUFFER_H
 
 #include "vert_attributes.h"
-#include "mesh.h"
-#include "../external/gl_includes.h"
-
-#include <memory>
+#include "shared_3d.h"
 
 /**
  * A class that encapsulates OpenGL VertexArrayObjects, VertexBufferObjects, IndexBufferObjects and Instanced Arrays
@@ -43,7 +40,7 @@ class VertBuffer
 
     void onMeshDestroyed(); // Called by ~Mesh()
 
-    void reuploadVertices(const SharedMesh &, int numVerticesToReuploadOrAll=-1); // -1 -> all
+    void reuploadVertices(const SharedMesh &, int numVerticesToReuploadOrAll = -1 /* -1 => all */);
 
     /**
      * upload vertex-attributes that do not advance per vertex, but per instance (glDrawElementsInstanced() & glVertexAttribDivisor())
@@ -53,9 +50,9 @@ class VertBuffer
      *
      * returns the id of the uploaded buffer. If you want to update the same buffer at a later moment call this function again with id != -1
      **/
-    GLuint uploadPerInstanceData(const VertData &, GLuint advanceRate=1, int id=-1, GLenum usage=GL_STATIC_DRAW);
+    GLuint uploadPerInstanceData(const class VertData &, GLuint advanceRate = 1, int id = -1, GLenum usage = GL_STATIC_DRAW);
 
-    void usePerInstanceData(GLuint instanceDataId, GLuint advanceRate=1);
+    void usePerInstanceData(GLuint instanceDataId, GLuint advanceRate = 1);
 
     void deletePerInstanceData(GLuint instanceDataId);
 

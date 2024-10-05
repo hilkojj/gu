@@ -1,18 +1,24 @@
 
 #include "gltf_model_loader.h"
 
+#include "../mesh.h"
+#include "../model.h"
+#include "../armature.h"
 #include "../tangent_calculator.h"
 
+#include "../../textures/texture.h"
 #include "../../external/stb_image.h"
+
+#include "../../../utils/gu_error.h"
+
 #define TINYGLTF_IMPLEMENTATION
 #define TINYGLTF_NO_INCLUDE_STB_IMAGE
 #define TINYGLTF_NO_STB_IMAGE_WRITE
 #include "../../../../external/tiny_gltf.h"
 
-GltfModelLoader::GltfModelLoader(const VertAttributes &attrs) : vertAttributes(attrs)
-{
-
-}
+GltfModelLoader::GltfModelLoader(const VertAttributes &attrs) :
+    vertAttributes(attrs)
+{}
 
 int componentTypeSize(int componentType)
 {
@@ -140,18 +146,15 @@ void loadMeshes(GltfModelLoader &loader, const tinygltf::Model &tiny)
                                 assert(sizeof(int32) == sizeof(float));
                             case GL_INT:
                             case GL_UNSIGNED_INT:
-
-                                mesh->set(*((float *) &buffer.data.at(bufferView.byteOffset + tinyVertI * attr.byteSize + component * sizeof(float))), vertI, attrOffset + component * sizeof(float));
+                                mesh->get<float>(vertI, attrOffset + component * sizeof(float)) = *((float *) &buffer.data.at(bufferView.byteOffset + tinyVertI * attr.byteSize + component * sizeof(float)));
                                 break;
                             case GL_SHORT:
                             case GL_UNSIGNED_SHORT:
-
-                                mesh->set(*((short *) &buffer.data.at(bufferView.byteOffset + tinyVertI * attr.byteSize + component * sizeof(short))), vertI, attrOffset + component * sizeof(short));
+                                mesh->get<short>(vertI, attrOffset + component * sizeof(short)) = *((short *) &buffer.data.at(bufferView.byteOffset + tinyVertI * attr.byteSize + component * sizeof(short)));
                                 break;
                             case GL_BYTE:
                             case GL_UNSIGNED_BYTE:
-
-                                mesh->set(*((char *) &buffer.data.at(bufferView.byteOffset + tinyVertI * attr.byteSize + component * sizeof(char))), vertI, attrOffset + component * sizeof(char));
+                                mesh->get<char>(vertI, attrOffset + component * sizeof(char)) = *((char *) &buffer.data.at(bufferView.byteOffset + tinyVertI * attr.byteSize + component * sizeof(char)));
                                 break;
                         }
                     }
@@ -217,11 +220,11 @@ void stdVectorToGlmVec(const std::vector<double> &stdVector, vec<length, float, 
 }
 
 template<class TinyTextureInfo>
-void loadImageData(const GltfModelLoader &loader, const TinyTextureInfo &info, TextureAssetOrPtr &out)
+void loadImageData(const GltfModelLoader &loader, const TinyTextureInfo &info, SharedTexture &out)
 {
     if (info.index < 0)
         return;
-    out.sharedTex = loader.textures.at(info.index);
+    out = loader.textures.at(info.index);
 }
 
 void loadMaterials(GltfModelLoader &loader, const tinygltf::Model &tiny)

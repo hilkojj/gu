@@ -1,11 +1,8 @@
 
 #include "orthographic_camera.h"
 
-#include "../../gu/game_utils.h"
-#include "../../input/mouse_input.h"
-
-OrthographicCamera::OrthographicCamera(float near_, float far_, float viewportWidth, float viewportHeight)
-    : Camera(near_, far_, viewportWidth, viewportHeight)
+OrthographicCamera::OrthographicCamera(float near_, float far_, float viewportWidth, float viewportHeight) :
+    Camera(near_, far_, viewportWidth, viewportHeight)
 {
 }
 
@@ -18,20 +15,5 @@ void OrthographicCamera::update()
         up
     );
     combined = projection * view;
-}
-
-vec2 OrthographicCamera::cursorTo2DWorldPos(int xAxis, int yAxis)
-{
-    return worldPos2D(MouseInput::mouseX / gu::widthPixels, MouseInput::mouseY / gu::heightPixels, xAxis, yAxis);
-}
-
-vec2 OrthographicCamera::worldPos2D(float viewportX, float viewportY, int xAxis, int yAxis)
-{
-    vec2 p(position[xAxis], position[yAxis]);
-
-    p.x += (viewportX * 2 - 1) * .5 * viewportWidth;
-    p.y += (viewportY * -2 + 1) * .5 * viewportHeight;
-
-    return p;
 }
 

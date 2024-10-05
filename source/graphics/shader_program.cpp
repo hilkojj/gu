@@ -1,11 +1,12 @@
 #include "shader_program.h"
+
+#include "external/gl_includes.h"
+
 #include "../files/file_utils.h"
 #include "../utils/string_utils.h"
 #include "../utils/gu_error.h"
 
 #include <iostream>
-#include <utility>
-#include <vector>
 
 ShaderProgram::ShaderProgram(const std::string &name, const char *vertSource, const char *fragSource, bool compile)
     : name(name)
@@ -119,7 +120,7 @@ GLuint ShaderProgram::id() const
     return programId;
 }
 
-GLuint ShaderProgram::location(const char *uniformName) const
+GLint ShaderProgram::location(const char *uniformName) const
 {
     return glGetUniformLocation(programId, uniformName);
 }

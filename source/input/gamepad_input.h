@@ -5,7 +5,7 @@
 #include "../graphics/external/gl_includes.h"
 #include "../utils/delegate.h"
 #include "../math/math_utils.h"
-#include "../json.hpp"
+#include "../json_fwd.hpp"
 
 #include <map>
 #include <string>
@@ -110,7 +110,7 @@ int getAxisByName(const char *axisName);
 
 struct Button
 {
-    uint glfwValue = 0;;
+    uint glfwValue = 0;
 
     Button() = default;
     Button(const uint &v) : glfwValue(v) {}
@@ -124,7 +124,7 @@ void from_json(const json &j, Button &v);
 
 struct Axis
 {
-    uint glfwValue = 0;;
+    uint glfwValue = 0;
 
     Axis() = default;
     Axis(const uint &v) : glfwValue(v) {}

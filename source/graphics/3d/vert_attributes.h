@@ -4,8 +4,8 @@
 
 #include "../external/gl_includes.h"
 
-#include <iostream>
 #include <vector>
+#include <string>
 
 struct VertAttr
 {
@@ -59,10 +59,10 @@ class VertAttributes
      *
      * // attrs = [POSITION, NORMAL]
      */
-    unsigned int add(const VertAttr& attr);
+    unsigned int add(const VertAttr &attr);
 
     // same as above but returns this.
-    VertAttributes &add_(const VertAttr& attr);
+    VertAttributes &add_(const VertAttr &attr);
 
     const VertAttr &get(unsigned int i) const;
 

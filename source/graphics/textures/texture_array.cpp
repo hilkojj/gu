@@ -1,10 +1,18 @@
 
-#include <iostream>
 #include "texture_array.h"
-#include "texture.h"
-#include "graphics/frame_buffer.h"
-#include "utils/gu_error.h"
+#include "dds_texture.h"
+
+#include "../../utils/gu_error.h"
+
+#if EMSCRIPTEN
+// For the hack below:
+#include "../frame_buffer.h"
 #include "graphics/3d/renderers/quad_renderer.h"
+#endif
+
+#ifndef GU_PUT_A_SOCK_IN_IT
+#include <iostream>
+#endif
 
 SharedTexArray TextureArray::fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLsizei depth,
     GLuint magFilter, GLuint minFilter, bool bGenerateMipMaps)
@@ -61,12 +69,12 @@ SharedTexArray TextureArray::fromDDSFiles(const std::vector<std::string> &paths)
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D_ARRAY, id);
 
-    std::vector<DDSData> datas;
+    std::vector<DDSTexture::DDSData> datas;
     datas.reserve(paths.size());
     for (auto &path : paths)
         datas.emplace_back(path.c_str());
 
-    DDSData &d = datas[0];
+    const DDSTexture::DDSData &d = datas[0];
 
     GLsizei width = d.width, height = d.height, layerCount = datas.size(), mipMapCount = d.mipMapCount;
 
@@ -105,7 +113,7 @@ SharedTexArray TextureArray::fromDDSFiles(const std::vector<std::string> &paths)
 TextureArray::TextureArray(GLuint id, GLuint width, GLuint height, GLuint layers)
     : id(id), width(width), height(height), layers(layers)
 {
-    #ifndef PUT_A_SOCK_IN_IT
+    #ifndef GU_PUT_A_SOCK_IN_IT
     std::cout << "TextureArray (" << width << "x" << height << " x " << layers << ") id: " << id << " created\n";
     #endif
 }
@@ -119,7 +127,7 @@ void TextureArray::bind(GLuint unit)
 TextureArray::~TextureArray()
 {
     glDeleteTextures(1, &id);
-    #ifndef PUT_A_SOCK_IN_IT
+    #ifndef GU_PUT_A_SOCK_IN_IT
     std::cout << "TextureArray " << id << " destroyed\n";
     #endif
 }

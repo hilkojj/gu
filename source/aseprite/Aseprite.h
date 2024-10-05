@@ -104,7 +104,7 @@ class Sprite
     std::vector<Tag>   tags;
     std::vector<Slice> slices;
 
-    ColorRGBA palette[256] = {ColorRGBA(0)};
+    ColorRGBA palette[256] = { ColorRGBA(0) };
 
     /**
      * Get a slice from the 'slices' vector using name and frame.

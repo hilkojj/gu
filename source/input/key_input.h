@@ -3,15 +3,14 @@
 #define KEY_INPUT_H
 
 #include "../graphics/external/gl_includes.h"
-#include "../json.hpp"
+#include "../json_fwd.hpp"
 
-#include <iostream>
 #include <map>
 
 namespace KeyInput
 {
 
-void setInputWindow(GLFWwindow* window);
+void setInputWindow(GLFWwindow *window);
 
 void update();
 

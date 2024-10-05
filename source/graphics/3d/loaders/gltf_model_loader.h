@@ -2,7 +2,9 @@
 #ifndef GAME_GLTF_MODEL_LOADER_H
 #define GAME_GLTF_MODEL_LOADER_H
 
-#include "../model.h"
+#include "../vert_attributes.h"
+#include "../shared_3d.h"
+#include "../../textures/shared_texture.h"
 
 class GltfModelLoader
 {
@@ -28,7 +30,7 @@ class GltfModelLoader
     GLuint textureMagFilter = GL_LINEAR;
     GLuint textureMinFilter = GL_LINEAR_MIPMAP_LINEAR;
 
-    GltfModelLoader(const VertAttributes &);
+    explicit GltfModelLoader(const VertAttributes &);
 
     std::vector<SharedArmature> armatures;
     std::vector<SharedTexture> textures;

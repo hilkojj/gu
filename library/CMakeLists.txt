@@ -6,12 +6,12 @@ project(gameutils)
 option(GU_INCLUDE_PHYSICS "Include the bullet physics engine" OFF)
 option(GU_INCLUDE_AUDIO "Include audio utilities" OFF)
 option(GU_INCLUDE_EXAMPLE_SCREENS "Include example screens" OFF)
+option(GU_PUT_A_SOCK_IN_IT "Removes verbose print statements" OFF)
+option(GU_INCLUDE_JSON_MODEL_LOADER "Include the Json Model loader" OFF)
 option(GU_UNITY_BUILD "Build as a single object" ON)
 
 
 # ---
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
-
 set(PROJECT_SOURCE_DIR ../source/*)
 file(GLOB_RECURSE source ${PROJECT_SOURCE_DIR})
 
@@ -20,11 +20,18 @@ if(GU_INCLUDE_AUDIO)
 else()
     list(FILTER source EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/audio/.*" )
 endif()
-
 if(NOT GU_INCLUDE_EXAMPLE_SCREENS)
     list(FILTER source EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/example_screens/.*" )
 endif()
+if(GU_PUT_A_SOCK_IN_IT)
+    add_definitions(-DGU_PUT_A_SOCK_IN_IT)
+endif()
+if(NOT GU_INCLUDE_JSON_MODEL_LOADER)
+    add_definitions(-DGU_PBR_ONLY)
+    list(FILTER source EXCLUDE REGEX "${PROJECT_SOURCE_DIR}/graphics/3d/loaders/json_model_loader.*" )
+endif()
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
 add_library(gameutils ${source})
 target_include_directories(gameutils PUBLIC ../source/)
 

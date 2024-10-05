@@ -18,8 +18,7 @@ inline uint32 hashStringCrossPlatform(const string &inputString)
     int i = -1;
     while (inputString[++i] != '\0')
     {
-        const unsigned char c = inputString[i];
-        hash = hash ^ c;
+        hash = hash ^ inputString[i];
         hash *= prime;
     }
     return hash;

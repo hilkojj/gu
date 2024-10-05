@@ -1,11 +1,16 @@
 #include "game_utils.h"
+#include "game_config.h"
+#include "profiler.h"
+
+#include "../input/gamepad_input.h"
+#include "../input/key_input.h"
+#include "../input/mouse_input.h"
+#include "../graphics/external/gl_includes.h"
 #include "../utils/gu_error.h"
 
 #include <imgui.h>
 #include "examples/imgui_impl_glfw.h"
 #include "examples/imgui_impl_opengl3.h"
-
-#include <string>
 
 #ifdef _WIN32
 // enable dedicated graphics for NVIDIA:
@@ -24,71 +29,78 @@ extern "C"
 namespace gu
 {
 
-Config config;
-GLFWwindow *window = nullptr;
+int pixelWidth = 0, pixelHeight = 0;
+int virtualWidth = 0, virtualHeight = 0;
+bool bFullscreen = false;
 
-// size of the window:
-// width & height are in screen coordinates, widthPixels & heightPixels are in pixels.
-int width = 0, height = 0, widthPixels = 0, heightPixels = 0;
-bool fullscreen = false;
-
-std::function<void(double)> beforeRender = [](auto){};
-
-delegate<bool()> canClose;
+delegate<void(double deltaTime)> beforeRender;
 delegate<void()> onResize;
+delegate<bool()> canClose;
 
 namespace
 {
+
+Config config;
+GLFWwindow *window = nullptr;
+
 Screen *screen;
 
-void APIENTRY glMessageCallback(GLenum source, GLenum type, GLuint id,
-                            GLenum severity, GLsizei length,
-                            const GLchar *msg, const void *data)
+bool bResized = true;
+int nextVirtualWidth, nextVirtualHeight, nextPixelWidth, nextPixelHeight;
+
+void onVirtualSizeChanged(GLFWwindow *, int width, int height)
+{
+    nextVirtualWidth = width;
+    nextVirtualHeight = height;
+}
+
+void onPixelSizeChanged(GLFWwindow *, int width, int height)
+{
+    nextPixelWidth = width;
+    nextPixelHeight = height;
+    bResized = true;
+}
+
+void APIENTRY glMessageCallback(
+    GLenum source, GLenum type, GLuint id,
+    GLenum severity, GLsizei length,
+    const GLchar *msg, const void *data
+)
 {
     if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
     {
-        if (config.printOpenGLMessages)
+        if (config.bPrintOpenGLMessages)
+        {
             std::cout << "====== OpenGL Message. ID: " << id << " ======" << std::endl << msg << "\n======================================" << std::endl;
+        }
     }
-    else if (config.printOpenGLErrors)
+    else if (config.bPrintOpenGLErrors)
+    {
         std::cerr << "====== OpenGL Error. ID: " << id << " ======" << std::endl << msg << "\n======================================" << std::endl;
-}
-
-bool resized = true;
-int nextWidth, nextHeight, nextWidthPixels, nextHeightPixels;
-
-void window_size_callback(GLFWwindow* window, int width, int height)
-{
-    nextWidth = width;
-    nextHeight = height;
-}
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    nextWidthPixels = width;
-    nextHeightPixels = height;
-    resized = true;
+    }
 }
 
 void render(double deltaTime)
 {
     if (screen)
+    {
         screen->render(deltaTime);
+    }
 }
 
-GLFWmonitor *get_current_monitor(GLFWwindow *window)
+GLFWmonitor *getMonitorContainingWindow(GLFWwindow *window)
 {
     ivec2 windowPos, windowSize;
-    int nrOfMonitors;
-    GLFWmonitor **monitors = glfwGetMonitors(&nrOfMonitors);
-    GLFWmonitor *monitor = NULL;
+    int numMonitors = 0;
+    GLFWmonitor **monitors = glfwGetMonitors(&numMonitors);
+    GLFWmonitor *monitor = nullptr;
 
     glfwGetWindowPos(window, &windowPos.x, &windowPos.y);
     glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
 
-    ivec2 winCenter = windowPos + windowSize / 2;
+    const ivec2 windowCenterPos = windowPos + windowSize / 2;
 
-    for (int i = 0; i < nrOfMonitors; i++) {
+    for (int i = 0; i < numMonitors; i++) {
 
         monitor = monitors[i];
         const GLFWvidmode *mode = glfwGetVideoMode(monitor);
@@ -97,79 +109,62 @@ GLFWmonitor *get_current_monitor(GLFWwindow *window)
         ivec2 monitorPos;
         glfwGetMonitorPos(monitor, &monitorPos.x, &monitorPos.y);
 
-        if (
-                winCenter.x >= monitorPos.x && winCenter.x <= monitorPos.x + monitorSize.x
-                &&
-                winCenter.y >= monitorPos.y && winCenter.y <= monitorPos.y + monitorSize.y
-        )
+        if (windowCenterPos.x >= monitorPos.x && windowCenterPos.x <= monitorPos.x + monitorSize.x
+            && windowCenterPos.y >= monitorPos.y && windowCenterPos.y <= monitorPos.y + monitorSize.y)
+        {
             break;
+        }
     }
-    if (!monitor) throw gu_err("No monitor found");
+
+    // Fallback, even though this function never failed when testing.
+    if (monitor == nullptr && numMonitors > 0)
+    {
+        monitor = monitors[0];
+    }
+    if (monitor == nullptr)
+    {
+        throw gu_err("No monitor found");
+    }
     return monitor;
 }
 
 void toggleFullscreen()
 {
-    #ifndef EMSCRIPTEN
+#ifndef EMSCRIPTEN
     static int restoreXPos, restoreYPos, restoreWidth, restoreHeight;
-    if (fullscreen)
+    if (bFullscreen)
     {
         glfwGetWindowPos(window, &restoreXPos, &restoreYPos);
         glfwGetWindowSize(window, &restoreWidth, &restoreHeight);
-        auto monitor = get_current_monitor(window);
-
-        auto videoMode = glfwGetVideoMode(monitor);
-        int w = videoMode->width, h = videoMode->height;
-        glfwSetWindowMonitor(window, monitor, 0, 0, w, h, videoMode->refreshRate);
+        GLFWmonitor *monitor = getMonitorContainingWindow(window);
+        const GLFWvidmode *videoMode = glfwGetVideoMode(monitor);
+        glfwSetWindowMonitor(window, monitor, 0, 0, videoMode->width, videoMode->height, videoMode->refreshRate);
     }
     else
     {
         glfwSetWindowMonitor(window, NULL, restoreXPos, restoreYPos, restoreWidth, restoreHeight, GLFW_DONT_CARE);
     }
-    glfwSwapInterval(config.vsync);
-    #endif
+    glfwSwapInterval(config.bVSync);
+#endif
 }
 
 #ifdef EMSCRIPTEN
 
-EM_JS(const char *, js_getClipboardText, (), {
-
-    var input = window.pastedText || "";
-    var lengthBytes = lengthBytesUTF8(input) + 1;
-    var stringOnWasmHeap = _malloc(lengthBytes);
+EM_JS(const char *, js_getClipboardText, (),
+{
+    const input = window.pastedText || "";
+    const lengthBytes = lengthBytesUTF8(input) + 1;
+    const stringOnWasmHeap = _malloc(lengthBytes);
     stringToUTF8(input, stringOnWasmHeap, lengthBytes);
     return stringOnWasmHeap;
 });
-EM_JS(void, js_setClipboardText, (const char *text), {
-
+EM_JS(void, js_setClipboardText, (const char *text),
+{
     window.pastedText = UTF8ToString(text);
 
-    // ONLY works in HTTPS mode:
+    // Only work on secure pages (HTTPS):
     if (navigator.clipboard != undefined)
         navigator.clipboard.writeText(window.pastedText);
-
-    // hacky fallback for HTTP:
-    else setTimeout(() => {
-        var textArea = document.createElement("textarea");
-        textArea.value = window.pastedText;
-
-        // Avoid scrolling to bottom
-        textArea.style.top = "0";
-        textArea.style.left = "0";
-        textArea.style.position = "fixed";
-
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-
-        try {
-            if (!document.execCommand('copy'))
-                console.warn('Could not copy text');
-        } catch (err) {
-            console.error('Unable to copy:', err);
-        }
-        document.body.removeChild(textArea);
-    })
 });
 
 const char* EMSCRIPTENGetClipboardText(void* user_data)
@@ -188,24 +183,17 @@ void EMSCRIPTENSetClipboardText(void* user_data, const char* text)
 
 #endif
 
-} // namespace
-
-void glfwErrorCB(int error, const char *description)
+void onGLFWError(int errorCode, const char *description)
 {
     std::cerr << "GLFW ERROR: " << description << std::endl;
-
-    // not all glfw errors should crash the game.
-
-//    throw gu_err(
-//        "GLFW ERROR: " + std::string(description)
-//    );
 }
 
-bool init(Config config_)
+} // namespace
+
+bool init(const Config &inConfig)
 {
-    config = config_;
-    // Initialise GLFW
-    glfwSetErrorCallback(glfwErrorCB);
+    config = inConfig;
+    glfwSetErrorCallback(onGLFWError);
     if (!glfwInit())
     {
         std::cerr << "Failed to initialize GLFW" << std::endl;
@@ -218,11 +206,10 @@ bool init(Config config_)
     #ifndef EMSCRIPTEN
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, config.openGLMajorVersion);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, config.openGLMinorVersion);
-//    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // To make MacOS happy; should not be needed. Dont use this, because: it broke the game on niek's laptop where the compat version is 3.0
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     #endif
 
-    window = glfwCreateWindow(config.width, config.height, config.title.c_str(), NULL, NULL);
+    window = glfwCreateWindow(config.width, config.height, config.title.c_str(), nullptr, nullptr);
 
     if (!window)
     {
@@ -232,28 +219,27 @@ bool init(Config config_)
     }
     glfwMakeContextCurrent(window);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
         std::cerr << "Failed to initialize OpenGL context" << std::endl;
         return false;
     }
 
-    glfwSwapInterval(config.vsync);
+    glfwSwapInterval(config.bVSync);
 
-    glfwSetWindowSizeCallback(window, window_size_callback);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetWindowSizeCallback(window, onVirtualSizeChanged);
+    glfwSetFramebufferSizeCallback(window, onPixelSizeChanged);
 
-    glfwGetWindowSize(window, &nextWidth, &nextHeight);
-    glfwGetFramebufferSize(window, &nextWidthPixels, &nextHeightPixels);
+    glfwGetWindowSize(window, &nextVirtualWidth, &nextVirtualHeight);
+    glfwGetFramebufferSize(window, &nextPixelWidth, &nextPixelHeight);
 
-    profiler::showGUI = config.showProfiler;
+    profiler::showGUI = config.bShowProfiler;
 
     KeyInput::setInputWindow(window);
     MouseInput::setInputWindow(window);
     GamepadInput::setInputWindow(window);
 
-
-    if (config.printOpenGLMessages || config.printOpenGLErrors)
+    if (config.bPrintOpenGLMessages || config.bPrintOpenGLErrors)
     {
         #ifndef EMSCRIPTEN
         glEnable(GL_DEBUG_OUTPUT);
@@ -266,17 +252,17 @@ bool init(Config config_)
 
     // IMGUI ---------------------------------
     ImGui::CreateContext();
-    const char* glsl_version = "#version 300 es";
+    const char *glslVersionLine = "#version 300 es";
 
     // Initialize helper Platform and Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, false);
-    if (config.customImGuiRenderingInit)
+    if (config.customImGuiRendering.initialize != nullptr)
     {
-        config.customImGuiRenderingInit(glsl_version);
+        config.customImGuiRendering.initialize(glslVersionLine);
     }
     else
     {
-        ImGui_ImplOpenGL3_Init(glsl_version);
+        ImGui_ImplOpenGL3_Init(glslVersionLine);
     }
     #ifdef EMSCRIPTEN
 
@@ -302,9 +288,9 @@ bool init(Config config_)
     return true;
 }
 
-double prevTime;
-int framesInSecond;
-double remainingSecond;
+double prevTime = 0.0;
+int framesInSecond = 0;
+double remainingSecond = 0.0;
 
 void mainLoop()
 {
@@ -315,7 +301,7 @@ void mainLoop()
     framesInSecond++;
     if ((remainingSecond -= deltaTime) <= 0)
     {
-        if (config.showFPSInTitleBar)
+        if (config.bShowFPSInTitleBar)
         {
             std::string fps = std::to_string(framesInSecond) + "fps";
             glfwSetWindowTitle(window, fps.c_str());
@@ -325,23 +311,23 @@ void mainLoop()
         remainingSecond = 1;
     }
 
-    if (resized)
+    if (bResized)
     {
-        width = nextWidth;
-        height = nextHeight;
-        widthPixels = nextWidthPixels;
-        heightPixels = nextHeightPixels;
-        resized = false;
-        glViewport(0, 0, nextWidthPixels, nextHeightPixels);
+        virtualWidth = nextVirtualWidth;
+        virtualHeight = nextVirtualHeight;
+        pixelWidth = nextPixelWidth;
+        pixelHeight = nextPixelHeight;
+        bResized = false;
+        glViewport(0, 0, nextPixelWidth, nextPixelHeight);
         if (screen)
             screen->onResize();
         onResize();
     }
 
     // Feed inputs to dear imgui, start new frame
-    if (config.customImGuiRenderingNewFrame)
+    if (config.customImGuiRendering.newFrame != nullptr)
     {
-        config.customImGuiRenderingNewFrame();
+        config.customImGuiRendering.newFrame();
     }
     else
     {
@@ -357,9 +343,9 @@ void mainLoop()
         profiler::Zone z("render");
         render(min(deltaTime, .1));
         static bool wasFullscreen = false;
-        if (wasFullscreen != fullscreen)
+        if (wasFullscreen != bFullscreen)
             toggleFullscreen();
-        wasFullscreen = fullscreen;
+        wasFullscreen = bFullscreen;
     } {
         profiler::Zone z("input");
         KeyInput::update();
@@ -372,9 +358,9 @@ void mainLoop()
 
     // Render dear imgui into screen
     ImGui::Render();
-    if (config.customImGuiRenderingRenderDrawData)
+    if (config.customImGuiRendering.drawData != nullptr)
     {
-        config.customImGuiRenderingRenderDrawData(ImGui::GetDrawData());
+        config.customImGuiRendering.drawData(ImGui::GetDrawData());
     }
     else
     {
@@ -423,13 +409,13 @@ void setScreen(Screen *newScreen)
     onResize();
 }
 
-void setVSync(bool enabled)
+void setVSync(bool bEnabled)
 {
-    if (enabled == config.vsync)
+    if (bEnabled == config.bVSync)
         return;
 
-    config.vsync = enabled;
-    glfwSwapInterval(enabled);
+    config.bVSync = bEnabled;
+    glfwSwapInterval(bEnabled);
 }
 
 } // namespace gu

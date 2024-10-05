@@ -1,6 +1,9 @@
 
 #include "mouse_input.h"
 
+#include "../gu/game_utils.h"
+#include "../graphics/external/gl_includes.h"
+
 #include <imgui.h>
 #include <examples/imgui_impl_glfw.h>
 
@@ -35,7 +38,7 @@ struct Capture
 std::vector<Capture> captures[NR_OF_BUTTONS];
 int highestCapturePriority[NR_OF_BUTTONS];
 
-void glfwButtonCallback(GLFWwindow* window, int button, int action, int mods)
+void glfwButtonCallback(GLFWwindow *window, int button, int action, int mods)
 {
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     if (ImGui::GetIO().WantCaptureMouse)
@@ -45,23 +48,52 @@ void glfwButtonCallback(GLFWwindow* window, int button, int action, int mods)
 
 double nextXScroll = 0, nextYScroll = 0, nextMouseX = 0, nextMouseY = 0;
 
-void glfwScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+void glfwScrollCallback(GLFWwindow *window, double x, double y)
 {
-    #ifdef EMSCRIPTEN
-    xoffset *= -.012;
-    yoffset *= -.012;
-    #endif
-    ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+    ImGui_ImplGlfw_ScrollCallback(window, x, y);
     if (ImGui::GetIO().WantCaptureMouse)
         return;
-    nextXScroll += xoffset;
-    nextYScroll += yoffset;
+#ifdef EMSCRIPTEN
+    x *= -0.012;
+    y *= -0.012;
+#endif
+    nextXScroll += x;
+    nextYScroll += y;
 }
 
-void glfwMousePosCallback(GLFWwindow* window, double xpos, double ypos)
+void screenCoordsToPixels(double &x, double &y)
 {
-    nextMouseX = xpos;
-    nextMouseY = ypos;
+    if (gu::virtualWidth > 0)
+    {
+        x /= gu::virtualWidth;
+        x *= gu::pixelWidth;
+    }
+    if (gu::virtualHeight > 0)
+    {
+        y /= gu::virtualHeight;
+        y *= gu::pixelHeight;
+    }
+}
+
+void pixelsToScreenCoords(double &x, double &y)
+{
+    if (gu::pixelWidth > 0)
+    {
+        x /= gu::pixelWidth;
+        x *= gu::virtualWidth;
+    }
+    if (gu::pixelHeight > 0)
+    {
+        y /= gu::pixelHeight;
+        y *= gu::virtualHeight;
+    }
+}
+
+void glfwMousePosCallback(GLFWwindow *window, double xScreenCoord, double yScreenCoord)
+{
+    nextMouseX = xScreenCoord;
+    nextMouseY = yScreenCoord;
+    screenCoordsToPixels(nextMouseX, nextMouseY);
 }
 
 } // namespace
@@ -77,6 +109,7 @@ void setInputWindow(GLFWwindow *inputWindow)
     glfwSetCursorPosCallback(window, glfwMousePosCallback);
 
     glfwGetCursorPos(window, &mouseX, &mouseY);
+    screenCoordsToPixels(mouseX, mouseY);
     nextMouseX = mouseX;
     nextMouseY = mouseY;
 }
@@ -131,6 +164,7 @@ void setLockedMode(bool lockedMode)
 
 void setMousePos(double x, double y)
 {
+    pixelsToScreenCoords(x, y);
     glfwSetCursorPos(window, x, y);
 }
 

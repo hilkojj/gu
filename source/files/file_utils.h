@@ -2,11 +2,9 @@
 #ifndef FILE_H
 #define FILE_H
 
-#include <iostream>
 #include <vector>
 #include <functional>
-#include <fstream>
-#include <sstream>
+#include <string>
 
 namespace fu
 {
@@ -19,13 +17,7 @@ bool exists(const char *path);
 
 void createDirectory(const char *path);
 
-template<typename data_vec>
-void writeBinary(const char *path, const data_vec &data)
-{
-    std::ofstream out(path, std::ios::out | std::ios::binary);
-    out.write((const char *) &data[0], data.size());
-    out.close();
-}
+void writeBinary(const char *path, const char *data, size_t dataSize);
 
 void iterateDirectoryRecursively(
     const char *directoryPath,

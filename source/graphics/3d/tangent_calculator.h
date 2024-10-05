@@ -1,7 +1,9 @@
 #ifndef TANGENT_CALCULATOR_H
 #define TANGENT_CALCULATOR_H
 
-#include "mesh.h"
+#include "shared_3d.h"
+
+#include "../../math/math_utils.h"
 
 namespace TangentCalculator
 {

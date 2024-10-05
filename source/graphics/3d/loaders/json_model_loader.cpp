@@ -3,6 +3,8 @@
 
 #include "../../../files/file_utils.h"
 #include "../../../utils/gu_error.h"
+#include "../../../utils/string_utils.h"
+#include "../../../json.hpp"
 
 std::string basePath(const std::string &filePath)
 {
@@ -24,8 +26,8 @@ std::vector<SharedModel> JsonModelLoader::fromUbjsonFile(const char *path, const
     return loader.models;
 }
 
-JsonModelLoader::JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs, std::string textureBasePath)
-: obj(obj), id(id), predefinedAttrs(predefinedAttrs), textureBasePath(textureBasePath)
+JsonModelLoader::JsonModelLoader(const json &obj, std::string id, const VertAttributes *predefinedAttrs, std::string textureBasePath) :
+    obj(&obj), id(id), predefinedAttrs(predefinedAttrs), textureBasePath(textureBasePath)
 {
     loadArmatures();
     loadMaterials();
@@ -35,9 +37,9 @@ JsonModelLoader::JsonModelLoader(const json &obj, std::string id, const VertAttr
 
 void JsonModelLoader::loadMeshes()
 {
-    if (!obj.contains("meshes")) return;
+    if (!obj->contains("meshes")) return;
 
-    for (const json &meshJson : obj["meshes"])
+    for (const json &meshJson : (*obj)["meshes"])
     {
         VertAttributes originalAttrs;
         for (std::string attrStr : meshJson["attributes"])
@@ -65,9 +67,9 @@ void JsonModelLoader::loadMeshes()
 
         if (!predefinedAttrs)  // load vertices as laid out in JSON
         {
-            unsigned int i = 0;
+            int i = 0;
             for (float vert : verticesJson)
-                mesh->set(vert, 0, i++ * sizeof(float));
+                mesh->get<float>(0, i++ * sizeof(float)) = vert;
         }
         else                    // load vertices as laid out in predefinedAttrs
         {
@@ -85,7 +87,7 @@ void JsonModelLoader::loadMeshes()
                     for (int j = 0; j < attr.size; j++)
                     {
                         int originalIndex = originalOffset + j + v * originalAttrs.getVertSize() / sizeof(float);
-                        mesh->set<float>(verticesJson[originalIndex], v, newOffset + j * sizeof(float));
+                        mesh->get<float>(v, newOffset + j * sizeof(float)) = verticesJson[originalIndex];
                     }
                 }
             }
@@ -115,9 +117,9 @@ VertAttr JsonModelLoader::attrFromString(const std::string &str)
 
 void JsonModelLoader::loadModels()
 {
-    if (!obj.contains("nodes")) return;
+    if (!obj->contains("nodes")) return;
 
-    for (const json &modelJson : obj["nodes"])
+    for (const json &modelJson : (*obj)["nodes"])
     {
         if (!modelJson.contains("parts")) continue;
 
@@ -165,9 +167,9 @@ void JsonModelLoader::loadModels()
 
 void JsonModelLoader::loadMaterials()
 {
-    if (!obj.contains("materials")) return;
+    if (!obj->contains("materials")) return;
 
-    for (const json &matJson : obj["materials"])
+    for (const json &matJson : (*obj)["materials"])
     {
         SharedMaterial mat = std::make_shared<Material>();
         mat->name = matJson.contains("id") ? matJson["id"] : "untitled";
@@ -227,9 +229,9 @@ void loadChildBones(const json &boneJson, std::vector<SharedBone> &out, SharedAr
 
 void JsonModelLoader::loadArmatures()
 {
-    if (!obj.contains("nodes")) return;
+    if (!obj->contains("nodes")) return;
 
-    for (const json &armJson : obj["nodes"])
+    for (const json &armJson : (*obj)["nodes"])
     {
         if (armJson.contains("parts")) continue;  // assume this is a model.
 
@@ -248,10 +250,10 @@ void JsonModelLoader::loadArmatures()
         armatures.push_back(arm);
     }
 
-    if (!obj.contains("animations")) return;
+    if (!obj->contains("animations")) return;
 
 #if 0
-    for (const json &animJson : obj["animations"])
+    for (const json &animJson : (*obj)["animations"])
     {
         if (!animJson.contains("bones")) continue;  // this is not an armature animation.
 

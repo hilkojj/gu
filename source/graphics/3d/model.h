@@ -1,34 +1,14 @@
 
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef GU_MODEL_H
+#define GU_MODEL_H
 
-#include "mesh.h"
-#include "armature.h"
+#include "shared_3d.h"
 
-#include "../textures/texture.h"
-#include "../../asset_manager/asset.h"
+#include "../textures/shared_texture.h"
 
-#include <memory>
+#include "../../math/math_utils.h"
+
 #include <vector>
-
-struct TextureAssetOrPtr
-{
-    asset<Texture> assetTex;
-    SharedTexture sharedTex;
-
-    Texture &get()
-    {
-        if (sharedTex)
-            return *sharedTex.get();
-        else
-            return assetTex.get();
-    }
-
-    bool isSet() const
-    {
-        return assetTex.isSet() || !!sharedTex;
-    }
-};
 
 /**
  *  This Material struct contains variables used for PBR rendering. (https://github.com/KhronosGroup/glTF/tree/master/specification/2.0#materials)
@@ -39,11 +19,11 @@ struct Material
 {
     std::string name;
     vec3 diffuse = mu::ZERO_3, ambient = mu::ZERO_3, emissive = mu::ZERO_3;
-    float metallic = .0, roughness = .5;
+    float metallic = 0.0f, roughness = 0.5f;
 
     bool doubleSided = false;
 
-    TextureAssetOrPtr
+    SharedTexture
         diffuseTexture,
         normalMap,
         metallicRoughnessTexture,
@@ -51,19 +31,18 @@ struct Material
         emissiveTexture;
 
     float normalMapScale = 1.0f;
-    float aoTextureStrength = 1.0f; // occludedColor = lerp(color, color * <sampled occlusion
-                                  // texture value>, <occlusion strength>)
+    float aoTextureStrength = 1.0f;
 
     // for backwards compatibility, or the specular extension for glTF/PBR.
     vec4 specular = vec4(1.0f);
 
+#ifndef GU_PBR_ONLY
     // backwards compatibility, not PBR:
     vec3 reflection = vec3(1.0f);
     float shininess = 1.0f;
-    TextureAssetOrPtr specularMap;
+    SharedTexture specularMap;
+#endif
 };
-
-typedef std::shared_ptr<Material> SharedMaterial;
 
 struct ModelPart
 {
@@ -83,9 +62,6 @@ class Model
     Model(std::string name);
 
     ~Model();
-
 };
-
-typedef std::shared_ptr<Model> SharedModel;
 
 #endif

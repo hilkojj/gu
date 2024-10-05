@@ -1,6 +1,8 @@
 
 #include "tangent_calculator.h"
 
+#include "mesh.h"
+
 namespace TangentCalculator
 {
 
@@ -34,9 +36,9 @@ void addTangentsToMesh(Mesh *mesh, int meshPart)
 {
     auto &part = mesh->parts.at(meshPart);
 
-    VertAttributes &attrs = mesh->attributes;
-    int posOffset = attrs.getOffset(VertAttributes::POSITION);
-    int texOffset = attrs.getOffset(VertAttributes::TEX_COORDS);
+    const VertAttributes &attrs = mesh->attributes;
+    const int posOffset = attrs.getOffset(VertAttributes::POSITION);
+    const int texOffset = attrs.getOffset(VertAttributes::TEX_COORDS);
     int tanOffset = 0;
 
 
@@ -46,11 +48,11 @@ void addTangentsToMesh(Mesh *mesh, int meshPart)
         // set tangents to vec4(0, 0, 0, 1) first, to prevent NaN floats when adding in the next loop.
         for (int i = 0; i < part.indices.size(); i += 3)
         {
-            int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
+            const int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
 
-            mesh->set<vec4>(vec4(0, 0, 0, 1), vertI0, tanOffset);
-            mesh->set<vec4>(vec4(0, 0, 0, 1), vertI1, tanOffset);
-            mesh->set<vec4>(vec4(0, 0, 0, 1), vertI2, tanOffset);
+            mesh->get<vec4>(vertI0, tanOffset) = vec4(0, 0, 0, 1);
+            mesh->get<vec4>(vertI1, tanOffset) = vec4(0, 0, 0, 1);
+            mesh->get<vec4>(vertI2, tanOffset) = vec4(0, 0, 0, 1);
         }
     }
     else
@@ -59,17 +61,17 @@ void addTangentsToMesh(Mesh *mesh, int meshPart)
         // set tangents to vec3(0) first, to prevent NaN floats when adding in the next loop.
         for (int i = 0; i < part.indices.size(); i += 3)
         {
-            int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
+            const int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
 
-            mesh->set<vec3>(vec3(0), vertI0, tanOffset);
-            mesh->set<vec3>(vec3(0), vertI1, tanOffset);
-            mesh->set<vec3>(vec3(0), vertI2, tanOffset);
+            mesh->get<vec3>(vertI0, tanOffset) = vec3(0);
+            mesh->get<vec3>(vertI1, tanOffset) = vec3(0);
+            mesh->get<vec3>(vertI2, tanOffset) = vec3(0);
         }
     }
 
     for (int i = 0; i < part.indices.size(); i += 3)
     {
-        int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
+        const int vertI0 = part.indices[i], vertI1 = part.indices[i + 1], vertI2 = part.indices[i + 2];
         auto p0 = mesh->get<vec3>(vertI0, posOffset),
              p1 = mesh->get<vec3>(vertI1, posOffset),
              p2 = mesh->get<vec3>(vertI2, posOffset);
@@ -77,9 +79,9 @@ void addTangentsToMesh(Mesh *mesh, int meshPart)
              uv1 = mesh->get<vec2>(vertI1, texOffset),
              uv2 = mesh->get<vec2>(vertI2, texOffset);
         auto tangent = calculateTangent(p0, p1, p2, uv0, uv1, uv2);
-        mesh->add<vec3>(tangent, vertI0, tanOffset);
-        mesh->add<vec3>(tangent, vertI1, tanOffset);
-        mesh->add<vec3>(tangent, vertI2, tanOffset);
+        mesh->get<vec3>(vertI0, tanOffset) += tangent;
+        mesh->get<vec3>(vertI1, tanOffset) += tangent;
+        mesh->get<vec3>(vertI2, tanOffset) += tangent;
     }
     mesh->normalizeVecAttribute<vec3>(tanOffset);
 }

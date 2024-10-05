@@ -1,14 +1,14 @@
 #ifndef GU_PROFILER_H
 #define GU_PROFILER_H
 
-#include "../graphics/external/gl_includes.h"
-
 #include <map>
-#include <iostream>
 #include <list>
+#include <string>
 
 namespace gu::profiler
 {
+    double getTime();
+
     struct ZoneTime
     {
         double time = 0;
@@ -36,12 +36,12 @@ namespace gu::profiler
 
         ~Zone()
         {
-            frames.back().getActiveSubZone()->time += glfwGetTime() - startTime;
+            frames.back().getActiveSubZone()->time += getTime() - startTime;
             parent->activeSubZone.clear();
         }
 
       private:
-        double startTime = glfwGetTime();
+        double startTime = getTime();
         ZoneTime *parent;
     };
 

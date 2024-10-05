@@ -1,10 +1,10 @@
 #ifndef FRAME_BUFFER_H
 #define FRAME_BUFFER_H
 
-#include <vector>
+#include "textures/shared_texture.h"
+#include "external/gl_includes.h"
 
-#include "graphics/textures/texture.h"
-#include "graphics/external/gl_includes.h"
+#include <vector>
 
 class FrameBuffer
 {

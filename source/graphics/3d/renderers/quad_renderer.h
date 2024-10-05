@@ -3,6 +3,8 @@
 
 #include "../mesh.h"
 #include "../../textures/texture.h"
+#include "../../textures/shared_texture.h"
+#include "../../shader_program.h"
 
 namespace QuadRenderer
 {
@@ -49,7 +51,7 @@ inline void render(Texture *tex)
     tex->bind(0);
     shader->use();
     glUniform1i(shader->location("tex"), 0);
-    Mesh::getQuad()->render();
+    Mesh::getUploadedQuad()->render();
 }
 
 // renders the texture to a full-screen quad.

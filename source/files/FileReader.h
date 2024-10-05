@@ -2,56 +2,42 @@
 #ifndef GAME_FILEREADER_H
 #define GAME_FILEREADER_H
 
-#include "file_utils.h"
-#include "../utils/gu_error.h"
-
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include <vector>
-#include <cstring>
-
 
 class FileReader
 {
-  protected:
-    int pos = 0;
-    std::vector<unsigned char> data;
-
   public:
-//    std::ifstream stream;
 
-    FileReader(const char *path)// : stream(path, std::ios::in | std::ios::binary)
-        : data(fu::readBinary(path))
-    {}
+    FileReader(const char *path);
 
     template<typename type>
     type read()
     {
         type out;
         if (!hasNMoreBytes(sizeof(type)))
+        {
             return out;
-        memcpy(&out, &data[pos], sizeof(type));
-        pos += sizeof(type);
+        }
+        copy(sizeof(type), (char *) &out);
+        readPos += sizeof(type);
         return out;
     }
 
-    template<typename byte>
-    void read(int n, std::vector<byte> &out)
+    template<typename container>
+    void readInto(int n, container &out)
     {
         if (!hasNMoreBytes(n))
+        {
             return;
+        }
         out.insert(out.end(), n, 0);
-        char *copyTo = (char *) &out[out.size() - n];
-        memcpy(copyTo, &data[pos], n);
-        pos += n;
+        copy(n, (char *) &out[out.size() - n]);
+        readPos += n;
     }
 
-    void skip(int n)
-    {
-        if (hasNMoreBytes(n))
-            pos += n;
-    }
+    void copy(int n, char *out);
+
+    void skip(int n);
 
     template<typename type>
     void skip()
@@ -59,20 +45,15 @@ class FileReader
         skip(sizeof(type));
     }
 
-    int currentPosition()
-    {
-        return pos;
-    }
+    int currentReadPosition() const;
 
-    bool hasNMoreBytes(int n)
-    {
-        return pos + n <= data.size();
-    }
+    bool hasNMoreBytes(int n) const;
 
-    bool endReached()
-    {
-        return !hasNMoreBytes(1);
-    }
+    bool reachedEnd() const;
+
+  protected:
+    int readPos = 0;
+    std::vector<unsigned char> data;
 };
 
 

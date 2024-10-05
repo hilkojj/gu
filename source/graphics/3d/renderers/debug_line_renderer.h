@@ -1,15 +1,16 @@
 #ifndef DEBUG_LINE_RENDERER_H
 #define DEBUG_LINE_RENDERER_H
 
-#include "../mesh.h"
-#include "../vert_attributes.h"
-#include "../vert_buffer.h"
+#include "../shared_3d.h"
 
 #include "../../shader_program.h"
 
-/**
- * THIS LINE RENDERER IS VEEEEEEEEEERYYYY SLOOOOOOW, so only use it for debugging
- **/
+#include "../../../math/math_utils.h"
+
+/*
+ * Purely for debugging purposes.
+ * This line renderer is not batched. Every line is a draw-call, shapes are multiple draw calls.
+ */
 class DebugLineRenderer
 {
   public:
@@ -31,19 +32,19 @@ class DebugLineRenderer
 
     void arrow(const vec2 &p0, const vec2 &p1, float size, const vec3 &color);
 
-    void arrow(const vec3 &p0, const vec3 &p1, float size, const vec3 &color, const vec3 &arrowHeadAxis=mu::Y);
+    void arrow(const vec3 &p0, const vec3 &p1, float size, const vec3 &color, const vec3 &arrowHeadAxis = mu::Y);
 
     void arrows(const vec2 &p, float size, const vec3 &color);
 
-    void square(const vec3 &p, float size, const vec3 &color, const vec3 &xAxis=mu::X, const vec3 &yAxis=mu::Y);
+    void square(const vec3 &p, float size, const vec3 &color, const vec3 &xAxis = mu::X, const vec3 &yAxis = mu::Y);
 
     void circle(const vec2 &p, float radius, int resolution, const vec3 &color);
 
-    void circle(const vec3 &p, float radius, int resolution, const vec3 &color, const vec3 &xAxis=mu::X, const vec3 &yAxis=mu::Y);
+    void circle(const vec3 &p, float radius, int resolution, const vec3 &color, const vec3 &xAxis = mu::X, const vec3 &yAxis = mu::Y);
 
   private:
     ShaderProgram shaderProgram;
-    GLuint u_colorId, p0Id, p1Id, MVPId;
+    int u_colorLocation, p0Location, p1Location, MVPLocation;
     SharedMesh lineMesh;
 };
 

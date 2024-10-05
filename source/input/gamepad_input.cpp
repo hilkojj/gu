@@ -1,6 +1,7 @@
 #include "gamepad_input.h"
 
 #include "../utils/gu_error.h"
+#include "../json.hpp"
 
 #include <iostream>
 

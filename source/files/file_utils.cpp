@@ -4,6 +4,10 @@
 #include "../utils/gu_error.h"
 #include "../utils/string_utils.h"
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
 #ifdef _WIN32
 #include <filesystem>
 #else
@@ -47,6 +51,12 @@ bool fu::exists(const char *path)
     return exists;
 }
 
+void fu::writeBinary(const char *path, const char *data, size_t dataSize)
+{
+    std::ofstream out(path, std::ios::out | std::ios::binary);
+    out.write(data, size_t(dataSize));
+    out.close();
+}
 
 void fu::iterateDirectoryRecursively(
     const char *directoryPath,

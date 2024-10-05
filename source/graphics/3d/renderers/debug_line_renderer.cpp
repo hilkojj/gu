@@ -1,6 +1,7 @@
 #include "debug_line_renderer.h"
 
-#include <string>
+#include "../vert_buffer.h"
+#include "../mesh.h"
 
 namespace
 {
@@ -41,25 +42,25 @@ DebugLineRenderer::DebugLineRenderer() :
     shaderProgram("DebugLineShader", vertSource, fragSource)
 {
     VertAttributes attrs;
-    attrs.add({"nr", 1, 1, GL_BYTE});
-    lineMesh = SharedMesh(new Mesh("debug_line", 2, attrs));
-    lineMesh->set(true, 0, 0);
-    lineMesh->set(false, 1, 0);
+    attrs.add({ "nr", 1, 1, GL_BYTE });
+    lineMesh = std::make_shared<Mesh>("debug_line", 2, attrs);
+    lineMesh->get<bool>(0, 0) = true;
+    lineMesh->get<bool>(1, 0) = false;
     VertBuffer::uploadSingleMesh(lineMesh);
 
-    u_colorId = shaderProgram.location("u_color");
-    MVPId = shaderProgram.location("MVP");
-    p0Id = shaderProgram.location("p0");
-    p1Id = shaderProgram.location("p1");
+    u_colorLocation = shaderProgram.location("u_color");
+    MVPLocation = shaderProgram.location("MVP");
+    p0Location = shaderProgram.location("p0");
+    p1Location = shaderProgram.location("p1");
 }
 
 void DebugLineRenderer::line(const vec3 &p0, const vec3 &p1, const vec3 &color)
 {
     shaderProgram.use();
-    glUniform3f(u_colorId, color.r, color.g, color.b);
-    glUniform3f(p0Id, p0.x * scale, p0.y * scale, p0.z * scale);
-    glUniform3f(p1Id, p1.x * scale, p1.y * scale, p1.z * scale);
-    glUniformMatrix4fv(MVPId, 1, GL_FALSE, &projection[0][0]);
+    glUniform3f(u_colorLocation, color.r, color.g, color.b);
+    glUniform3f(p0Location, p0.x * scale, p0.y * scale, p0.z * scale);
+    glUniform3f(p1Location, p1.x * scale, p1.y * scale, p1.z * scale);
+    glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &projection[0][0]);
     lineMesh->renderArrays(GL_LINES);
 }
 

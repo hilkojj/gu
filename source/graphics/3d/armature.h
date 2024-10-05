@@ -2,14 +2,13 @@
 #ifndef ARMATURE_H
 #define ARMATURE_H
 
+#include "shared_3d.h"
+
 #include "../../math/math_utils.h"
 
 #include <memory>
 #include <vector>
 #include <unordered_map>
-
-struct Bone;
-typedef std::shared_ptr<Bone> SharedBone;
 
 struct Bone
 {
@@ -71,7 +70,5 @@ struct Armature
     std::vector<SharedBone> bones;
     std::unordered_map<std::string, Animation> animations;
 };
-
-typedef std::shared_ptr<Armature> SharedArmature;
 
 #endif

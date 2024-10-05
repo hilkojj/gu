@@ -1,6 +1,8 @@
 
 #include "AsepriteLoader.h"
 
+#include "../utils/gu_error.h"
+
 #include <zlib.h>
 
 namespace aseprite
@@ -26,7 +28,7 @@ std::string Loader::loadString()
     std::string str(length, ' ');
     if (!hasNMoreBytes(length))
         throw gu_err("no string here");
-    memcpy(&str[0], &data[pos], length);
+    copy(length, &str[0]);
     skip(str.size());
     return str;
 }
@@ -92,7 +94,7 @@ void Loader::loadFrames()
         frame.pixels.resize(sprite.width * sprite.height * sprite.mode, 0);
 
         int
-            frameStart = currentPosition(),
+            frameStart = currentReadPosition(),
             frameEnd = frameStart + int(read<DWORD>());
 
         if (read<WORD>() != 0xF1FA) // magic number
@@ -109,7 +111,7 @@ void Loader::loadFrames()
         for (int j = 0; j < chunkCount; j++)
         {
             int
-                chunkStart = currentPosition(),
+                chunkStart = currentReadPosition(),
                 chunkEnd = chunkStart + read<DWORD>();
 
             ChunkType type = ChunkType(read<WORD>());
@@ -142,9 +144,9 @@ void Loader::loadFrames()
                 default:
                     break;
             }
-            skip(chunkEnd - currentPosition());
+            skip(chunkEnd - currentReadPosition());
         }
-        skip(frameEnd - currentPosition());
+        skip(frameEnd - currentReadPosition());
     }
 }
 
@@ -194,16 +196,16 @@ void Loader::loadCel(Frame &frame, int celEnd)
 
     if (celType == 0) // RAW pixels
     {
-        read(count, cel.pixels);
+        readInto(count, cel.pixels);
     }
     else if (celType == 2) // ZLIB compressed pixels
     {
-        int compressedPixelsBegin = currentPosition();
+        int compressedPixelsBegin = currentReadPosition();
         int compressedPixelsEnd = celEnd;
 
         int size = compressedPixelsEnd - compressedPixelsBegin;
         std::vector<char> compressedPixels;
-        read(size, compressedPixels);
+        readInto(size, compressedPixels);
 
         z_stream infstream;
         infstream.zalloc = Z_NULL;
@@ -220,7 +222,7 @@ void Loader::loadCel(Frame &frame, int celEnd)
         inflate(&infstream, Z_NO_FLUSH);
         inflateEnd(&infstream);
     }
-    if (currentPosition() != celEnd)
+    if (currentReadPosition() != celEnd)
         throw gu_err("file corrupt.");
 
     celToFrame(frame, cel);

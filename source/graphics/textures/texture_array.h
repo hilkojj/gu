@@ -1,20 +1,16 @@
 #ifndef TEXTURE_ARRAY_H
 #define TEXTURE_ARRAY_H
 
-#include <memory>
+#include "shared_texture.h"
+
+#include "../external/gl_includes.h"
+
 #include <vector>
 #include <string>
-#include "graphics/external/gl_includes.h"
-
-class TextureArray;
-
-typedef std::shared_ptr<TextureArray> SharedTexArray;
 
 class TextureArray
 {
-
   public:
-
     /*
     WARNING when using fromDDSFiles() in WebGL:
 
@@ -38,8 +34,6 @@ class TextureArray
     void bind(GLuint unit);
 
     ~TextureArray();
-
 };
-
 
 #endif

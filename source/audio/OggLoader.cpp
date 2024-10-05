@@ -7,9 +7,8 @@ using std::ldexp; // fixes clash with glm::ldexp
 void au::OggLoader::load(const char *path, Sound &s)
 {
     short *decoded;
-
-    int channels, sampleRate;
-
+    int channels;
+    int sampleRate;
     int samples = stb_vorbis_decode_filename(path, &channels, &sampleRate, &decoded);
 
     if (samples == -1)

@@ -1,24 +1,11 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include <memory>
-#include "graphics/external/gl_includes.h"
-#include "graphics/shader_program.h"
-
-class Texture;
-
-typedef std::shared_ptr<Texture> SharedTexture;
+#include "../external/gl_includes.h"
 
 class Texture
 {
-
   public:
-
-    /**
-     * Load a DXT1/3/5 texture directly to OpenGL
-     */
-    static SharedTexture fromDDSFile(const char *path); // todo: should return Texture instead of SharedTexture. But changing that will break old projects.
-
     static Texture fromImageFile(const char *path);
 
     static Texture fromByteData(const GLubyte *data, GLint internalFormat, GLenum format, GLsizei width, GLsizei height,
@@ -31,23 +18,10 @@ class Texture
     void bind(GLuint unit) const;
 
     // same as bind() but also sets sampler uniform for shader.
-    void bind(GLuint unit, const ShaderProgram &shader, const char* name) const;
+    void bind(GLuint unit, const class ShaderProgram &shader, const char* name) const;
 
     ~Texture();
 
-};
-
-class DDSData
-{
-  public:
-
-    GLuint height, width, linearSize, mipMapCount, fourCC, format, bufsize;
-
-    unsigned char *buffer;
-
-    DDSData(const char *path);
-
-    ~DDSData();
 };
 
 #endif

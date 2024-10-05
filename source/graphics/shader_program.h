@@ -2,20 +2,17 @@
 #ifndef SHADER_PROGRAM_H
 #define SHADER_PROGRAM_H
 
-#include "graphics/external/gl_includes.h"
-
 #include <string>
 #include <map>
 #include <vector>
 
 class ShaderDefinitions
 {
-
     std::map<std::string, std::string> definitionsMap;
     double lastEditTime = 0;
     friend class ShaderAsset;
 
-public:
+  public:
 
     static ShaderDefinitions &global();
 
@@ -54,16 +51,16 @@ class ShaderProgram
     ~ShaderProgram();
 
     bool compiled() const;
-    GLuint id() const;
-    GLuint location(const char *uniformName) const;
+    unsigned int id() const;
+    int location(const char *uniformName) const;
 
     virtual void use();
 
-    // Set varyings to load from the program into C++. Program must be compiled after setting this.
+    // Set varyings to load from the program into C++. Must be set before compiling.
     void setFeedbackVaryings(const std::vector<const char *> &varyings);
 
   protected:
-    GLuint programId = 0;
+    unsigned int programId = 0;
     std::string name;
     bool compiled_ = false;
 
@@ -73,7 +70,7 @@ class ShaderProgram
 
     void compile(const char *vertSource, const char *fragSource, const char *geomSource=NULL);
 
-    void compileAndAttach(const char *source, GLuint shaderId, const char *shaderType);
+    void compileAndAttach(const char *source, unsigned int shaderId, const char *shaderType);
 };
 
 #endif

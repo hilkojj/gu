@@ -4,10 +4,9 @@
 #include "../../gu/game_utils.h"
 #include "../../input/key_input.h"
 #include "../../input/mouse_input.h"
-#include "../../math/math_utils.h"
 
-FlyingCameraController::FlyingCameraController(Camera *cam)
-: cam(cam)
+FlyingCameraController::FlyingCameraController(Camera *cam) :
+    cam(cam)
 {
     MouseInput::setLockedMode(true);
 }
@@ -36,10 +35,10 @@ void FlyingCameraController::update(double deltaTime)
         cam->position.y += deltaTime * speedMultiplier;
 
     if (MouseInput::deltaMouseX != 0)
-        cam->rotate(MouseInput::deltaMouseX / gu::width * -100 * mouseSensivity, mu::Y);
+        cam->rotate(MouseInput::deltaMouseX / gu::virtualWidth * -100 * mouseSensivity, mu::Y);
 
     if (MouseInput::deltaMouseY != 0)
-        cam->rotate(MouseInput::deltaMouseY / gu::height * -100 * mouseSensivity, cam->right);
+        cam->rotate(MouseInput::deltaMouseY / gu::virtualHeight * -100 * mouseSensivity, cam->right);
     
 
     cam->update();

@@ -1,14 +1,14 @@
 
 #include "frame_buffer.h"
 
-#include <memory>
+#include "textures/texture.h"
+
 #include "../gu/game_utils.h"
-#include "math/math_utils.h"
 
 void FrameBuffer::unbindCurrent()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, gu::widthPixels, gu::heightPixels);
+    glViewport(0, 0, gu::pixelWidth, gu::pixelHeight);
 }
 
 GLuint create()
@@ -28,7 +28,7 @@ FrameBuffer::FrameBuffer(GLuint width, GLuint height, GLuint samples_)
           #endif
       )
 {
-    #ifndef PUT_A_SOCK_IN_IT
+    #ifndef GU_PUT_A_SOCK_IN_IT
     std::cout << "FrameBuffer " << id << " created with " << samples << " samples" << std::endl;
     #endif
 
@@ -38,7 +38,7 @@ FrameBuffer::FrameBuffer(GLuint width, GLuint height, GLuint samples_)
 FrameBuffer::~FrameBuffer()
 {
     glDeleteFramebuffers(1, &id);
-    #ifndef PUT_A_SOCK_IN_IT
+    #ifndef GU_PUT_A_SOCK_IN_IT
     std::cout << "FrameBuffer " << id << " destroyed" << std::endl;
     #endif
     if (sampled) delete sampled;
@@ -232,5 +232,5 @@ void FrameBuffer::blitTo(GLbitfield mask, FrameBuffer *other, GLenum filter)
     glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, other ? other->id : 0);
 
-    glBlitFramebuffer(0, 0, width, height, 0, 0, other ? other->width : gu::widthPixels, other ? other->height : gu::heightPixels, mask, filter);
+    glBlitFramebuffer(0, 0, width, height, 0, 0, other ? other->width : gu::pixelWidth, other ? other->height : gu::pixelHeight, mask, filter);
 }
