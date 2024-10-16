@@ -127,19 +127,22 @@ target_link_libraries(gameutils PUBLIC zlib)
 
 
 # ---TinyGLTF---
-file(DOWNLOAD https://raw.githubusercontent.com/syoyo/tinygltf/7e83ef9fb44d8150d69e3d70067146f3746db917/tiny_gltf.h ${CMAKE_CURRENT_LIST_DIR}/../external/tiny_gltf.h
-    STATUS DOWNLOAD_STATUS)
-
-# Separate the returned status code, and error message.
-list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
-list(GET DOWNLOAD_STATUS 1 ERROR_MESSAGE)
-# Check if download was successful.
-if(${STATUS_CODE} EQUAL 0)
-    message(STATUS "tiny_gltf.h download completed successfully!")
-else()
-    # Exit CMake if the download failed, printing the error message.
-    message(FATAL_ERROR "Error occurred during tiny_gltf.h download: ${ERROR_MESSAGE}")
+set(TINY_GLTF_PATH ${CMAKE_CURRENT_LIST_DIR}/../external/tiny_gltf.h)
+if (NOT EXISTS ${TINY_GLTF_PATH})
+    file(
+        DOWNLOAD https://raw.githubusercontent.com/syoyo/tinygltf/7e83ef9fb44d8150d69e3d70067146f3746db917/tiny_gltf.h
+            ${TINY_GLTF_PATH}
+        STATUS DOWNLOAD_STATUS
+    )
+    list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
+    list(GET DOWNLOAD_STATUS 1 ERROR_MESSAGE)
+    if(${STATUS_CODE} EQUAL 0)
+        message(STATUS "tiny_gltf.h download completed successfully!")
+    else()
+        message(FATAL_ERROR "Error occurred during tiny_gltf.h download: ${ERROR_MESSAGE}")
+    endif()
 endif()
+
 
 
 # ---Bullet2---

@@ -5,6 +5,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <thread>
 
 class FileWatcher
 {
@@ -27,8 +28,11 @@ class FileWatcher
 
     void startWatchingAsync();
 
+    ~FileWatcher();
+
   private:
     std::vector<std::string> paths;
+    std::thread thread;
 };
 
 

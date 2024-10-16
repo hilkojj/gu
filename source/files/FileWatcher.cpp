@@ -31,7 +31,7 @@ void FileWatcher::addDirectoryToWatch(const char *path, bool bRecursive)
 
 void FileWatcher::startWatchingAsync()
 {
-    std::thread(&FileWatcher::startWatchingSync, this);
+    thread = std::thread(&FileWatcher::startWatchingSync, this);
 }
 
 #ifdef linux
@@ -111,3 +111,11 @@ void FileWatcher::startWatchingSync()
 }
 
 #endif
+
+FileWatcher::~FileWatcher()
+{
+    if (thread.joinable())
+    {
+        thread.join();
+    }
+}

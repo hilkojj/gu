@@ -31,6 +31,8 @@ void setShouldClose(bool);
 
 void setScreen(Screen *screen);
 
+bool getVSync();
+
 void setVSync(bool bEnabled);
 
 }; // namespace gu

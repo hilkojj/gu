@@ -409,6 +409,11 @@ void setScreen(Screen *newScreen)
     onResize();
 }
 
+bool getVSync()
+{
+    return config.bVSync;
+}
+
 void setVSync(bool bEnabled)
 {
     if (bEnabled == config.bVSync)

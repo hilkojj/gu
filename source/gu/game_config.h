@@ -14,7 +14,11 @@ namespace gu
 struct Config
 {
     std::string title = "Game";
-    int width = 1600, height = 900, samples = 0, depthBits = 24;
+
+    // Requested window size at startup is in screen coordinates, not pixels.
+    int width = 1600, height = 900;
+
+    int samples = 0, depthBits = 24;
     bool
         bVSync = false,
         bShowFPSInTitleBar = false,

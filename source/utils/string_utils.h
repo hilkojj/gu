@@ -73,7 +73,7 @@ inline char randomAlphanumericChar()
     return chars[rand() % maxIndex];
 }
 
-inline std::string random(int length)
+inline std::string randomAlphanumeric(int length)
 {
     std::string string(length, 0);
     std::generate_n(string.begin(), length, randomAlphanumericChar);
