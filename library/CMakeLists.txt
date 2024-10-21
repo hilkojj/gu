@@ -12,8 +12,8 @@ option(GU_UNITY_BUILD "Build as a single object" ON)
 
 
 # ---
-set(PROJECT_SOURCE_DIR ../source/*)
-file(GLOB_RECURSE source ${PROJECT_SOURCE_DIR})
+set(PROJECT_SOURCE_DIR ../source)
+file(GLOB_RECURSE source ${PROJECT_SOURCE_DIR}/*)
 
 if(GU_INCLUDE_AUDIO)
     add_definitions(-DGU_INCLUDE_AUDIO)
@@ -99,6 +99,7 @@ add_library(imgui
     ${IMGUI_DIR}/examples/imgui_impl_opengl3.h
     ${IMGUI_DIR}/examples/imgui_impl_opengl3.cpp
 )
+target_compile_definitions(imgui INTERFACE "-DIMGUI_USER_CONFIG=<gu_imgui_config.h>")
 
 if (NOT DEFINED EMSCRIPTEN)
     add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD) # tell IMGUI that we use glad on desktop

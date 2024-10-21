@@ -4,7 +4,7 @@
 
 #include "shader_program.h"
 
-#include "../asset_manager/asset.h"
+#include "../assets/asset.h"
 
 class ShaderAsset : public ShaderProgram
 {

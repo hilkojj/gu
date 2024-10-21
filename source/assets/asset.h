@@ -15,10 +15,10 @@ class asset_impl
 
     void set(size_t typeHash, const char *path);
 
-    bool hasReloaded();
+    bool hasReloaded() const;
 
     std::shared_ptr<loaded_asset> loadedAsset;
-    double lastReloadCheckTime;
+    mutable double lastReloadCheckTime;
 };
 
 template<typename type>
@@ -53,7 +53,7 @@ class asset
         return *(this->operator->());
     }
 
-    bool hasReloaded()
+    bool hasReloaded() const
     {
         return impl.hasReloaded();
     }

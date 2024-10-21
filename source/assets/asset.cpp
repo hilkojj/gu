@@ -33,7 +33,7 @@ void asset_impl::set(size_t typeHash, const char *path)
     }
 }
 
-bool asset_impl::hasReloaded()
+bool asset_impl::hasReloaded() const
 {
     if (loadedAsset == nullptr)
     {
