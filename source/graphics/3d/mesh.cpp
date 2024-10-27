@@ -137,6 +137,11 @@ void Mesh::disposeOfflineData()
     }
 }
 
+int Mesh::getNumVertsReservedInBuffer()
+{
+    return inBuffer.numVertsReserved;
+}
+
 Mesh::~Mesh()
 {
     #ifndef GU_PUT_A_SOCK_IN_IT

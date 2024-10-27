@@ -85,6 +85,8 @@ class Mesh : public VertData
      */
     void disposeOfflineData();
 
+    int getNumVertsReservedInBuffer();
+
     ~Mesh();
 
     // Returns a static shared quad, which has been uploaded.
