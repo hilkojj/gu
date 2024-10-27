@@ -5,10 +5,6 @@
 
 #include "../../utils/gu_error.h"
 
-#ifndef GU_PUT_A_SOCK_IN_IT
-#include <iostream>
-#endif
-
 Texture Texture::fromImageFile(const char *path)
 {
     int width, height, channels;
@@ -41,9 +37,6 @@ Texture Texture::fromImageFile(const char *path)
 Texture::Texture(GLuint id, GLuint width, GLuint height)
     : id(id), width(width), height(height)
 {
-    #ifndef GU_PUT_A_SOCK_IN_IT
-    std::cout << "Texture (" << width << "x" << height << ") id: " << id << " created\n";
-    #endif
 }
 
 void Texture::bind(GLuint unit) const
@@ -61,9 +54,6 @@ void Texture::bind(GLuint unit, const ShaderProgram &shader, const char* name) c
 Texture::~Texture()
 {
     glDeleteTextures(1, &id);
-    #ifndef GU_PUT_A_SOCK_IN_IT
-    std::cout << "Texture " << id << " destroyed\n";
-    #endif
 }
 
 Texture Texture::fromByteData(

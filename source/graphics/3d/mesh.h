@@ -10,7 +10,7 @@
 class VertData
 {
   public:
-    const VertAttributes attributes;
+    VertAttributes attributes;
     std::vector<unsigned char> vertexData;
 
     VertData(VertAttributes attrs, std::vector<unsigned char> vertices);

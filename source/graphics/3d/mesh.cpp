@@ -33,9 +33,6 @@ Mesh::Mesh(const std::string &name, unsigned int nrOfVertices, const VertAttribu
     name(name),
     VertData(attributes, std::vector<u_char>(nrOfVertices * attributes.getVertSize()))
 {
-    #ifndef GU_PUT_A_SOCK_IN_IT
-    std::cout << "Mesh created: " << name << std::endl;
-    #endif
 }
 
 namespace
@@ -144,10 +141,6 @@ int Mesh::getNumVertsReservedInBuffer()
 
 Mesh::~Mesh()
 {
-    #ifndef GU_PUT_A_SOCK_IN_IT
-    std::cout << "Mesh destroyed: " << name << std::endl;
-    #endif
-
     if (vertBuffer)
     {
         vertBuffer->onMeshDestroyed();

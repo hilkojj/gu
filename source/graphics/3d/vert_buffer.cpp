@@ -4,10 +4,6 @@
 
 #include "../../utils/gu_error.h"
 
-#ifndef GU_PUT_A_SOCK_IN_IT
-#include <iostream>
-#endif
-
 GLuint VertBuffer::currentlyBoundVao = 0;
 
 VertBuffer *VertBuffer::with(const VertAttributes &attributes)
@@ -80,9 +76,6 @@ void VertBuffer::upload(bool disposeOfflineData)
         throw gu_err("VertBuffer already uploaded");
     }
 
-    #ifndef GU_PUT_A_SOCK_IN_IT
-    std::cout << "Uploading vbo\n";
-    #endif
     bind();
 
     glGenBuffers(1, &vboId);    // create VertexBuffer
@@ -223,9 +216,6 @@ GLuint VertBuffer::uploadPerInstanceData(const VertData &data, GLuint advanceRat
 
 void VertBuffer::onMeshDestroyed()
 {
-    #ifndef GU_PUT_A_SOCK_IN_IT
-    std::cout << "A mesh in this VB was destroyed\n";
-    #endif
     if (!inUse())
     {
         delete this;
@@ -270,9 +260,6 @@ VertBuffer::~VertBuffer()
         }
         std::cerr << "]" << std::endl;
     }
-    #ifndef GU_PUT_A_SOCK_IN_IT
-    std::cout << "Deleting VertBuffer: vao & vbo & ibo\n";
-    #endif
     glDeleteVertexArrays(1, &vaoId);
     glDeleteBuffers(1, &vboId);
     glDeleteBuffers(1, &iboId);

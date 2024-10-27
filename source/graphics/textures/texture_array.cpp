@@ -10,10 +10,6 @@
 #include "graphics/3d/renderers/quad_renderer.h"
 #endif
 
-#ifndef GU_PUT_A_SOCK_IN_IT
-#include <iostream>
-#endif
-
 SharedTexArray TextureArray::fromByteData(const GLubyte *data, GLenum format, GLsizei width, GLsizei height, GLsizei depth,
     GLuint magFilter, GLuint minFilter, bool bGenerateMipMaps)
 {
@@ -113,9 +109,6 @@ SharedTexArray TextureArray::fromDDSFiles(const std::vector<std::string> &paths)
 TextureArray::TextureArray(GLuint id, GLuint width, GLuint height, GLuint layers)
     : id(id), width(width), height(height), layers(layers)
 {
-    #ifndef GU_PUT_A_SOCK_IN_IT
-    std::cout << "TextureArray (" << width << "x" << height << " x " << layers << ") id: " << id << " created\n";
-    #endif
 }
 
 void TextureArray::bind(GLuint unit)
@@ -127,7 +120,4 @@ void TextureArray::bind(GLuint unit)
 TextureArray::~TextureArray()
 {
     glDeleteTextures(1, &id);
-    #ifndef GU_PUT_A_SOCK_IN_IT
-    std::cout << "TextureArray " << id << " destroyed\n";
-    #endif
 }

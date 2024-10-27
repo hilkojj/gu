@@ -28,19 +28,12 @@ FrameBuffer::FrameBuffer(GLuint width, GLuint height, GLuint samples_)
           #endif
       )
 {
-    #ifndef GU_PUT_A_SOCK_IN_IT
-    std::cout << "FrameBuffer " << id << " created with " << samples << " samples" << std::endl;
-    #endif
-
     if (samples) sampled = new FrameBuffer(width, height);
 }
 
 FrameBuffer::~FrameBuffer()
 {
     glDeleteFramebuffers(1, &id);
-    #ifndef GU_PUT_A_SOCK_IN_IT
-    std::cout << "FrameBuffer " << id << " destroyed" << std::endl;
-    #endif
     if (sampled) delete sampled;
 }
 
