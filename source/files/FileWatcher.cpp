@@ -1,8 +1,8 @@
-
 #include "FileWatcher.h"
 
 #include "file_utils.h"
 
+#include "../math/math_utils.h"
 #include "../utils/gu_error.h"
 #include "../utils/string_utils.h"
 
@@ -39,16 +39,21 @@ void FileWatcher::startWatchingAsync()
 #include <sys/inotify.h>
 #include <unistd.h>
 
-#define EVENT_SIZE      sizeof(struct inotify_event)
-#define EVENT_BUF_LEN   (1024 * (EVENT_SIZE + 16))
+#define EVENT_SIZE sizeof(inotify_event)
+#define EVENT_BUF_LEN (1024 * (EVENT_SIZE + 16))
 
 void FileWatcher::startWatchingSync()
 {
-    const int inotifyInstance = inotify_init();
+    inotifyInstance = inotify_init();
 
     if (inotifyInstance < 0)
     {
         throw gu_err("Failed to get inotify instance");
+    }
+
+    if (pipe(stopPipe) < 0)
+    {
+        throw gu_err("Failed to create stop-pipe for inotify");
     }
 
     std::map<int, std::string> watchToPath;
@@ -61,36 +66,54 @@ void FileWatcher::startWatchingSync()
 
     std::cout << "Started watching " << watchToPath.size() << " directories.\n";
 
-    while (bContinueWatching)
+    while (true)
     {
-        char buffer[EVENT_BUF_LEN];
-        const int eventLength = read(inotifyInstance, buffer, EVENT_BUF_LEN);
+        fd_set fileDescriptors;
+        FD_ZERO(&fileDescriptors);
+        FD_SET(stopPipe[0], &fileDescriptors);
+        FD_SET(inotifyInstance, &fileDescriptors);
 
-        if (eventLength < 0)
+        if (select(max(inotifyInstance, stopPipe[0]) + 1, &fileDescriptors, nullptr, nullptr, nullptr) < 0)
         {
-            throw gu_err("Reading inotify events failed");
+            throw gu_err("Error while watching.");
         }
 
-        inotify_event *event = (inotify_event *) &buffer[0];
-        if (!event->len || event->mask & IN_ISDIR)
+        if (FD_ISSET(stopPipe[0], &fileDescriptors))
         {
-            continue;
+            // Stop pipe was written to.
+            break;
         }
+        if (FD_ISSET(inotifyInstance, &fileDescriptors))
+        {
+            char buffer[EVENT_BUF_LEN];
+            const int eventLength = read(inotifyInstance, buffer, EVENT_BUF_LEN);
 
-        const std::string &directoryPath = watchToPath[event->wd];
-        const std::string filePath = directoryPath + std::string(event->name);
+            if (eventLength < 0)
+            {
+                throw gu_err("Reading inotify events failed");
+            }
 
-        if (event->mask & IN_CREATE && onCreate)
-        {
-            onCreate(filePath);
-        }
-        else if (event->mask & IN_DELETE && onDelete)
-        {
-            onDelete(filePath);
-        }
-        else if (event->mask & IN_CLOSE_WRITE && onChange)
-        {
-            onChange(filePath);
+            inotify_event *event = (inotify_event *) &buffer[0];
+            if (!event->len || event->mask & IN_ISDIR)
+            {
+                continue;
+            }
+
+            const std::string &directoryPath = watchToPath[event->wd];
+            const std::string filePath = directoryPath + std::string(event->name);
+
+            if (event->mask & IN_CREATE && onCreate)
+            {
+                onCreate(filePath);
+            }
+            else if (event->mask & IN_DELETE && onDelete)
+            {
+                onDelete(filePath);
+            }
+            else if (event->mask & IN_CLOSE_WRITE && onChange)
+            {
+                onChange(filePath);
+            }
         }
     }
     for (auto &[watch, path] : watchToPath)
@@ -99,6 +122,9 @@ void FileWatcher::startWatchingSync()
     }
 
     close(inotifyInstance);
+    close(stopPipe[0]);
+    close(stopPipe[1]);
+    inotifyInstance = -1;
 
     std::cout << "Stopped watching " << watchToPath.size() << " directories.\n";
 }
@@ -112,10 +138,21 @@ void FileWatcher::startWatchingSync()
 
 #endif
 
-FileWatcher::~FileWatcher()
+void FileWatcher::stopWatching()
 {
+#if linux
+    if (inotifyInstance >= 0)
+    {
+        write(stopPipe[1], "bye", 3);
+    }
+#endif
     if (thread.joinable())
     {
         thread.join();
     }
+}
+
+FileWatcher::~FileWatcher()
+{
+    stopWatching();
 }

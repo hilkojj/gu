@@ -17,22 +17,21 @@ class FileWatcher
     callback onDelete;
     callback onChange;
 
-    /**
-     * set this to false in a callback to stop the watching thread.
-     */
-    bool bContinueWatching = true;
-
     void addDirectoryToWatch(const char *path, bool bRecursive);
 
     void startWatchingSync();
 
     void startWatchingAsync();
 
+    void stopWatching();
+
     ~FileWatcher();
 
   private:
     std::vector<std::string> paths;
     std::thread thread;
+    int inotifyInstance = -1;
+    int stopPipe[2];
 };
 
 
