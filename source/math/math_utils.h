@@ -32,7 +32,7 @@ const quat NO_ROTATION = identity<quat>();
 
 inline float random()
 {
-    return (float) std::rand() / RAND_MAX;
+    return float(std::rand() / RAND_MAX);
 }
 
 inline float random(float max)
@@ -103,6 +103,7 @@ inline bool findCircleIntersections(
         x - h * (circle1Pos.y - circle0Pos.y) / circleDistance,
         y + h * (circle1Pos.x - circle0Pos.x) / circleDistance
     );
+    return true;
 }
 
 }

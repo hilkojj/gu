@@ -44,7 +44,7 @@ SharedTexArray TextureArray::fromDDSFiles(const std::vector<std::string> &paths)
     int width_, height_;
     for (auto p : paths)
     {
-        SharedTexture tex = Texture::fromDDSFile(p.c_str());
+        SharedTexture tex = DDSTexture::fromDDSFile(p.c_str());
         if (!fb)
         {
             fb = new FrameBuffer(tex->width, tex->height);

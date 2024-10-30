@@ -295,15 +295,15 @@ double remainingSecond = 0.0;
 void mainLoop()
 {
     profiler::beginNewFrame();
-    double currTime = glfwGetTime();
-    double deltaTime = currTime - prevTime;
+    const double currTime = glfwGetTime();
+    const double deltaTime = currTime - prevTime;
 
     framesInSecond++;
     if ((remainingSecond -= deltaTime) <= 0)
     {
         if (config.bShowFPSInTitleBar)
         {
-            std::string fps = std::to_string(framesInSecond) + "fps";
+            const std::string fps = std::to_string(framesInSecond) + "fps";
             glfwSetWindowTitle(window, fps.c_str());
         }
         profiler::fps = framesInSecond;
@@ -381,7 +381,7 @@ void run()
     remainingSecond = 1;
 
     #ifdef EMSCRIPTEN
-    emscripten_set_main_loop(mainLoop, config.vsync ? 0 : 99999, 1);
+    emscripten_set_main_loop(mainLoop, config.bVSync ? 0 : 99999, 1);
     #else
 
     do mainLoop();
