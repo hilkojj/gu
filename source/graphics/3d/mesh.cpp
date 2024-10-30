@@ -31,7 +31,7 @@ int Mesh::Part::getNumIndicesToRender() const
 
 Mesh::Mesh(const std::string &name, unsigned int nrOfVertices, const VertAttributes &attributes) :
     name(name),
-    VertData(attributes, std::vector<u_char>(nrOfVertices * attributes.getVertSize()))
+    VertData(attributes, std::vector<unsigned char>(nrOfVertices * attributes.getVertSize()))
 {
 }
 

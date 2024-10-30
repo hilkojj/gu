@@ -39,12 +39,12 @@ class InstancedMeshScreen : public Screen
         VertBuffer *buffer = VertBuffer::with(mesh->attributes);
         buffer->add(mesh)->upload(true);
 
-        VertData instanceOffsets(VertAttributes().add_({"OFFSET", 3}), std::vector<u_char>(sizeof(float) * 3 * 20 * 20 * 20));
+        VertData instanceOffsets(VertAttributes().add_({"OFFSET", 3}), std::vector<unsigned char>(sizeof(float) * 3 * 20 * 20 * 20));
         int i = 0;
         for (int x = 0; x < 20; x++)
             for (int y = 0; y < 20; y++)
                 for (int z = 0; z < 20; z++)
-                    instanceOffsets.set(vec3(x * 2, y * 2, z * 2), i++, 0);
+                    instanceOffsets.get<vec3>(i++, 0) = vec3(x * 2, y * 2, z * 2);
 
         buffer->uploadPerInstanceData(instanceOffsets);
 
@@ -82,8 +82,8 @@ class InstancedMeshScreen : public Screen
 
     void onResize()
     {
-        cam.viewportWidth = gu::widthPixels;
-        cam.viewportHeight = gu::heightPixels;
+        cam.viewportWidth = gu::pixelWidth;
+        cam.viewportHeight = gu::pixelHeight;
     }
 
 };
