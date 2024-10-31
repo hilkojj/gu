@@ -1,5 +1,4 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#pragma once
 
 #include "math_utils.h"
 
@@ -10,5 +9,3 @@ struct Sphere
 
     bool rayIntersection(const vec3 &rayOrigin, const vec3 &rayDirection, vec3 *p0, vec3 *p1 = nullptr) const;
 };
-
-#endif

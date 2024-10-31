@@ -1,6 +1,4 @@
-
-#ifndef GAME_SHADER_ASSET_H
-#define GAME_SHADER_ASSET_H
+#pragma once
 
 #include "shader_program.h"
 
@@ -37,6 +35,3 @@ class ShaderAsset : public ShaderProgram
     void use() override;
 
 };
-
-
-#endif

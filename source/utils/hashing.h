@@ -1,6 +1,4 @@
-
-#ifndef GAME_HASHING_H
-#define GAME_HASHING_H
+#pragma once
 
 #include "../math/math_utils.h"
 
@@ -23,5 +21,3 @@ inline uint32 hashStringCrossPlatform(const string &inputString)
     }
     return hash;
 }
-
-#endif //GAME_HASHING_H

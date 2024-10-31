@@ -1,6 +1,4 @@
-
-#ifndef GU_DDS_TEXTURE_H
-#define GU_DDS_TEXTURE_H
+#pragma once
 
 #include "texture.h"
 #include "shared_texture.h"
@@ -22,5 +20,3 @@ namespace DDSTexture
         ~DDSData();
     };
 }
-
-#endif

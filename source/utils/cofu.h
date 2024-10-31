@@ -1,6 +1,4 @@
-
-#ifndef GU_COFU_H
-#define GU_COFU_H
+#pragma once
 
 #include <utility>
 #include <functional>
@@ -65,5 +63,3 @@ class cofu
     }
 
 };
-
-#endif

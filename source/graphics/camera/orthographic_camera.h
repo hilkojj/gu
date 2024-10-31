@@ -1,5 +1,4 @@
-#ifndef GAME_ORTHOGRAPHIC_CAMERA_H
-#define GAME_ORTHOGRAPHIC_CAMERA_H
+#pragma once
 
 #include "camera.h"
 
@@ -13,6 +12,3 @@ class OrthographicCamera : public Camera
 
     ~OrthographicCamera() override = default;
 };
-
-
-#endif

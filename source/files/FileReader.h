@@ -1,6 +1,4 @@
-
-#ifndef GAME_FILEREADER_H
-#define GAME_FILEREADER_H
+#pragma once
 
 #include <vector>
 
@@ -55,6 +53,3 @@ class FileReader
     int readPos = 0;
     std::vector<unsigned char> data;
 };
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef FRAME_BUFFER_H
-#define FRAME_BUFFER_H
+#pragma once
 
 #include "textures/shared_texture.h"
 #include "external/gl_includes.h"
@@ -55,5 +54,3 @@ class FrameBuffer
     static void unbindCurrent();
 
 };
-
-#endif

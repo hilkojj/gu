@@ -1,6 +1,4 @@
-
-#ifndef GAME_STARTUP_ARGS_H
-#define GAME_STARTUP_ARGS_H
+#pragma once
 
 #include "string_utils.h"
 
@@ -21,5 +19,3 @@ inline void startupArgsToMap(int argCount, char *argValues[], std::map<std::stri
         }
     }
 }
-
-#endif //GAME_STARTUP_ARGS_H

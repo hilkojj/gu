@@ -1,6 +1,4 @@
-
-#ifndef VERT_BUFFER_H
-#define VERT_BUFFER_H
+#pragma once
 
 #include "vert_attributes.h"
 #include "shared_3d.h"
@@ -29,7 +27,7 @@ class VertBuffer
 
     /**
      * upload all added Meshes to OpenGL, after uploading the Meshes can be drawn.
-     * 
+     *
      * if disposeOfflineData is true then mesh.disposeOfflineData() will be called for each uploaded mesh.
      **/
     void upload(bool disposeOfflineData);
@@ -75,7 +73,7 @@ class VertBuffer
 
     std::vector<GLuint> instanceVbos;
     std::vector<VertAttributes> instanceVboAttrs;
-    
+
     GLuint nrOfVerts = 0, nrOfIndices = 0;
 
     std::vector<std::weak_ptr<Mesh>> meshes;
@@ -85,5 +83,3 @@ class VertBuffer
     bool uploaded = false;
 
 };
-
-#endif

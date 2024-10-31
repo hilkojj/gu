@@ -1,6 +1,4 @@
-
-#ifndef GU_SHARED_3D_H
-#define GU_SHARED_3D_H
+#pragma once
 
 #include <memory>
 
@@ -18,5 +16,3 @@ typedef std::shared_ptr<Armature> SharedArmature;
 
 struct Bone;
 typedef std::shared_ptr<Bone> SharedBone;
-
-#endif //GAMEUTILS_SHARED_3D_H

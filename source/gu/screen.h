@@ -1,6 +1,4 @@
-
-#ifndef SCREEN_H
-#define SCREEN_H
+#pragma once
 
 class Screen
 {
@@ -9,5 +7,3 @@ class Screen
     virtual void onResize() {}
     virtual ~Screen() = default;
 };
-
-#endif

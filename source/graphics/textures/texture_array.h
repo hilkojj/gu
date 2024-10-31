@@ -1,5 +1,4 @@
-#ifndef TEXTURE_ARRAY_H
-#define TEXTURE_ARRAY_H
+#pragma once
 
 #include "shared_texture.h"
 
@@ -35,5 +34,3 @@ class TextureArray
 
     ~TextureArray();
 };
-
-#endif

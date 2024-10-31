@@ -1,6 +1,4 @@
-
-#ifndef MATH_UTILS_H
-#define MATH_UTILS_H
+#pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtx/rotate_vector.hpp>
@@ -107,5 +105,3 @@ inline bool findCircleIntersections(
 }
 
 }
-
-#endif

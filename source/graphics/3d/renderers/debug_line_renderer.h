@@ -1,5 +1,4 @@
-#ifndef DEBUG_LINE_RENDERER_H
-#define DEBUG_LINE_RENDERER_H
+#pragma once
 
 #include "../shared_3d.h"
 
@@ -47,5 +46,3 @@ class DebugLineRenderer
     int u_colorLocation, p0Location, p1Location, MVPLocation;
     SharedMesh lineMesh;
 };
-
-#endif

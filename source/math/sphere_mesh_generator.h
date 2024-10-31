@@ -1,5 +1,4 @@
-#ifndef SPHERE_MESH_GENERATOR_H
-#define SPHERE_MESH_GENERATOR_H
+#pragma once
 
 #include "graphics/3d/mesh.h"
 
@@ -14,5 +13,3 @@ namespace mu
 SharedMesh generateSphereMesh(const std::string &meshName, float radius, int segments, int rings, VertAttributes &attrs);
 
 }
-
-#endif

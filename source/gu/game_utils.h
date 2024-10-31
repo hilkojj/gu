@@ -1,5 +1,4 @@
-#ifndef GAME_UTILS_H
-#define GAME_UTILS_H
+#pragma once
 
 #include "screen.h"
 
@@ -36,5 +35,3 @@ bool getVSync();
 void setVSync(bool bEnabled);
 
 }; // namespace gu
-
-#endif

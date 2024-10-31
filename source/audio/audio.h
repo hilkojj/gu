@@ -1,6 +1,4 @@
-
-#ifndef GAME_AUDIO_H
-#define GAME_AUDIO_H
+#pragma once
 
 #include "../utils/gu_error.h"
 #include "../math/math_utils.h" // used for integer types.
@@ -22,7 +20,7 @@ struct Sound
 
 struct SoundSource
 {
-    
+
     SoundSource(const Sound &sound);
 
     /**
@@ -57,4 +55,3 @@ void init();
 void terminate();
 
 }
-#endif //GAME_AUDIO_H

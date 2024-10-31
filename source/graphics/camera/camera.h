@@ -1,5 +1,4 @@
-#ifndef GU_CAMERA_H
-#define GU_CAMERA_H
+#pragma once
 
 #include "../../math/math_utils.h"
 
@@ -12,18 +11,18 @@ class Camera
 
     mat4 projection, view, combined;
 
-    float 
+    float
         near_, far_, // 'near' and 'far' are reserved keywords on wInDOwS, thats why they are called 'near_' and 'far_'
         viewportWidth, viewportHeight;
 
     /**
-     * sets 'direction', 'up' and 'right' so that the Camera looks at the 'target'. 
+     * sets 'direction', 'up' and 'right' so that the Camera looks at the 'target'.
      * 'up' will be uppish in relation to the Y axis.
      */
     void lookAt(vec3 target);
 
     /**
-     * sets 'direction', 'up' and 'right' so that the Camera looks at the 'target'. 
+     * sets 'direction', 'up' and 'right' so that the Camera looks at the 'target'.
      * 'up' will be uppish in relation to 'localYAxis'.
      */
     void lookAt(vec3 target, vec3 localYAxis);
@@ -51,5 +50,3 @@ class Camera
   protected:
     virtual bool isInViewPort(const vec4 &homogeneousCoordinates, const vec3 &h3Coordinates) const;
 };
-
-#endif

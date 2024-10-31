@@ -1,5 +1,4 @@
-#ifndef GU_PROFILER_H
-#define GU_PROFILER_H
+#pragma once
 
 #include <map>
 #include <list>
@@ -51,5 +50,3 @@ namespace gu::profiler
 
     ZoneTime getAverageFrame();
 }
-
-#endif

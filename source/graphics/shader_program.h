@@ -1,6 +1,4 @@
-
-#ifndef SHADER_PROGRAM_H
-#define SHADER_PROGRAM_H
+#pragma once
 
 #include <string>
 #include <map>
@@ -72,5 +70,3 @@ class ShaderProgram
 
     void compileAndAttach(const char *source, unsigned int shaderId, const char *shaderType);
 };
-
-#endif

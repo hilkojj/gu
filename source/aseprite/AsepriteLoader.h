@@ -1,6 +1,4 @@
-
-#ifndef GAME_ASEPRITELOADER_H
-#define GAME_ASEPRITELOADER_H
+#pragma once
 
 #include "Aseprite.h"
 
@@ -79,5 +77,3 @@ enum ChunkType
 };
 
 }
-
-#endif

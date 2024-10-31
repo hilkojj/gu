@@ -1,6 +1,4 @@
-
-#ifndef VERT_ATTRIBUTES_H
-#define VERT_ATTRIBUTES_H
+#pragma once
 
 #include "../external/gl_includes.h"
 
@@ -86,5 +84,3 @@ private:
     unsigned int vertSize = 0, nrOfComponents = 0;
     std::vector<VertAttr> attributes;
 };
-
-#endif

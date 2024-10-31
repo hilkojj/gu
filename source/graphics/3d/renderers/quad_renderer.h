@@ -1,5 +1,4 @@
-#ifndef QUAD_RENDERER_H
-#define QUAD_RENDERER_H
+#pragma once
 
 #include "../mesh.h"
 #include "../../textures/texture.h"
@@ -61,5 +60,3 @@ inline void render(SharedTexture texture)
 }
 
 }
-
-#endif

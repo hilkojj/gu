@@ -1,6 +1,4 @@
-
-#ifndef GU_MODEL_H
-#define GU_MODEL_H
+#pragma once
 
 #include "shared_3d.h"
 
@@ -56,12 +54,10 @@ struct ModelPart
 class Model
 {
   public:
-    std::vector<ModelPart> parts;    
+    std::vector<ModelPart> parts;
     std::string name;
 
     Model(std::string name);
 
     ~Model();
 };
-
-#endif

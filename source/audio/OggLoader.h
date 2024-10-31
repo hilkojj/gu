@@ -1,6 +1,4 @@
-
-#ifndef GAME_OGGLOADER_H
-#define GAME_OGGLOADER_H
+#pragma once
 
 #include "audio.h"
 
@@ -14,4 +12,3 @@ class OggLoader
 };
 
 }
-#endif

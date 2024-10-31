@@ -1,6 +1,4 @@
-
-#ifndef MOUSE_INPUT_H
-#define MOUSE_INPUT_H
+#pragma once
 
 class GLFWwindow;
 
@@ -32,5 +30,3 @@ void capture(int button, int priority, int frames = 1);
 void setMousePos(double x, double y);
 
 }
-
-#endif

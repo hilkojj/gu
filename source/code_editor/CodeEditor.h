@@ -1,6 +1,4 @@
-
-#ifndef GAME_CODEEDITOR_H
-#define GAME_CODEEDITOR_H
+#pragma once
 
 #include "../../external/ImGuiColorTextEdit/TextEditor.h"
 
@@ -34,6 +32,3 @@ namespace CodeEditor
     void drawGUI(ImFont *codeFont=NULL);
 
 };
-
-
-#endif

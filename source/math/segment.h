@@ -1,6 +1,4 @@
-
-#ifndef MATH_SEGMENT_H
-#define MATH_SEGMENT_H
+#pragma once
 
 #include "math_utils.h"
 #include "triangle.h"
@@ -29,6 +27,3 @@ inline float distanceBetweenSegmentAndPoint(const vec &a, const vec &b, const ve
 }
 
 }
-
-
-#endif

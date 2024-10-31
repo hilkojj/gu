@@ -1,6 +1,4 @@
-
-#ifndef GU_JSON_MODEL_LOADER_H
-#define GU_JSON_MODEL_LOADER_H
+#pragma once
 
 #ifndef GU_PBR_ONLY
 
@@ -33,7 +31,7 @@ class JsonModelLoader
     std::vector<SharedMesh> meshes;
 
   private:
-    
+
     const VertAttributes *predefinedAttrs;
     const json *obj;
     std::string id, textureBasePath;
@@ -50,5 +48,4 @@ class JsonModelLoader
 
 };
 
-#endif
 #endif

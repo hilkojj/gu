@@ -1,6 +1,4 @@
-
-#ifndef GAME_ASSETMANAGER_H
-#define GAME_ASSETMANAGER_H
+#pragma once
 
 #include "../utils/type_name.h"
 
@@ -103,6 +101,3 @@ class AssetManager
     static std::list<AssetLoader> &getLoaders();
 
 };
-
-
-#endif

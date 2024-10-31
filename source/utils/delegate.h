@@ -1,6 +1,4 @@
-
-#ifndef GAME_DELEGATE_H
-#define GAME_DELEGATE_H
+#pragma once
 
 #include <functional>
 #include <memory>
@@ -135,6 +133,3 @@ struct delegate<void(Args...)> : public delegate_base<void(Args...)>
     }
 
 };
-
-
-#endif //GAME_DELEGATE_H

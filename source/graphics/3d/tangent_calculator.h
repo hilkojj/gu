@@ -1,5 +1,4 @@
-#ifndef TANGENT_CALCULATOR_H
-#define TANGENT_CALCULATOR_H
+#pragma once
 
 #include "shared_3d.h"
 
@@ -26,6 +25,3 @@ void addTangentsToMesh(SharedMesh mesh, int meshPart);
 void addTangentsToMesh(Mesh *mesh, int meshPart=0);
 
 } // namespace TangentCalculator
-
-
-#endif

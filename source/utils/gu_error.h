@@ -1,5 +1,4 @@
-#ifndef GU_ERROR_H
-#define GU_ERROR_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -25,7 +24,7 @@ class _gu_err : public std::runtime_error
         #ifdef linux
         std::cerr << "\033[1m\033[32m";
         #endif
-        
+
         std::cerr << file << ":" << line << "\n" << std::endl;
 
         #ifdef linux
@@ -38,6 +37,4 @@ class _gu_err : public std::runtime_error
 #define gu_err(msg) _gu_err(msg, __FUNCSIG__, __FILE__, __LINE__)
 #else
 #define gu_err(msg) _gu_err(msg, __PRETTY_FUNCTION__, __FILE__, __LINE__)
-#endif
-
 #endif

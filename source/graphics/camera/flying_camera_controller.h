@@ -1,6 +1,4 @@
-
-#ifndef FLYING_CAMERA_CONTROLLER_H
-#define FLYING_CAMERA_CONTROLLER_H
+#pragma once
 
 #include "camera.h"
 
@@ -18,5 +16,3 @@ class FlyingCameraController
     void update(double deltaTime);
 
 };
-
-#endif

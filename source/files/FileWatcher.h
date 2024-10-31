@@ -1,6 +1,4 @@
-
-#ifndef GAME_FILEWATCHER_H
-#define GAME_FILEWATCHER_H
+#pragma once
 
 #include <functional>
 #include <string>
@@ -33,6 +31,3 @@ class FileWatcher
     int inotifyInstance = -1;
     int stopPipe[2];
 };
-
-
-#endif

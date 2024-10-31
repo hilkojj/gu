@@ -1,6 +1,4 @@
-
-#ifndef MESH_H
-#define MESH_H
+#pragma once
 
 #include "vert_attributes.h"
 #include "shared_3d.h"
@@ -116,5 +114,3 @@ class Mesh : public VertData
     }
     inBuffer;
 };
-
-#endif

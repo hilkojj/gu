@@ -1,6 +1,4 @@
-
-#ifndef ARMATURE_H
-#define ARMATURE_H
+#pragma once
 
 #include "shared_3d.h"
 
@@ -70,5 +68,3 @@ struct Armature
     std::vector<SharedBone> bones;
     std::unordered_map<std::string, Animation> animations;
 };
-
-#endif

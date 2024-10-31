@@ -1,6 +1,4 @@
-
-#ifndef GAME_ASEPRITETEXTUREGENERATOR_H
-#define GAME_ASEPRITETEXTUREGENERATOR_H
+#pragma once
 
 #include "Aseprite.h"
 
@@ -12,5 +10,3 @@ namespace aseprite
 SharedTexture frameToTexture(const Sprite &sprite, int frameI);
 
 }
-
-#endif

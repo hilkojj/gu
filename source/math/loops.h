@@ -1,6 +1,4 @@
-
-#ifndef MATH_LOOPS_H
-#define MATH_LOOPS_H
+#pragma once
 
 #include "math_utils.h"
 
@@ -12,7 +10,7 @@ namespace mu
 /**
  * Executes 'callback' size^2 times in a spiral loop.
  * 'callback' must return true to continue, or false to beak the loop.
- * 
+ *
  * Example:
  * if size is 3 then 'callback' will be called 9 times with these positions:
  * (0, 0) (1, 0) (1, 1) (0, 1) (-1, 1) (-1, 0) (-1, -1) (0, -1) (1, -1)
@@ -219,5 +217,3 @@ inline void fastVoxelTraversal(vec3 rayOrigin, const vec3 &rayDirection, const u
 }
 
 } // namespace mu
-
-#endif

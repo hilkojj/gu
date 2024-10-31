@@ -1,6 +1,4 @@
-
-#ifndef INTERPOLATION_H
-#define INTERPOLATION_H
+#pragma once
 
 #include "math_utils.h"
 
@@ -72,4 +70,3 @@ inline void interpolate(const mat4& a, const mat4& b, float x, mat4& out)
 }
 
 }
-#endif

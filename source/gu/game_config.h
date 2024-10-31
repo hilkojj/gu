@@ -1,6 +1,4 @@
-
-#ifndef GU_CONFIG_H
-#define GU_CONFIG_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -46,5 +44,3 @@ struct Config
 };
 
 }
-
-#endif

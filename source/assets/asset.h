@@ -1,6 +1,4 @@
-
-#ifndef GAME_ASSET_H
-#define GAME_ASSET_H
+#pragma once
 
 #include <memory>
 
@@ -83,6 +81,3 @@ class asset
     asset_impl impl;
 
 };
-
-
-#endif

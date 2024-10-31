@@ -1,6 +1,4 @@
-
-#ifndef GAME_GLTF_MODEL_LOADER_H
-#define GAME_GLTF_MODEL_LOADER_H
+#pragma once
 
 #include "../vert_attributes.h"
 #include "../shared_3d.h"
@@ -43,6 +41,3 @@ class GltfModelLoader
     void fromBinaryFile(const char *path);
 
 };
-
-
-#endif

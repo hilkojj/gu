@@ -1,6 +1,4 @@
-
-#ifndef GAME_STRING_H
-#define GAME_STRING_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -81,5 +79,3 @@ inline std::string randomAlphanumeric(int length)
 }
 
 }
-
-#endif //GAME_STRING_H

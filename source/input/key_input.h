@@ -1,6 +1,4 @@
-
-#ifndef KEY_INPUT_H
-#define KEY_INPUT_H
+#pragma once
 
 #include "../graphics/external/gl_includes.h"
 #include "../json_fwd.hpp"
@@ -168,5 +166,3 @@ void to_json(json& j, const Key& v);
 void from_json(const json& j, Key& v);
 
 } // namespace KeyInput
-
-#endif

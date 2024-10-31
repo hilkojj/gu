@@ -1,6 +1,4 @@
-
-#ifndef GAME_TYPE_NAME_H
-#define GAME_TYPE_NAME_H
+#pragma once
 
 #include <string>
 #include <typeinfo>
@@ -34,5 +32,3 @@ std::string getTypeName(bool removeNamespacesAndTemplates = true)
     return name;
 }
 }
-
-#endif //GAME_TYPE_NAME_H

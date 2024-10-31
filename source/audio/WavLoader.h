@@ -1,6 +1,4 @@
-
-#ifndef GAME_WAVLOADER_H
-#define GAME_WAVLOADER_H
+#pragma once
 
 #include "audio.h"
 
@@ -28,5 +26,3 @@ class WavLoader : public FileReader
 };
 
 }
-
-#endif

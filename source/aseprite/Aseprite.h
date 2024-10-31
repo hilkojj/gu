@@ -1,6 +1,4 @@
-
-#ifndef GAME_ASEPRITE_H
-#define GAME_ASEPRITE_H
+#pragma once
 
 #include "../math/math_utils.h"
 
@@ -117,5 +115,3 @@ class Sprite
 };
 
 }
-
-#endif

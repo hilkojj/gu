@@ -1,6 +1,4 @@
-
-#ifndef MATH_TRIANGLE_H
-#define MATH_TRIANGLE_H
+#pragma once
 
 #include "math_utils.h"
 
@@ -64,4 +62,3 @@ inline vec3 calculateBarycentricCoords(const vec2 &point, const vec2 &a, const v
 }
 
 }
-#endif

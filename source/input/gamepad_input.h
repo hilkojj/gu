@@ -1,6 +1,4 @@
-
-#ifndef GAMEPAD_INPUT_H
-#define GAMEPAD_INPUT_H
+#pragma once
 
 #include "../graphics/external/gl_includes.h"
 #include "../utils/delegate.h"
@@ -137,5 +135,3 @@ void to_json(json &j, const Axis &v);
 void from_json(const json &j, Axis &v);
 
 }
-
-#endif

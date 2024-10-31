@@ -1,5 +1,4 @@
-#ifndef PERSPECTIVE_CAMERA
-#define PERSPECTIVE_CAMERA
+#pragma once
 
 #include "camera.h"
 
@@ -18,5 +17,3 @@ class PerspectiveCamera : public Camera {
   protected:
     bool isInViewPort(const vec4 &homogeneousCoordinates, const vec3 &h3Coordinates) const override;
 };
-
-#endif
