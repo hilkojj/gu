@@ -28,7 +28,9 @@ enum ButtonStatus
     JUST_RELEASED
 };
 
-ButtonStatus buttonStatuses[NR_OF_BUTTONS];
+bool buttonJustPressed[NR_OF_BUTTONS];
+bool buttonPressed[NR_OF_BUTTONS];
+bool buttonJustReleased[NR_OF_BUTTONS];
 
 struct Capture
 {
@@ -43,7 +45,16 @@ void glfwButtonCallback(GLFWwindow *window, int button, int action, int mods)
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
     if (ImGui::GetIO().WantCaptureMouse)
         return;
-    buttonStatuses[button] = action == GLFW_PRESS ? JUST_PRESSED : JUST_RELEASED;
+    if (action == GLFW_PRESS)
+    {
+        buttonJustPressed[button] = true;
+        buttonPressed[button] = true;
+    }
+    else
+    {
+        buttonPressed[button] = false;
+        buttonJustReleased[button] = true;
+    }
 }
 
 double nextXScroll = 0, nextYScroll = 0, nextMouseX = 0, nextMouseY = 0;
@@ -135,11 +146,8 @@ void update()
 
     for (int i = 0; i < NR_OF_BUTTONS; i++)
     {
-        ButtonStatus& s = buttonStatuses[i];
-        if (s == JUST_PRESSED)
-            s = PRESSED;
-        else if (s == JUST_RELEASED)
-            s = NOT_PRESSED;
+        buttonJustPressed[i] = false;
+        buttonJustReleased[i] = false;
     }
     xScroll = nextXScroll;
     yScroll = nextYScroll;
@@ -170,22 +178,21 @@ void setMousePos(double x, double y)
 
 bool justPressed(int button, int priority)
 {
-    if (buttonStatuses[button] == JUST_PRESSED && highestCapturePriority[button] <= priority)
+    if (buttonJustPressed[button] && highestCapturePriority[button] <= priority)
         return true;
     return false;
 }
 
 bool pressed(int button, int priority)
 {
-    auto &s = buttonStatuses[button];
-    if ((s == PRESSED || s == JUST_PRESSED) && highestCapturePriority[button] <= priority)
+    if (buttonPressed[button] && highestCapturePriority[button] <= priority)
         return true;
     return false;
 }
 
 bool justReleased(int button, int priority)
 {
-    if (buttonStatuses[button] == JUST_RELEASED && highestCapturePriority[button] <= priority)
+    if (buttonJustReleased[button] && highestCapturePriority[button] <= priority)
         return true;
     return false;
 }
