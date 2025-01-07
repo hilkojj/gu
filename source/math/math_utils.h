@@ -67,7 +67,7 @@ inline int randomIntFromX(float x, int max)
 template<typename type>
 inline type map(type value, type min1, type max1, type min2, type max2)
 {
-    const float x = (value - min1) / (max1 - min1);
+    const type x = (value - min1) / (max1 - min1);
     return x * (max2 - min2) + min2;
 }
 
