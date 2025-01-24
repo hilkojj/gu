@@ -112,6 +112,8 @@ class Sprite
     const Slice &getSliceByName(const char *name, int frame) const;
 
     const Tag &getTagByName(const char *name) const;
+
+    const Tag *tryGetTagByName(const char *name) const;
 };
 
 }
