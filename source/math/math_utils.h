@@ -30,7 +30,7 @@ const quat NO_ROTATION = identity<quat>();
 
 inline float random()
 {
-    return float(std::rand() / RAND_MAX);
+    return static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
 }
 
 inline float random(float max)
