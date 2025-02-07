@@ -251,7 +251,7 @@ void Loader::loadUserData()
 {
     DWORD flags = read<DWORD>();
     std::string text;
-    ColorRGBA color;
+    ColorRGBA color(0u);
 
     if (flags & 0x1u) // has text
         text = loadString();
