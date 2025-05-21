@@ -182,6 +182,7 @@ void ShaderDefinitions::define(const char *name, std::string val)
 void ShaderDefinitions::undef(const char *name)
 {
     definitionsMap.erase(name);
+    lastEditTime = glfwGetTime();
 }
 
 void ShaderDefinitions::defineInt(const char *name, int val)
