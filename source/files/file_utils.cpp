@@ -18,21 +18,17 @@
 
 std::string fu::readString(const char *path)
 {
-    std::ifstream stream(path, std::ios::binary | std::ios::ate);
+    std::ifstream stream(path, std::ios::in);
 
     if (!stream.is_open())
     {
         throw gu_err("Could not open: " + std::string(path));
     }
-    const std::streamsize size = stream.tellg();
-    stream.seekg(0, std::ios::beg);
 
-    std::string string(size, '\0');
-    if (!stream.read(string.data(), size))
-    {
-        throw gu_err("Could not read: " + std::string(path));
-    }
-    return string;
+    std::stringstream sstr;
+    sstr << stream.rdbuf();
+    stream.close();
+    return sstr.str();
 }
 
 std::vector<unsigned char> fu::readBinary(const char *path)
