@@ -27,7 +27,7 @@ inline orientation calculateOrientation(const vec2 &a, const vec2 &b, const vec2
     return slopeValue > 0.0f ? clockwise : counterclockwise;
 }
 
-inline bool isPointInside(const vec2 &point, const vec2 &a, const vec2 &b, const vec2 &c)
+inline bool isPointInside(const vec2 &point, const vec2 &a, const vec2 &b, const vec2 &c, const float precision = 0.0001f)
 {
     auto sign = [] (const vec2 &p0, const vec2 &p1, const vec2 &p2)
     {
@@ -39,7 +39,7 @@ inline bool isPointInside(const vec2 &point, const vec2 &a, const vec2 &b, const
         sign(point, b, c),
         sign(point, c, a)
     );
-    return !(any(lessThan(d, mu::ZERO_3)) && any(greaterThan(d, mu::ZERO_3)));
+    return !any(lessThan(d, vec3(-precision))) || !any(greaterThan(d, vec3(precision)));
 }
 
 inline vec3 calculateBarycentricCoords(const vec2 &point, const vec2 &a, const vec2 &b, const vec2 &c)
