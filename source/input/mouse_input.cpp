@@ -39,6 +39,7 @@ struct Capture
 
 std::vector<Capture> captures[NR_OF_BUTTONS];
 int highestCapturePriority[NR_OF_BUTTONS];
+double pixelsDraggedWhilePressed[NR_OF_BUTTONS];
 
 void glfwButtonCallback(GLFWwindow *window, int button, int action, int mods)
 {
@@ -158,6 +159,18 @@ void update()
     mouseX = nextMouseX;
     mouseY = nextMouseY;
     // dont set nextMouse... to 0 here.
+
+    for (int i = 0; i < NR_OF_BUTTONS; i++)
+    {
+        if (buttonPressed[i])
+        {
+            pixelsDraggedWhilePressed[i] += abs(deltaMouseX) + abs(deltaMouseY);
+        }
+        else
+        {
+            pixelsDraggedWhilePressed[i] = 0;
+        }
+    }
 }
 
 void setLockedMode(bool lockedMode)
@@ -195,6 +208,16 @@ bool justReleased(int button, int priority)
     if (buttonJustReleased[button] && highestCapturePriority[button] <= priority)
         return true;
     return false;
+}
+
+bool justReleasedNoDrag(int button, int dragPixelsThreshold, int priority)
+{
+    return !isDragging(button, dragPixelsThreshold) && justReleased(button, priority);
+}
+
+bool isDragging(int button, int dragPixelsThreshold)
+{
+    return pixelsDraggedWhilePressed[button] >= dragPixelsThreshold;
 }
 
 void capture(int button, int priority, int frames)

@@ -25,6 +25,10 @@ bool pressed(int button, int priority = 0);
 
 bool justReleased(int button, int priority = 0);
 
+bool justReleasedNoDrag(int button, int dragPixelsThreshold = 4, int priority = 0);
+
+bool isDragging(int button, int dragPixelsThreshold = 4);
+
 void capture(int button, int priority, int frames = 1);
 
 void setMousePos(double x, double y);
