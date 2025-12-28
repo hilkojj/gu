@@ -161,6 +161,75 @@ void loadMeshes(GltfModelLoader &loader, const tinygltf::Model &tiny)
                     tinyVertI++;
                 }
             }
+
+            // Morph targets:
+            for (int targetI = 0; targetI < primitive.targets.size(); targetI++)
+            {
+                for (auto &[attrName, accessorI] : primitive.targets[targetI])
+                {
+                    auto &accessor = tiny.accessors.at(accessorI);
+                    primitiveVerts = accessor.count;
+
+                    VertAttr attr { attrName };
+                    if (attrName == "TEXCOORD_0")
+                        attr = VertAttributes::TEX_COORDS;
+                    else if (attrName == "COLOR_0")
+                        attr = accessor.type == 3 ? VertAttributes::RGB : VertAttributes::RGBA;
+                    else if (attrName == "TANGENT" && accessor.type == TINYGLTF_TYPE_VEC4)
+                    {
+                        attr = VertAttributes::TANGENT_AND_SIGN;
+                        tangentsProvided = true;
+                    }
+
+                    attr.type = accessor.componentType;
+                    attr.size = accessor.type;
+                    attr.byteSize = componentTypeSize(attr.type) * attr.size;
+                    attr.normalized = accessor.normalized;
+
+                    attr.name += "_" + std::to_string(targetI);
+
+                    if (!loader.vertAttributes.contains(attr))
+                        continue;
+
+                    auto &bufferView = tiny.bufferViews.at(accessor.bufferView);
+                    auto &buffer = tiny.buffers.at(bufferView.buffer);
+
+                    if (buffer.data.size() < bufferView.byteOffset + bufferView.byteLength)
+                        throw gu_err("Error while loading glTF: buffer is too small");
+
+                    if (bufferView.byteLength != primitiveVerts * attr.byteSize)
+                        throw gu_err("Error while loading glTF: vertices bufferView byteLength is incorrect");
+
+                    auto attrOffset = loader.vertAttributes.getOffset(attr);
+
+                    int tinyVertI = 0;
+                    for (int vertI = nrOfVertsLoaded; vertI < nrOfVertsLoaded + primitiveVerts; vertI++)
+                    {
+                        for (int component = 0; component < attr.size; component++)
+                        {
+                            switch (attr.type)
+                            {
+                                case GL_FLOAT:
+                                    assert(sizeof(int32) == sizeof(float));
+                                case GL_INT:
+                                case GL_UNSIGNED_INT:
+                                    mesh->get<float>(vertI, attrOffset + component * sizeof(float)) = *((float *) &buffer.data.at(bufferView.byteOffset + tinyVertI * attr.byteSize + component * sizeof(float)));
+                                    break;
+                                case GL_SHORT:
+                                case GL_UNSIGNED_SHORT:
+                                    mesh->get<short>(vertI, attrOffset + component * sizeof(short)) = *((short *) &buffer.data.at(bufferView.byteOffset + tinyVertI * attr.byteSize + component * sizeof(short)));
+                                    break;
+                                case GL_BYTE:
+                                case GL_UNSIGNED_BYTE:
+                                    mesh->get<char>(vertI, attrOffset + component * sizeof(char)) = *((char *) &buffer.data.at(bufferView.byteOffset + tinyVertI * attr.byteSize + component * sizeof(char)));
+                                    break;
+                            }
+                        }
+                        tinyVertI++;
+                    }
+                }
+            }
+
             nrOfVertsLoaded += primitiveVerts;
 
             switch (loader.calculateTangents)
