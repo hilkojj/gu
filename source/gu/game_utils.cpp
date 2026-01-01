@@ -2,10 +2,12 @@
 #include "game_config.h"
 #include "profiler.h"
 
+#include "../files/file_utils.h"
 #include "../input/gamepad_input.h"
 #include "../input/key_input.h"
 #include "../input/mouse_input.h"
 #include "../graphics/external/gl_includes.h"
+#include "../graphics/external/stb_image.h"
 #include "../utils/gu_error.h"
 
 #include <imgui.h>
@@ -246,6 +248,28 @@ bool init(const Config &inConfig)
 
     glfwGetWindowSize(window, &nextVirtualWidth, &nextVirtualHeight);
     glfwGetFramebufferSize(window, &nextPixelWidth, &nextPixelHeight);
+
+    std::vector<GLFWimage> windowIcons;
+    for (const std::string &iconPath : config.windowIconPaths)
+    {
+        if (fu::exists(iconPath.c_str()))
+        {
+            GLFWimage &image = windowIcons.emplace_back();
+            int channels = 0;
+            image.pixels = stbi_load(iconPath.c_str(), &image.width, &image.height, &channels, 4);
+            if (channels != 4)
+            {
+                stbi_image_free(image.pixels);
+                windowIcons.pop_back();
+            }
+        }
+    }
+    glfwSetWindowIcon(window, windowIcons.size(), windowIcons.data());
+    for (GLFWimage &image : windowIcons)
+    {
+        stbi_image_free(image.pixels);
+    }
+    windowIcons.clear();
 
     profiler::showGUI = config.bShowProfiler;
 
