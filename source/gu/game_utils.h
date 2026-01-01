@@ -14,6 +14,8 @@ extern int pixelWidth, pixelHeight;
 extern int virtualWidth, virtualHeight;
 
 extern bool bFullscreen;
+extern int desiredFullscreenWidth;
+extern int desiredFullscreenHeight;
 
 extern delegate<void(double deltaTime)> beforeRender;
 extern delegate<void()> onResize;

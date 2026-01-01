@@ -32,6 +32,8 @@ namespace gu
 int pixelWidth = 0, pixelHeight = 0;
 int virtualWidth = 0, virtualHeight = 0;
 bool bFullscreen = false;
+int desiredFullscreenWidth = -1;
+int desiredFullscreenHeight = -1;
 
 delegate<void(double deltaTime)> beforeRender;
 delegate<void()> onResize;
@@ -128,17 +130,29 @@ GLFWmonitor *getMonitorContainingWindow(GLFWwindow *window)
     return monitor;
 }
 
-void toggleFullscreen()
+void updateFullscreen()
 {
 #ifndef EMSCRIPTEN
-    static int restoreXPos, restoreYPos, restoreWidth, restoreHeight;
+    static int restoreXPos = 0, restoreYPos = 0, restoreWidth = 200, restoreHeight = 200, restoreResolutionX = 1280, restoreResolutionY = 720;
     if (bFullscreen)
     {
-        glfwGetWindowPos(window, &restoreXPos, &restoreYPos);
-        glfwGetWindowSize(window, &restoreWidth, &restoreHeight);
-        GLFWmonitor *monitor = getMonitorContainingWindow(window);
+        GLFWmonitor *monitor = glfwGetWindowMonitor(window);
+        if (monitor == nullptr)
+        {
+            // Not fullscreen yet.
+            // Save window properties
+            glfwGetWindowPos(window, &restoreXPos, &restoreYPos);
+            glfwGetWindowSize(window, &restoreWidth, &restoreHeight);
+            // Get Monitor that window is inside, to make game fullscreen in that monitor:
+            monitor = getMonitorContainingWindow(window);
+            const GLFWvidmode *videoMode = glfwGetVideoMode(monitor);
+            restoreResolutionX = videoMode->width;
+            restoreResolutionY = videoMode->height;
+        }
         const GLFWvidmode *videoMode = glfwGetVideoMode(monitor);
-        glfwSetWindowMonitor(window, monitor, 0, 0, videoMode->width, videoMode->height, videoMode->refreshRate);
+        int width = desiredFullscreenWidth <= 0 ? restoreResolutionX : desiredFullscreenWidth;
+        int height = desiredFullscreenHeight <= 0 ? restoreResolutionY : desiredFullscreenHeight;
+        glfwSetWindowMonitor(window, monitor, 0, 0, width, height, videoMode->refreshRate);
     }
     else
     {
@@ -343,9 +357,19 @@ void mainLoop()
         profiler::Zone z("render");
         render(min(deltaTime, .1));
         static bool wasFullscreen = false;
+        static int prevDesiredFullscreenWidth = -1;
+        static int prevDesiredFullscreenHeight = -1;
         if (wasFullscreen != bFullscreen)
-            toggleFullscreen();
+        {
+            updateFullscreen();
+        }
+        else if (bFullscreen && (prevDesiredFullscreenWidth != desiredFullscreenWidth || prevDesiredFullscreenHeight != desiredFullscreenHeight))
+        {
+            updateFullscreen();
+        }
         wasFullscreen = bFullscreen;
+        prevDesiredFullscreenWidth = desiredFullscreenWidth;
+        prevDesiredFullscreenHeight = desiredFullscreenHeight;
     } {
         profiler::Zone z("input");
         KeyInput::update();
