@@ -36,6 +36,7 @@ int virtualWidth = 0, virtualHeight = 0;
 bool bFullscreen = false;
 int desiredFullscreenWidth = -1;
 int desiredFullscreenHeight = -1;
+int desiredFullscreenRefreshRate = -1;
 
 delegate<void(double deltaTime)> beforeRender;
 delegate<void()> onResize;
@@ -154,7 +155,7 @@ void updateFullscreen()
         const GLFWvidmode *videoMode = glfwGetVideoMode(monitor);
         int width = desiredFullscreenWidth <= 0 ? restoreResolutionX : desiredFullscreenWidth;
         int height = desiredFullscreenHeight <= 0 ? restoreResolutionY : desiredFullscreenHeight;
-        glfwSetWindowMonitor(window, monitor, 0, 0, width, height, videoMode->refreshRate);
+        glfwSetWindowMonitor(window, monitor, 0, 0, width, height, desiredFullscreenRefreshRate == -1 ? videoMode->refreshRate : desiredFullscreenRefreshRate);
     }
     else
     {
@@ -383,17 +384,19 @@ void mainLoop()
         static bool wasFullscreen = false;
         static int prevDesiredFullscreenWidth = -1;
         static int prevDesiredFullscreenHeight = -1;
+        static int prevDesiredFullscreenRefreshRate = -1;
         if (wasFullscreen != bFullscreen)
         {
             updateFullscreen();
         }
-        else if (bFullscreen && (prevDesiredFullscreenWidth != desiredFullscreenWidth || prevDesiredFullscreenHeight != desiredFullscreenHeight))
+        else if (bFullscreen && (prevDesiredFullscreenWidth != desiredFullscreenWidth || prevDesiredFullscreenHeight != desiredFullscreenHeight || prevDesiredFullscreenRefreshRate != desiredFullscreenRefreshRate))
         {
             updateFullscreen();
         }
         wasFullscreen = bFullscreen;
         prevDesiredFullscreenWidth = desiredFullscreenWidth;
         prevDesiredFullscreenHeight = desiredFullscreenHeight;
+        prevDesiredFullscreenRefreshRate = desiredFullscreenRefreshRate;
     } {
         profiler::Zone z("input");
         KeyInput::update();
@@ -415,6 +418,8 @@ void mainLoop()
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
+    // Finish all OpenGL operations & changes to the framebuffer. Not doing this will cause jittery display on Windows with fullscreen and Vsync enabled.
+    glFinish();
     // Swap buffers
     glfwSwapBuffers(window);
     glfwPollEvents();
