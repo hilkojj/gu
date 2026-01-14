@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.5)
-cmake_policy(SET CMP0069 NEW)
 
 project(gameutils)
 
@@ -35,7 +34,6 @@ target_include_directories(gameutils PUBLIC ../source/)
 set_property(TARGET gameutils PROPERTY LINKER_LANGUAGE CXX)
 set_property(TARGET gameutils PROPERTY CXX_STANDARD 17)
 set_property(TARGET gameutils PROPERTY CXX_STANDARD_REQUIRED ON)
-set_property(TARGET gameutils PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
 if(GU_UNITY_BUILD)
     set_property(TARGET gameutils PROPERTY UNITY_BUILD ON)
     set_property(TARGET gameutils PROPERTY UNITY_BUILD_MODE GROUP)
@@ -58,7 +56,6 @@ if(NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/../external/glad)
 endif()
 
 add_library(glad ../external/glad/include/glad/glad.h ../external/glad/src/glad.c)
-set_property(TARGET glad PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
 target_include_directories(glad PUBLIC ../external/glad/include/)
 target_link_libraries(gameutils PUBLIC glad)
 
@@ -73,7 +70,6 @@ if(NOT DEFINED EMSCRIPTEN)
     add_subdirectory(../external/glfw ./bin/glfw)
     include_directories(../external/glfw/include)
 
-    set_property(TARGET glfw PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
     target_link_libraries(gameutils PUBLIC glfw)
 endif()
 
@@ -82,7 +78,6 @@ endif()
 set(GLM_TEST_ENABLE OFF)
 add_subdirectory(../external/glm/glm ./bin/glm)
 include_directories(../external/glm/glm)
-set_property(TARGET glm PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
 target_link_libraries(gameutils PUBLIC glm)
 
 
@@ -101,7 +96,6 @@ add_library(imgui
     ${IMGUI_DIR}/examples/imgui_impl_opengl3.cpp
 )
 target_compile_definitions(imgui INTERFACE "-DIMGUI_USER_CONFIG=<gu_imgui_config.h>")
-set_property(TARGET imgui PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
 
 if (NOT DEFINED EMSCRIPTEN)
     add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD) # tell IMGUI that we use glad on desktop
@@ -123,7 +117,6 @@ file(GLOB ZLIB_SOURCES ${ZLIB_DIR}/*.c)
 file(GLOB ZLIB_HEADERS ${ZLIB_DIR}/*.h)
 
 add_library(zlib ${ZLIB_SOURCES} ${ZLIB_HEADERS})
-set_property(TARGET zlib PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
 
 target_include_directories(zlib PUBLIC ${ZLIB_DIR})
 target_link_libraries(gameutils PUBLIC zlib)
