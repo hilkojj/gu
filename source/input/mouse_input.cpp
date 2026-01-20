@@ -10,6 +10,8 @@
 #include <iostream>
 #include <vector>
 
+#include "imgui_internal.h"
+
 #define NR_OF_BUTTONS 8
 
 namespace MouseInput
@@ -44,7 +46,7 @@ double pixelsDraggedWhilePressed[NR_OF_BUTTONS];
 void glfwButtonCallback(GLFWwindow *window, int button, int action, int mods)
 {
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
-    if (ImGui::GetIO().WantCaptureMouse)
+    if (ImGui::GetIO().WantCaptureMouse && !(buttonPressed[button] && action == GLFW_RELEASE))
         return;
     if (action == GLFW_PRESS)
     {
