@@ -384,14 +384,27 @@ void loadTextures(GltfModelLoader &loader, const tinygltf::Model &tiny)
             if (tinyImage.component <= 0 || tinyImage.component > 4)
                 throw gu_err(tinyImage.name + " has " + std::to_string(tinyImage.component) + " channels!");
 
-            if (tinyImage.pixel_type != GL_UNSIGNED_BYTE)
-                throw gu_err("pixel data of " + tinyImage.name + " is not GL_UNSIGNED_BYTE!");
+            GLint internalFormat = GL_RGB8;
+            GLenum type = GL_UNSIGNED_BYTE;
+            if (tinyImage.pixel_type == GL_UNSIGNED_BYTE)
+            {
+                internalFormat = std::vector<GLint>{GL_R8, GL_RG8, GL_RGB8, GL_RGBA8}[tinyImage.component - 1];
+            }
+            else if (tinyImage.pixel_type == GL_UNSIGNED_SHORT)
+            {
+                internalFormat = std::vector<GLint>{GL_R16, GL_RG16, GL_RGB16, GL_RGBA16}[tinyImage.component - 1];
+                type = GL_UNSIGNED_SHORT;
+            }
+            else
+            {
+                throw gu_err("pixel data of " + tinyImage.name + " is an unsupported type! Only supporting GL_UNSIGNED_BYTE and GL_UNSIGNED_SHORT");
+            }
 
             GLenum format = std::vector<GLenum>{GL_R, GL_RG, GL_RGB, GL_RGBA}[tinyImage.component - 1];
 
             loader.textures.push_back(SharedTexture(new Texture(Texture::fromByteData(
-                tinyImage.image.data(), format, format, tinyImage.width, tinyImage.height,
-                loader.textureMagFilter, loader.textureMinFilter, loader.generateMipMaps
+                tinyImage.image.data(), internalFormat, format, tinyImage.width, tinyImage.height,
+                loader.textureMagFilter, loader.textureMinFilter, loader.generateMipMaps, type
             ))));
         }
         else loader.textures.push_back(SharedTexture());

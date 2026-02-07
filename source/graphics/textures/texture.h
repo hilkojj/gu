@@ -8,7 +8,7 @@ class Texture
     static Texture fromImageFile(const char *path);
 
     static Texture fromByteData(const GLubyte *data, GLint internalFormat, GLenum format, GLsizei width, GLsizei height,
-        GLuint magFilter, GLuint minFilter, bool bGenerateMipMaps = true);
+        GLuint magFilter, GLuint minFilter, bool bGenerateMipMaps = true, GLenum type = GL_UNSIGNED_BYTE);
 
     const GLuint id, width, height;
 
