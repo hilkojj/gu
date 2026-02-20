@@ -9,7 +9,8 @@
 #include <thread>
 #include <map>
 
-void FileWatcher::addDirectoryToWatch(const char *path, bool bRecursive)
+FileWatcher::FileWatcher(const char *path, bool bRecursive) :
+    bRecursive(bRecursive)
 {
     paths.emplace_back(path);
     if (!su::endsWith(path, "/"))
@@ -17,6 +18,7 @@ void FileWatcher::addDirectoryToWatch(const char *path, bool bRecursive)
         paths.back() += '/';
     }
 
+#ifdef linux
     if (bRecursive)
     {
         fu::iterateDirectoryRecursively(path, [&] (auto childPath, bool bIsDir)
@@ -27,6 +29,7 @@ void FileWatcher::addDirectoryToWatch(const char *path, bool bRecursive)
             }
         });
     }
+#endif
 }
 
 void FileWatcher::startWatchingAsync()
@@ -129,6 +132,148 @@ void FileWatcher::startWatchingSync()
     std::cout << "Stopped watching " << watchToPath.size() << " directories.\n";
 }
 
+#elif defined(_WIN32)
+
+#include <windows.h>
+
+void FileWatcher::startWatchingSync()
+{
+    if (paths.empty())
+    {
+        throw gu_err("No path specified");
+    }
+
+    const std::string &rootPath = paths[0];
+
+    auto toWide = [] (const std::string &str)
+    {
+        const int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+        std::wstring result(size - 1, L'\0');
+        MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &result[0], size);
+        return result;
+    };
+
+    auto toUtf8 = [] (const std::wstring &wide)
+    {
+        const int size = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, nullptr, 0, nullptr, nullptr);
+        std::string result(size - 1, '\0');
+        WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, &result[0], size, nullptr, nullptr);
+        return result;
+    };
+
+    const std::wstring widePath = toWide(rootPath);
+
+    windowsHandle = CreateFileW(
+        widePath.c_str(),
+        FILE_LIST_DIRECTORY,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        nullptr,
+        OPEN_EXISTING,
+        FILE_FLAG_BACKUP_SEMANTICS,
+        nullptr
+    );
+
+    if (windowsHandle == INVALID_HANDLE_VALUE)
+    {
+        throw gu_err("Failed to open " + rootPath);
+    }
+
+    const HANDLE stopEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+    if (!stopEvent)
+    {
+        throw gu_err("Failed to create stop event");
+    }
+
+    std::cout << "Started watching " << rootPath << std::endl;
+
+    constexpr DWORD BUFFER_SIZE = 16 * 1024;
+    std::vector<BYTE> buffer(BUFFER_SIZE);
+
+    while (true)
+    {
+        DWORD bytesReturned = 0;
+
+        const bool bSuccess = ReadDirectoryChangesW(
+            windowsHandle,
+            buffer.data(),
+            BUFFER_SIZE,
+            bRecursive,
+            FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE,
+            &bytesReturned,
+            nullptr,
+            nullptr
+        );
+
+        if (!bSuccess)
+        {
+            if (GetLastError() == ERROR_OPERATION_ABORTED)
+            {
+                break;
+            }
+            throw gu_err("ReadDirectoryChangesW failed");
+        }
+
+        const FILE_NOTIFY_INFORMATION *info = (FILE_NOTIFY_INFORMATION *) buffer.data();
+
+        while (true)
+        {
+            const std::wstring wideName(info->FileName, info->FileNameLength / sizeof(WCHAR));
+
+            std::string relativePath = toUtf8(wideName);
+            for (char &c : relativePath)
+            {
+                if (c == '\\')
+                {
+                    c = '/';
+                }
+            }
+            const std::string fullPath = rootPath + relativePath;
+
+            switch (info->Action)
+            {
+                case FILE_ACTION_ADDED:
+                    if (onCreate)
+                    {
+                        onCreate(fullPath);
+                    }
+                    break;
+                case FILE_ACTION_REMOVED:
+                    if (onDelete)
+                    {
+                        onDelete(fullPath);
+                    }
+                    break;
+                case FILE_ACTION_MODIFIED:
+                    if (onChange)
+                    {
+                        onChange(fullPath);
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            if (info->NextEntryOffset == 0)
+            {
+                break;
+            }
+
+            info = (FILE_NOTIFY_INFORMATION *) (((BYTE *) info) + info->NextEntryOffset);
+        }
+
+        if (WaitForSingleObject(stopEvent, 0) == WAIT_OBJECT_0)
+        {
+            break;
+        }
+    }
+
+    CloseHandle(windowsHandle);
+    CloseHandle(stopEvent);
+
+    windowsHandle = INVALID_HANDLE_VALUE;
+
+    std::cout << "Stopped watching " << rootPath << std::endl;
+}
 #else
 
 void FileWatcher::startWatchingSync()
@@ -144,6 +289,12 @@ void FileWatcher::stopWatching()
     if (inotifyInstance >= 0)
     {
         write(stopPipe[1], "bye", 3);
+    }
+#endif
+#ifdef _WIN32
+    if (windowsHandle != INVALID_HANDLE_VALUE)
+    {
+        CancelIoEx(windowsHandle, nullptr);
     }
 #endif
     if (thread.joinable())

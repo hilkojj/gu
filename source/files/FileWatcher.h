@@ -15,7 +15,7 @@ class FileWatcher
     callback onDelete;
     callback onChange;
 
-    void addDirectoryToWatch(const char *path, bool bRecursive);
+    FileWatcher(const char *path, bool bRecursive);
 
     void startWatchingSync();
 
@@ -27,7 +27,10 @@ class FileWatcher
 
   private:
     std::vector<std::string> paths;
+    bool bRecursive;
     std::thread thread;
     int inotifyInstance = -1;
     int stopPipe[2];
+
+    void *windowsHandle = (void *) (long) -1;
 };
