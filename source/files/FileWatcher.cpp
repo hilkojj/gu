@@ -25,7 +25,11 @@ FileWatcher::FileWatcher(const char *path, bool bRecursive) :
         {
             if (bIsDir)
             {
-                addDirectoryToWatch(childPath.c_str(), false);
+                paths.emplace_back(childPath);
+                if (!su::endsWith(childPath, "/"))
+                {
+                    paths.back() += '/';
+                }
             }
         });
     }
