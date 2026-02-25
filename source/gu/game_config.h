@@ -16,7 +16,7 @@ struct Config
     // Requested window size at startup is in screen coordinates, not pixels.
     int width = 1600, height = 900;
 
-    int samples = 0, depthBits = 24;
+    int samples = 0, depthBits = 24, rgbBits = -1;
     bool
         bVSync = false,
         bShowFPSInTitleBar = false,
