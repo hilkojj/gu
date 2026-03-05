@@ -71,6 +71,12 @@ inline type map(type value, type min1, type max1, type min2, type max2)
     return x * (max2 - min2) + min2;
 }
 
+template<typename type>
+inline type mapClamped(type value, type min1, type max1, type min2, type max2)
+{
+    return clamp(map(value, min1, max1, min2, max2), min(min2, max2), max(min2, max2));
+}
+
 inline bool findCircleIntersections(
     const vec2 &circle0Pos, const vec2 &circle1Pos, const float circle0Radius, const float circle1Radius,
     vec2 &outIntersection0, vec2 &outIntersection1
