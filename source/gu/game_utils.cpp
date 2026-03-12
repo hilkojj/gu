@@ -6,6 +6,8 @@
 #include "../input/gamepad_input.h"
 #include "../input/key_input.h"
 #include "../input/mouse_input.h"
+#include "../graphics/frame_buffer.h"
+#include "../graphics/3d/renderers/quad_renderer.h"
 #include "../graphics/external/gl_includes.h"
 #include "../graphics/external/stb_image.h"
 #include "../utils/gu_error.h"
@@ -33,6 +35,7 @@ namespace gu
 
 int pixelWidth = 0, pixelHeight = 0;
 int virtualWidth = 0, virtualHeight = 0;
+bool bHasFocus = true;
 bool bFullscreen = false;
 int desiredFullscreenWidth = -1;
 int desiredFullscreenHeight = -1;
@@ -50,8 +53,25 @@ GLFWwindow *window = nullptr;
 
 Screen *screen;
 
+float imGuiScale = 1.0f;
+FrameBuffer *imguiFbo = nullptr;
+
 bool bResized = true;
 int nextVirtualWidth, nextVirtualHeight, nextPixelWidth, nextPixelHeight;
+
+void updateImGuiFbo(int width, int height)
+{
+    if (imguiFbo != nullptr)
+    {
+        delete imguiFbo;
+        imguiFbo = nullptr;
+    }
+    if (imGuiScale != 1.0f)
+    {
+        imguiFbo = new FrameBuffer(width / imGuiScale, height / imGuiScale);
+        imguiFbo->addColorTexture(GL_RGBA, GL_NEAREST, GL_NEAREST);
+    }
+}
 
 void onVirtualSizeChanged(GLFWwindow *, int width, int height)
 {
@@ -64,6 +84,13 @@ void onPixelSizeChanged(GLFWwindow *, int width, int height)
     nextPixelWidth = width;
     nextPixelHeight = height;
     bResized = true;
+
+    updateImGuiFbo(width, height);
+}
+
+void onFocusChanged(GLFWwindow *, int focus)
+{
+    bHasFocus = focus;
 }
 
 void APIENTRY glMessageCallback(
@@ -253,6 +280,7 @@ bool init(const Config &inConfig)
 
     glfwSetWindowSizeCallback(window, onVirtualSizeChanged);
     glfwSetFramebufferSizeCallback(window, onPixelSizeChanged);
+    glfwSetWindowFocusCallback(window, onFocusChanged);
 
     glfwGetWindowSize(window, &nextVirtualWidth, &nextVirtualHeight);
     glfwGetFramebufferSize(window, &nextPixelWidth, &nextPixelHeight);
@@ -297,6 +325,8 @@ bool init(const Config &inConfig)
     }
 
     // IMGUI ---------------------------------
+    imGuiScale = config.uiScale;
+    updateImGuiFbo(config.width, config.height);
     ImGui::CreateContext();
     const char *glslVersionLine = "#version 300 es";
 
@@ -379,7 +409,7 @@ void mainLoop()
     {
         ImGui_ImplOpenGL3_NewFrame();
     }
-    ImGui_ImplGlfw_NewFrame();
+    ImGui_ImplGlfw_NewFrame(imGuiScale);
     ImGui::NewFrame();
 
     {
@@ -416,6 +446,12 @@ void mainLoop()
 
     // Render dear imgui into screen
     ImGui::Render();
+    if (imguiFbo != nullptr)
+    {
+        imguiFbo->bind();
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
     if (config.customImGuiRendering.drawData != nullptr)
     {
         config.customImGuiRendering.drawData(ImGui::GetDrawData());
@@ -423,6 +459,39 @@ void mainLoop()
     else
     {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+    if (imguiFbo != nullptr)
+    {
+        imguiFbo->unbind();
+        GLboolean bDepthTestEnabled = false;
+        GLboolean bDepthWriteEnabled = false;
+        GLboolean bBlendEnabled = false;
+        GLint blendSrc = 0, blendDst = 0;
+        glGetBooleanv(GL_DEPTH_TEST, &bDepthTestEnabled);
+        glGetBooleanv(GL_DEPTH_WRITEMASK, &bDepthWriteEnabled);
+        glGetBooleanv(GL_BLEND, &bBlendEnabled);
+        glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendSrc);
+        glGetIntegerv(GL_BLEND_DST_ALPHA, &blendDst);
+
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        QuadRenderer::render(imguiFbo->colorTexture);
+
+        if (bDepthTestEnabled)
+        {
+            glEnable(GL_DEPTH_TEST);
+        }
+        if (bDepthWriteEnabled)
+        {
+            glDepthMask(GL_TRUE);
+        }
+        if (!bBlendEnabled)
+        {
+            glDisable(GL_BLEND);
+        }
+        glBlendFunc(blendSrc, blendDst);
     }
 
     // Finish all OpenGL operations & changes to the framebuffer. Not doing this will cause jittery display on Windows with fullscreen and Vsync enabled.
@@ -448,6 +517,11 @@ void run()
     while (!shouldClose() || canClose().anyEquals(false));
 
     ImGui_ImplGlfw_Shutdown();
+    if (imguiFbo != nullptr)
+    {
+        delete imguiFbo;
+        imguiFbo = nullptr;
+    }
 
     #endif
     // glfwTerminate();
@@ -481,6 +555,12 @@ void setVSync(bool bEnabled)
 
     config.bVSync = bEnabled;
     glfwSwapInterval(bEnabled);
+}
+
+void setUIScale(float scale)
+{
+    imGuiScale = scale;
+    updateImGuiFbo(pixelWidth, pixelHeight);
 }
 
 } // namespace gu

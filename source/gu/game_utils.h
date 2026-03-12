@@ -13,6 +13,8 @@ extern int pixelWidth, pixelHeight;
 // Window content size in screen coordinates. https://www.glfw.org/docs/3.3/window_guide.html#window_size
 extern int virtualWidth, virtualHeight;
 
+extern bool bHasFocus;
+
 extern bool bFullscreen;
 extern int desiredFullscreenWidth;
 extern int desiredFullscreenHeight;
@@ -36,5 +38,7 @@ void setScreen(Screen *screen);
 bool getVSync();
 
 void setVSync(bool bEnabled);
+
+void setUIScale(float scale);
 
 }; // namespace gu

@@ -41,6 +41,8 @@ struct Config
         void (*drawData)(ImDrawData *) = nullptr;
     }
     customImGuiRendering;
+
+    float uiScale = 1.0f;
 };
 
 }

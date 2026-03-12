@@ -20,8 +20,8 @@ static const char *vertSource = MULTILINE(
 
         void main()
         {
-            gl_Position = vec4(a_pos, 1);
-            v_texCoords = a_pos.xy * vec2(.5) + vec2(.5);
+            gl_Position = vec4(a_pos, 1.0f);
+            v_texCoords = a_pos.xy * vec2(0.5f) + vec2(0.5f);
         }
 );
 
