@@ -343,8 +343,11 @@ void Loader::celToFrame(Frame &frame, Cel &cel)
                 {
                     // todo: custom blending
                     uint8 &p = cel.pixels[sx + sy];
-                    if (p != 0)
+                    const int frameIndex = dx + dy;
+                    if (p != 0 && frameIndex < frame.pixels.size())
+                    {
                         frame.pixels[dx + dy] = p;
+                    }
                     break;
                 }
                 case grayscale:
@@ -356,7 +359,13 @@ void Loader::celToFrame(Frame &frame, Cel &cel)
 
                     const ColorRGBA &p = celPixels[sx + sy];
                     if (p.a != 0u) // todo: very very bad
-                        framePixels[dx + dy] = p;
+                    {
+                        const int frameIndex = dx + dy;
+                        if (frameIndex * 4 < frame.pixels.size())
+                        {
+                            framePixels[frameIndex] = p;
+                        }
+                    }
 
                     break;
                 }
