@@ -34,6 +34,11 @@ target_include_directories(gameutils PUBLIC ../source/)
 set_property(TARGET gameutils PROPERTY LINKER_LANGUAGE CXX)
 set_property(TARGET gameutils PROPERTY CXX_STANDARD 17)
 set_property(TARGET gameutils PROPERTY CXX_STANDARD_REQUIRED ON)
+
+if (NOT MSVC)
+    target_compile_options(gameutils PRIVATE -O3)
+endif()
+
 if(GU_UNITY_BUILD)
     set_property(TARGET gameutils PROPERTY UNITY_BUILD ON)
     set_property(TARGET gameutils PROPERTY UNITY_BUILD_MODE GROUP)
@@ -118,6 +123,9 @@ file(GLOB ZLIB_HEADERS ${ZLIB_DIR}/*.h)
 
 add_library(zlib ${ZLIB_SOURCES} ${ZLIB_HEADERS})
 
+if (NOT MSVC)
+    target_compile_options(zlib PRIVATE -O3)
+endif()
 target_include_directories(zlib PUBLIC ${ZLIB_DIR})
 target_link_libraries(gameutils PUBLIC zlib)
 
@@ -146,5 +154,8 @@ endif()
 
 if(GU_INCLUDE_PHYSICS)
     add_subdirectory(../external/bullet2/src ./bin/bullet2)
+    if (NOT MSVC)
+        target_compile_options(Bullet PRIVATE -O3)
+    endif()
     target_link_libraries(gameutils PUBLIC Bullet)
 endif()
