@@ -7,9 +7,10 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 
 #ifdef _WIN32
-#include <filesystem>
+
 #else
 #include <dirent.h>
 #include <sys/stat.h>
@@ -52,10 +53,7 @@ std::vector<unsigned char> fu::readBinary(const char *path)
 
 bool fu::exists(const char *path)
 {
-    std::ifstream stream(path, std::ios::in);
-    bool exists = stream.is_open();
-    stream.close();
-    return exists;
+    return std::filesystem::exists(path);
 }
 
 void fu::writeBinary(const char *path, const char *data, size_t dataSize)
