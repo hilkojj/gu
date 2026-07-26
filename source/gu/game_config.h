@@ -26,6 +26,8 @@ struct Config
 
     int openGLMajorVersion = 4, openGLMinorVersion = 2;
 
+    bool bUseEGL = false;
+
     // For web-builds: the id of the HTML <canvas> element
     std::string htmlCanvasId = "canvas";
 

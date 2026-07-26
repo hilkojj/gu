@@ -258,6 +258,10 @@ bool init(const Config &inConfig)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, config.openGLMajorVersion);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, config.openGLMinorVersion);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    if (config.bUseEGL)
+    {
+        glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
+    }
     #endif
 
     window = glfwCreateWindow(config.width, config.height, config.title.c_str(), nullptr, nullptr);
