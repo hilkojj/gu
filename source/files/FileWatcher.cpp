@@ -71,7 +71,7 @@ void FileWatcher::startWatchingSync()
         watchToPath[watch] = path;
     }
 
-    std::cout << "Started watching " << watchToPath.size() << " directories.\n";
+    std::cout << "Live-reloading from " << watchToPath.size() << " directories.\n";
 
     while (true)
     {
@@ -188,7 +188,7 @@ void FileWatcher::startWatchingSync()
         throw gu_err("Failed to create stop event");
     }
 
-    std::cout << "Started watching " << rootPath << std::endl;
+    std::cout << "Live-reloading from " << rootPath << std::endl;
 
     constexpr DWORD BUFFER_SIZE = 16 * 1024;
     std::vector<BYTE> buffer(BUFFER_SIZE);
