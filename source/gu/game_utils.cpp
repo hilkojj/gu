@@ -252,11 +252,11 @@ bool init(const Config &inConfig)
     glfwWindowHint(GLFW_SAMPLES, config.samples);
     glfwWindowHint(GLFW_DEPTH_BITS, config.depthBits);
 
-    if (inConfig.rgbBits > 0)
+    if (config.rgbBits > 0)
     {
-        glfwWindowHint(GLFW_RED_BITS, inConfig.rgbBits);
-        glfwWindowHint(GLFW_GREEN_BITS, inConfig.rgbBits);
-        glfwWindowHint(GLFW_BLUE_BITS, inConfig.rgbBits);
+        glfwWindowHint(GLFW_RED_BITS, config.rgbBits);
+        glfwWindowHint(GLFW_GREEN_BITS, config.rgbBits);
+        glfwWindowHint(GLFW_BLUE_BITS, config.rgbBits);
     }
 
     #ifndef EMSCRIPTEN
