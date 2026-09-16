@@ -56,6 +56,11 @@ bool fu::exists(const char *path)
     return std::filesystem::exists(path);
 }
 
+bool fu::remove(const char *path)
+{
+    return std::filesystem::remove(path);
+}
+
 void fu::writeBinary(const char *path, const char *data, size_t dataSize)
 {
     std::ofstream out(path, std::ios::out | std::ios::binary);

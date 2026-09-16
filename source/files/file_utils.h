@@ -13,6 +13,8 @@ std::vector<unsigned char> readBinary(const char *path);
 
 bool exists(const char *path);
 
+bool remove(const char *path);
+
 void createDirectory(const char *path);
 
 void writeBinary(const char *path, const char *data, size_t dataSize);
