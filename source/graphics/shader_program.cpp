@@ -96,9 +96,8 @@ void ShaderProgram::compileAndAttach(const char *source, GLuint shaderId, const 
     glCompileShader(shaderId);
     glAttachShader(programId, shaderId);
 
-    #ifdef EMSCRIPTEN
     // check shader:
-    int logLength;
+    int logLength = 0;
     glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logLength);
     if (logLength > 1)
     {
@@ -107,7 +106,6 @@ void ShaderProgram::compileAndAttach(const char *source, GLuint shaderId, const 
         std::cout << name << " " << shaderType <<  " SHADER compilation log:\n"
                     << &log[0] << "\n";
     }
-    #endif
 }
 
 bool ShaderProgram::compiled() const
