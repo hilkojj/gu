@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <functional>
 #include <limits>
+#include <queue>
+#include <unordered_set>
 
 const float INFINITY_FLOAT = std::numeric_limits<float>::infinity();
 
@@ -30,9 +32,98 @@ bool findAStarPath(
 
     bool bToClosestNodeOnFail = false,
 
-    std::vector<nodeType> *outClosedSet = nullptr
+    std::unordered_set<nodeType> *outClosedSet = nullptr
 )
 {
+    using openPair = std::pair<float, nodeType>;
+
+    std::priority_queue<openPair, std::vector<openPair>, std::greater<openPair>> openQueue;
+    openQueue.push({0.0f, start});
+
+    std::unordered_set<nodeType> openSet{start};
+    std::unordered_set<nodeType> localClosedSet;
+    std::unordered_set<nodeType> &closedSet = outClosedSet ? *outClosedSet : localClosedSet;
+    std::vector<nodeType> neighbors;
+
+    std::unordered_map<nodeType, nodeType> cameFrom;
+    std::unordered_map<nodeType, float> gScore{{start, 0}};
+
+    std::unordered_map<nodeType, float> fScore{{start, 0}};
+
+    float lowestHValue = INFINITY_FLOAT;
+    nodeType finalNode = start;
+
+    while (!openSet.empty())
+    {
+        auto [currentF, current] = openQueue.top();
+        openQueue.pop();
+
+        if (closedSet.count(current)) continue;
+        openSet.erase(current);
+
+        // nodeType current = *openSet.begin();
+        // float lowestFScore = fScore[current];
+        // for (auto &n : openSet)
+        // {
+        //     float f = fScore[n];
+        //     if (f < lowestFScore)
+        //     {
+        //         current = n;
+        //         lowestFScore = f;
+        //     }
+        // }
+
+        if (current == goal)
+        {
+            finalNode = goal;
+            break;
+        }
+        // remove 'current' from openSet:
+        closedSet.insert(current);
+
+        neighbors.clear();
+        neighborsGetter(current, neighbors);
+        for (auto &nb : neighbors)
+        {
+            // if neighbor in closedSet: continue
+            if (closedSet.find(nb) != closedSet.end()) continue;
+
+            float tentativeGScore = gScore[current] + d(current, nb);
+            if (tentativeGScore < getWithDefault(gScore, nb, INFINITY_FLOAT))
+            {
+                cameFrom[nb] = current;
+                gScore[nb] = tentativeGScore;
+                const float hValue = h(nb);
+                const float fValue = tentativeGScore + hValue;
+                fScore[nb] = fValue;
+
+                openQueue.push({ fValue, nb });
+
+                if (openSet.insert(nb).second)
+                {
+                    if (hValue < lowestHValue)
+                    {
+                        lowestHValue = hValue;
+                        finalNode = nb;
+                    }
+                }
+            }
+        }
+    }
+
+    if (finalNode == goal || bToClosestNodeOnFail)
+    {
+        nodeType current = finalNode;
+        path.push_back(current);
+        while (current != start)
+        {
+            current = cameFrom[current];
+            path.push_front(current);
+        }
+        return true;
+    }
+    return false;
+    /*
     std::vector<nodeType> openSet{start};
     std::vector<nodeType> localClosedSet;
     std::vector<nodeType> &closedSet = outClosedSet ? *outClosedSet : localClosedSet;
@@ -110,4 +201,5 @@ bool findAStarPath(
         return true;
     }
     return false;
+    */
 }
