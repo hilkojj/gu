@@ -1,6 +1,8 @@
 #include "texture.h"
 
 #include "../shader_program.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../external/stb_image.h"
 
 #include "../../utils/gu_error.h"
@@ -32,6 +34,39 @@ Texture Texture::fromImageFile(const char *path)
 
     stbi_image_free(imgData);
     return Texture(id, width, height);
+}
+
+bool Texture::toPngFile(const GLubyte *data, GLsizei width, GLsizei height, int numComponents, const char *path,
+    GLenum type)
+{
+    int byteSize = 1;
+    switch (type)
+    {
+        case GL_BYTE:
+        case GL_UNSIGNED_BYTE:
+            byteSize = 1;
+            break;
+        case GL_SHORT:
+        case GL_UNSIGNED_SHORT:
+            byteSize = 2;
+            break;
+        case GL_INT:
+        case GL_UNSIGNED_INT:
+            byteSize = 4;
+            break;
+        default:
+            break;
+    }
+    stbi_flip_vertically_on_write(1);
+    stbi_write_png(path, width, height, numComponents, data, numComponents * width * byteSize);
+    return true;
+}
+
+bool Texture::toJpgFile(const GLubyte *data, GLsizei width, GLsizei height, int numComponents, const char *path)
+{
+    stbi_flip_vertically_on_write(1);
+    stbi_write_jpg(path, width, height, numComponents, data, 75);
+    return true;
 }
 
 Texture::Texture(GLuint id, GLuint width, GLuint height)

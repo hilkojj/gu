@@ -7,6 +7,9 @@ class Texture
   public:
     static Texture fromImageFile(const char *path);
 
+    static bool toPngFile(const GLubyte *data, GLsizei width, GLsizei height, int numComponents, const char *path, GLenum type = GL_UNSIGNED_BYTE);
+    static bool toJpgFile(const GLubyte *data, GLsizei width, GLsizei height, int numComponents, const char *path);
+
     static Texture fromByteData(const GLubyte *data, GLint internalFormat, GLenum format, GLsizei width, GLsizei height,
         GLuint magFilter, GLuint minFilter, bool bGenerateMipMaps = true, GLenum type = GL_UNSIGNED_BYTE);
 
