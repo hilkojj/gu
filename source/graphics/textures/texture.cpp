@@ -2,7 +2,6 @@
 
 #include "../shader_program.h"
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../external/stb_image.h"
 
 #include "../../utils/gu_error.h"

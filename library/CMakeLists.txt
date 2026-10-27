@@ -99,6 +99,8 @@ add_library(imgui
     ${IMGUI_DIR}/examples/imgui_impl_glfw.cpp
     ${IMGUI_DIR}/examples/imgui_impl_opengl3.h
     ${IMGUI_DIR}/examples/imgui_impl_opengl3.cpp
+    ${IMGUI_DIR}/misc/cpp/imgui_stdlib.h
+    ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
 )
 target_compile_definitions(imgui INTERFACE "-DIMGUI_USER_CONFIG=<gu_imgui_config.h>")
 
