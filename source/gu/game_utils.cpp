@@ -7,6 +7,7 @@
 #include "../input/key_input.h"
 #include "../input/mouse_input.h"
 #include "../graphics/frame_buffer.h"
+#include "../graphics/shader_asset.h"
 #include "../graphics/3d/renderers/quad_renderer.h"
 #include "../graphics/external/gl_includes.h"
 #include "../graphics/external/stb_image.h"
@@ -486,7 +487,27 @@ void mainLoop()
         glDepthMask(GL_FALSE);
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        QuadRenderer::render(imguiFbo->colorTexture);
+
+        static ShaderAsset scalingShader = ShaderAsset(
+            "ImGui Scaling Shader",
+            config.uiScalingVertexShader.c_str(),
+            config.uiScalingFragmentShader.c_str(),
+            ShaderAsset::CompileBehavior::COMPILE_ON_FIRST_USE
+        );
+        scalingShader.use();
+        imguiFbo->colorTexture->bind(0, scalingShader, "uiTexture");
+        glUniform2f(scalingShader.location("uiDimensions"), imguiFbo->width, imguiFbo->height);
+        float scalingAlpha = 0.33f;
+        if (config.uiScale > 1.3f)
+        {
+            scalingAlpha = 0.2f;
+        }
+        if (config.uiScale > 1.6f)
+        {
+            scalingAlpha = 0.15f;
+        }
+        glUniform1f(scalingShader.location("scalingAlpha"), scalingAlpha);
+        Mesh::getUploadedQuad()->render();
 
         if (bDepthTestEnabled)
         {

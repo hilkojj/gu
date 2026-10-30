@@ -45,6 +45,8 @@ struct Config
     customImGuiRendering;
 
     float uiScale = 1.0f;
+    std::string uiScalingVertexShader;
+    std::string uiScalingFragmentShader;
 };
 
 }
