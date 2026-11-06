@@ -70,12 +70,12 @@ void updateImGuiFbo(int width, int height)
     if (imGuiScale != 1.0f)
     {
         imguiFbo = new FrameBuffer(width / imGuiScale, height / imGuiScale);
-        GLuint magFilter = GL_NEAREST;
+        GLuint filter = GL_NEAREST;
         if (abs(imGuiScale - round(imGuiScale)) > 0.1f)
         {
-            magFilter = GL_LINEAR;
+            filter = GL_LINEAR;
         }
-        imguiFbo->addColorTexture(GL_RGBA, magFilter, GL_NEAREST);
+        imguiFbo->addColorTexture(GL_RGBA, filter, filter);
     }
 }
 
